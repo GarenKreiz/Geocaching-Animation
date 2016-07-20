@@ -53,10 +53,10 @@ from PIL import ImageFont
 currentZone = 'France'
 #currentZone = '_World_'
 #currentZone = '_Bretagne_'
-#currentZone = '_Europe_'
+currentZone = '_Europe_'
 
 # image à positionner dans le fond d'image
-# logoImage = 'bzh-geocacheurs_blackj_28.jpg'
+logoImage = 'bzh-geocacheurs_blackj_28.jpg'
 logoX = 1040
 logoY = 505
 
@@ -67,7 +67,8 @@ zones = {
                41.33333,  # cap di u Beccu, Iles Lavezzi, Corse
                -5.15083,  # phare de Nividic, Ouessant
                9.56000,   # plage Fiorentine, Alistro, Corse
-               (75,107)),
+               #(75,107)),
+               (50,70)),
   '_Bretagne_' :
               (48.92, 
                47.24, 
@@ -146,6 +147,7 @@ class GCAnimation:
       fontPathFixed = "/usr/share/fonts/truetype/freefont/FreeMono.ttf"
 
     #self.fontArial = ImageFont.truetype ( fontPath, 40 ) # 1080p
+    print fontPath
     self.fontArial = ImageFont.truetype ( fontPath, 32 ) # 720p
     self.fontArialMedium = ImageFont.truetype ( fontPath, 24 )
     #self.fontArialSmall = ImageFont.truetype ( fontPath, 24 ) # 1080p
@@ -160,19 +162,23 @@ class GCAnimation:
 
     print "X MinMax:", self.XMinLon,self.XMaxLon
     print "Y MinMax:", self.YMinLat,self.YMaxLat
-    self.scaleY = ySize/(self.YMaxLat-self.YMinLat)
-    self.scaleX = xSize/(self.XMaxLon-self.XMinLon)
+    #self.scaleY = ySize/(self.YMaxLat-self.YMinLat)
+    #self.scaleX = xSize/(self.XMaxLon-self.XMinLon)
     print "Scale computed :",self.scaleX, self.scaleY
-    self.scaleX = self.scaleY*scaleX/scaleY
+    #self.scaleX = self.scaleY*scaleX/scaleY
     print "Scale finale:", self.scaleX, self.scaleY
 
     self.LX = int((self.XMaxLon-self.XMinLon)*self.scaleX)
     self.LY = int((self.YMaxLat-self.YMinLat)*self.scaleY)
     
     print 'Dimensions:', self.LX, self.LY
-    if (self.LX < xSize) and (self.LY < ySize):
+    if (self.LX > xSize) or (self.LY > ySize):
+      print "Scale too large"
       self.LX,self.LY = xSize,ySize
     # self.LX,self.LY = xSize,ySize
+    print 'Final dimensions:', self.LX, self.LY
+    self.LX,self.LY = xSize,ySize
+    print 'Original dimensions:', self.LX, self.LY
 
     self.allWpts = {}     # list of all GC waypoints
     self.coords = {}      # coordinates of GC waypoints
@@ -287,8 +293,7 @@ class GCAnimation:
     if file[-4:].lower() == '.gpx':
       self.loadFromGPX(file,status=ACTIVE)
     else:
-      # self.loadFromCSV(file,geocacher)
-      self.loadmyfindsCSV(file,geocacher)
+      self.loadFromCSV(file,geocacher)
 
   def loadLogsFromCSV(self,myCSV):
 
@@ -357,7 +362,9 @@ class GCAnimation:
     while l <> '':
       fields = re.sub('[\n\r]*','',l)
       fields = re.sub('\|','&#108;',fields)      # cache names containing character |
+      print fields
       fields = re.sub('","','|',fields[1:-1])    # getting rid of all double quotes used by GSAK
+      print fields
       fields = string.split(fields,"|")
       (name,cacheType,note,last4logs,dateLastLog,wpName,placedBy,datePlaced,dateLastFound,found,country,latitude,longitude,status,url,dateFoundByMe,ownerId) = fields
       if name == "Code GC" or name == "Code":
@@ -409,71 +416,6 @@ class GCAnimation:
     fInput.close()
         
     print 'Added caches:',self.nAddedCaches
-
-    # icaunais: show found geocaches
-  def loadmyfindsCSV(self,myCSV,geocacher=None):
-
-    # Fields included in the GSAK view used to export to CSV
-    #   Code, Lat, Lon, Country, dateFoundByMe
-
-    print 'Generate map of my finds from ',myCSV
-    fInput = open(myCSV,'r')
-    if geocacher <> None:
-      geocacher = geocacher.upper()
-    self.nAddedCaches = 0
-    l = fInput.readline()
-    while l <> '':
-      print l
-      fields = re.sub('[\n\r]*','',l)
-      fields = re.sub('\|','&#108;',fields)      # cache names containing character |
-      print fields
-      fields = re.sub('";"','|',fields[1:-1])    # getting rid of all double quotes used by GSAK
-      print fields
-      fields = string.split(fields,"|")
-      print fields
-      (name,latitude,longitude,country,dateFoundByMe) = fields
-
-      if name == "Code GC" or name == "Code":      
-        # first line of headers in export file of GSAK
-        l = fInput.readline()
-        continue
-      elif currentZone[0] <> '_' and country <> currentZone:
-        print '!!! Pb cache outside',currentZone,':',name
-        l = fInput.readline()
-        continue
-
-      cacheType = "geo"
-      status = ACTIVE                    # Active cache 
-      lat,lon = float(latitude),float(longitude)
-      if (lat > self.maxLat) or (lat < self.minLat) or \
-         (lon > self.maxLon) or (lon < self.minLon) or (currentZone[0] <> '_' and country <> currentZone and country <> ''):
-        # print '!!! Pb point outside the drawing zone:',name
-        l = fInput.readline()
-        continue
-
-      cacheTime = self.convertDate(dateFoundByMe)
-      foundByMeTime = self.convertDate(dateFoundByMe)
-      
-      if status <> EVENT:
-        # a non-event cache is active for a while after being placed
-        self.newItem(name,lat,lon,1,cacheTime)
-        if status <> ACTIVE:
-          # the cache isn't active anymore
-          if lastLogTime == 0:
-            lastLogTime = cacheTime + 24*3600
-          self.newItem(name,lat,lon,status,lastLogTime)
-      else:
-        self.newItem(name,lat,lon,status,cacheTime)
-      if geocacher <> None:
-        if foundByMeTime <> 0:
-          self.newItem(name,lat,lon,TRACK,foundByMeTime)
-        if re.search(geocacher,ownerId.upper()):
-          self.newItem(name,lat,lon,TRACK,cacheTime)
-      l = fInput.readline()
-    fInput.close()
-        
-    print 'Added caches:',self.nAddedCaches
-
 
   def loadFromGPX(self,file,status=ACTIVE):
 
@@ -635,14 +577,14 @@ class GCAnimation:
     self.imResult.save('Geocaching_France_frontieres.png',"PNG")
 
 
-#    logo = Image.open(logoImage)
-#    self.imResult.paste(logo,(logoX,logoY))
+    logo = Image.open(logoImage)
+    self.imResult.paste(logo,(logoX,logoY))
     
-    imDraw.text((20,5),  u"Géocaches en France"                      , font=self.fontArial     , fill="red")
-#    imDraw.text((20,5),   u"Géocaches en Bretagne"                      , font=self.fontArial     , fill="red")
-    imDraw.text((25,50),  u"animation : GarenKreiz"                     , font=self.fontArialSmall, fill="red")
-#    imDraw.text((35,80),  u"musique : Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
-#    imDraw.text((36,110), u"licence : CC BY-NC-SA"                      , font=self.fontArialSmall, fill="red")
+    #imDraw.text((30,5),  u"Géocaches en France"                      , font=self.fontArial     , fill="red")
+    imDraw.text((30,5),   u"Géocaches en Bretagne"                      , font=self.fontArial     , fill="red")
+    imDraw.text((35,50),  u"animation: GarenKreiz"                     , font=self.fontArialSmall, fill="red")
+    imDraw.text((35,80),  u"musique: Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
+    imDraw.text((36,110), u"licence: CC BY-NC-SA"                      , font=self.fontArialSmall, fill="red")
 
     #imDraw.text((35,80),  u"musique: Pedro Collares (Gothic)", font=self.fontArialSmall, fill="red")
     #imDraw.text((35,80),  u"musique: ProleteR (April Showers)", font=self.fontArialSmall, fill="red")
