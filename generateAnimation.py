@@ -92,7 +92,8 @@ class GCAnimation:
 
   def __init__(self,(scaleX,scaleY),minLon,maxLon,minLat,maxLat):
     
-    if os.name <> 'posix':
+    print os.name, sys.platform
+    if os.name <> 'posix' or sys.platform == 'cygwin':
       # Windows fonts
       fontPath = "c:\Windows\Fonts\ARIAL.TTF"
       fontPathFixed = "c:\Windows\Fonts\COURBD.TTF"
@@ -280,6 +281,66 @@ class GCAnimation:
         
     print 'Added caches:',self.nAddedCaches
 
+    # icaunais: show found geocaches
+  def loadmyfindsCSV(self,myCSV,minLon,maxLon,minLat,maxLat,geocacher=None):
+
+    # Fields included in the GSAK view used to export to CSV
+    #   Code, Lat, Lon, Country, dateFoundByMe
+
+    print 'Generate map of my finds from ',myCSV
+    fInput = open(myCSV,'r')
+    if geocacher <> None:
+      geocacher = geocacher.upper()
+    self.nAddedCaches = 0
+    l = fInput.readline()
+    while l <> '':
+      fields = re.sub('[\n\r]*','',l)
+      fields = re.sub('";"','|',fields[1:-1])    # getting rid of all double quotes used by GSAK
+      fields = string.split(fields,"|")
+      (name,latitude,longitude,country,dateFoundByMe) = fields
+
+      if name == "Code":                         # first line of headers in export file of GSAK
+
+        l = fInput.readline()
+        continue
+      elif country <> currentCountry:
+        print '!!! Pb cache outside',currentCountry,':',name
+        l = fInput.readline()
+        continue
+
+      cacheType = "geo"
+      status = ACTIVE                    # Active cache 
+      lat,lon = float(latitude),float(longitude)
+      if (lat > maxLat) or (lat < minLat) or \
+         (lon > maxLon) or (lon < minLon) or (country <> currentCountry and country <> ''):
+        print '!!! Pb point outside the drawing zone:',name
+        l = fInput.readline()
+        continue
+
+      cacheTime = self.convertDate(dateFoundByMe)
+      foundByMeTime = self.convertDate(dateFoundByMe)
+      
+      if status <> EVENT:
+        # a non-event cache is active for a while after being placed
+        self.newItem(name,lat,lon,1,cacheTime)
+        if status <> ACTIVE:
+          # the cache isn't active anymore
+          if lastLogTime == 0:
+            lastLogTime = cacheTime + 24*3600
+          self.newItem(name,lat,lon,status,lastLogTime)
+      else:
+        self.newItem(name,lat,lon,status,cacheTime)
+      if geocacher <> None:
+        if foundByMeTime <> 0:
+          self.newItem(name,lat,lon,TRACK,foundByMeTime)
+        if re.search(geocacher,ownerId.upper()):
+          self.newItem(name,lat,lon,TRACK,cacheTime)
+      l = fInput.readline()
+    fInput.close()
+        
+    print 'Added caches:',self.nAddedCaches
+
+
   def loadFromGPX(self,myGPX,minLon,maxLon,minLat,maxLat,status=ACTIVE):
 
     self.foundWpts = {}
@@ -299,7 +360,9 @@ class GCAnimation:
         continue
 
       name =  p.attribs['name']
-      strTime = p.attribs['time']
+#       strTime = p.attribs['time']
+      strTime = p.attribs['groundspeak:date']
+
       cacheTime = int(time.mktime(time.strptime(strTime, "%Y-%m-%dT%H:%M:%SZ")))
       if p.attribs['type'] == 'Geocache|Event Cache' or p.attribs['type'] == 'Geocache|Cache In Trash Out Event':
         cacheStatus = EVENT
@@ -430,6 +493,7 @@ if __name__=='__main__':
   if nbArgs == 1:
     print 'Usage: python generationAnimation.py <active_caches.gpx> [ ... <archived_caches.gpx> ]'
     print 'Usage: python generationAnimation.py <gsak_extract.csv> [ <name of geocacher> ]'
+    print 'Usage: python generationAnimation.py <extract_myfinds.csv> myfinds'
   else:
     if sys.argv[1][-4:].lower() == '.gpx':
       # process GPX containing active cache
@@ -447,7 +511,10 @@ if __name__=='__main__':
           sys.exit()
     else:
       if nbArgs > 2:
-        myAnimation.loadFromCSV(sys.argv[1],minLonCountry,maxLonCountry,minLatCountry,maxLatCountry,geocacher=sys.argv[2])
+	 if sys.argv[2][-7:].lower() == 'myfinds':
+	    myAnimation.loadmyfindsCSV(sys.argv[1],minLonCountry,maxLonCountry,minLatCountry,maxLatCountry,geocacher=None)
+	 else:
+            myAnimation.loadFromCSV(sys.argv[1],minLonCountry,maxLonCountry,minLatCountry,maxLatCountry,geocacher=sys.argv[2])
       else:
         myAnimation.loadFromCSV(sys.argv[1],minLonCountry,maxLonCountry,minLatCountry,maxLatCountry,geocacher=None)
 
