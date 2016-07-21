@@ -500,37 +500,6 @@ class GCAnimation:
     sys.stdout.write('.')
     sys.stdout.flush()
 
-  def drawStats(self,nDays,nArchived,nUnavailable,nActive,dArchived,dUnavailable,dActive):
-    day = nDays % 700
-
-    scaleStats = 800
-    offsetStats = 900
-
-    # print 'Stats:',nDays,nArchived,nUnavailable,nActive,dArchived,dUnavailable,dActive
-    draw = ImageDraw.Draw(self.imResult)
-    draw.rectangle([1000,10,1200,700],outline=self.cacheColor[BLACK],fill=self.cacheColor[BLACK])
-    yStart = 700
-    draw.rectangle([1000,yStart,1200,yStart-dArchived],outline=self.cacheColor[ARCHIVED],fill=self.cacheColor[ARCHIVED])
-    yStart -= dArchived
-    draw.rectangle([1000,yStart,1200,yStart-dUnavailable],outline=self.cacheColor[UNAVAILABLE],fill=self.cacheColor[UNAVAILABLE])
-    yStart -= dUnavailable
-    draw.rectangle([1000,yStart,1200,yStart-dActive],outline=self.cacheColor[ACTIVE],fill=self.cacheColor[ACTIVE])
-    
-    
-    xActive = int(nActive/scaleStats)
-    xUnavailable = int(nUnavailable/scaleStats)
-    xArchived = int(nArchived/scaleStats)
-    draw.line([(offsetStats, day+11),(self.LX,day+11)], self.cacheColor[BLACK])
-    draw.line([(offsetStats, day+12),(self.LX,day+12)], self.cacheColor[BLACK])
-    draw.line([(offsetStats, day+13),(self.LX,day+13)], self.cacheColor[BLACK])
-    draw.line([(offsetStats, day+14),(self.LX,day+14)], self.cacheColor[BLACK])
-    xStart = offsetStats
-    draw.line([(xStart, day+10),(xStart + xArchived,day+10)], self.cacheColor[ARCHIVED])
-    xStart += xArchived + 1
-    draw.line([(xStart, day+10),(xStart + xUnavailable,day+10)], self.cacheColor[ACTIVE])
-    xStart += xUnavailable + 1
-    draw.line([(xStart, day+10),(xStart + xActive,day+10)], self.cacheColor[ACTIVE])
-
   def latlon2xy(self,lat,lon):
     x = self.xOrigin + int(self.scaleX*(lon-self.XMinLon)) # 720p
     y = self.yOrigin + int(self.scaleY*(self.YMaxLat-lat))
