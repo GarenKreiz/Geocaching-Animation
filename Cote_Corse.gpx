@@ -1,0 +1,1324 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<gpx version="1.1" creator="geojson2gpx"
+ xmlns="http://www.topografix.com/GPX/1/1"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+ xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3"
+ xmlns:gpxtrkx="http://www.garmin.com/xmlschemas/TrackStatsExtension/v1"
+ xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1"
+ xmlns:locus="http://www.locusmap.eu">
+<trk><name><![CDATA[4842993]]></name>
+<trkseg>
+<trkpt lat="42.33387" lon="8.552879"></trkpt>
+<trkpt lat="42.3189832" lon="8.597984"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843202]]></name>
+<trkseg>
+<trkpt lat="42.3622042" lon="8.555485"></trkpt>
+<trkpt lat="42.33387" lon="8.552879"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843210]]></name>
+<trkseg>
+<trkpt lat="42.3709536" lon="8.561308"></trkpt>
+<trkpt lat="42.3622042" lon="8.555485"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30998693]]></name>
+<trkseg>
+<trkpt lat="42.3815283" lon="8.573167"></trkpt>
+<trkpt lat="42.3709536" lon="8.561308"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[72681120]]></name>
+<trkseg>
+<trkpt lat="42.3821725" lon="8.574384"></trkpt>
+<trkpt lat="42.3815283" lon="8.573167"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843209]]></name>
+<trkseg>
+<trkpt lat="42.3818619" lon="8.596199"></trkpt>
+<trkpt lat="42.3821725" lon="8.574384"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[65994651]]></name>
+<trkseg>
+<trkpt lat="42.4092075" lon="8.601085"></trkpt>
+<trkpt lat="42.3818619" lon="8.596199"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843023]]></name>
+<trkseg>
+<trkpt lat="42.4670107" lon="8.679815"></trkpt>
+<trkpt lat="42.4092075" lon="8.601085"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[11783789]]></name>
+<trkseg>
+<trkpt lat="42.5004135" lon="8.666716"></trkpt>
+<trkpt lat="42.4670107" lon="8.679815"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30767570]]></name>
+<trkseg>
+<trkpt lat="42.5244382" lon="8.713113"></trkpt>
+<trkpt lat="42.5004135" lon="8.666716"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30767569]]></name>
+<trkseg>
+<trkpt lat="42.5285336" lon="8.717749"></trkpt>
+<trkpt lat="42.5244382" lon="8.713113"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4842997]]></name>
+<trkseg>
+<trkpt lat="42.5470074" lon="8.719857"></trkpt>
+<trkpt lat="42.5285336" lon="8.717749"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[19841934]]></name>
+<trkseg>
+<trkpt lat="42.5696155" lon="8.726768"></trkpt>
+<trkpt lat="42.5470074" lon="8.719857"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[73065019]]></name>
+<trkseg>
+<trkpt lat="42.5648114" lon="8.796247"></trkpt>
+<trkpt lat="42.5696155" lon="8.726768"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[232481428]]></name>
+<trkseg>
+<trkpt lat="42.584284" lon="8.801588"></trkpt>
+<trkpt lat="42.5648114" lon="8.796247"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[232481427]]></name>
+<trkseg>
+<trkpt lat="42.589922" lon="8.811358"></trkpt>
+<trkpt lat="42.584284" lon="8.801588"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[232481422]]></name>
+<trkseg>
+<trkpt lat="42.603686" lon="8.807342"></trkpt>
+<trkpt lat="42.589922" lon="8.811358"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[232481421]]></name>
+<trkseg>
+<trkpt lat="42.6093837" lon="8.847619"></trkpt>
+<trkpt lat="42.603686" lon="8.807342"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71408269]]></name>
+<trkseg>
+<trkpt lat="42.6082461" lon="8.867574"></trkpt>
+<trkpt lat="42.6093837" lon="8.847619"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[159926983]]></name>
+<trkseg>
+<trkpt lat="42.6124784" lon="8.874261"></trkpt>
+<trkpt lat="42.6082461" lon="8.867574"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30777611]]></name>
+<trkseg>
+<trkpt lat="42.6379423" lon="8.924327"></trkpt>
+<trkpt lat="42.6124784" lon="8.874261"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[125155168]]></name>
+<trkseg>
+<trkpt lat="42.6334282" lon="8.948456"></trkpt>
+<trkpt lat="42.6379423" lon="8.924327"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30790746]]></name>
+<trkseg>
+<trkpt lat="42.6392669" lon="8.980475"></trkpt>
+<trkpt lat="42.6334282" lon="8.948456"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30800958]]></name>
+<trkseg>
+<trkpt lat="42.6415369" lon="9.000576"></trkpt>
+<trkpt lat="42.6392669" lon="8.980475"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[211144143]]></name>
+<trkseg>
+<trkpt lat="42.6424283" lon="9.018424"></trkpt>
+<trkpt lat="42.6415369" lon="9.000576"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[211144141]]></name>
+<trkseg>
+<trkpt lat="42.6933559" lon="9.062047"></trkpt>
+<trkpt lat="42.6424283" lon="9.018424"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239976103]]></name>
+<trkseg>
+<trkpt lat="42.7155104" lon="9.100592"></trkpt>
+<trkpt lat="42.6933559" lon="9.062047"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[240057643]]></name>
+<trkseg>
+<trkpt lat="42.7197097" lon="9.233521"></trkpt>
+<trkpt lat="42.7155104" lon="9.100592"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[73179787]]></name>
+<trkseg>
+<trkpt lat="42.6764025" lon="9.298765"></trkpt>
+<trkpt lat="42.7197097" lon="9.233521"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[73179838]]></name>
+<trkseg>
+<trkpt lat="42.6782774" lon="9.300161"></trkpt>
+<trkpt lat="42.6764025" lon="9.298765"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[73178206]]></name>
+<trkseg>
+<trkpt lat="42.6799556" lon="9.297741"></trkpt>
+<trkpt lat="42.6782774" lon="9.300161"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[73178257]]></name>
+<trkseg>
+<trkpt lat="42.6802855" lon="9.297138"></trkpt>
+<trkpt lat="42.6799556" lon="9.297741"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[73177330]]></name>
+<trkseg>
+<trkpt lat="42.6960149" lon="9.321636"></trkpt>
+<trkpt lat="42.6802855" lon="9.297138"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[200480365]]></name>
+<trkseg>
+<trkpt lat="42.718572" lon="9.329325"></trkpt>
+<trkpt lat="42.6960149" lon="9.321636"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[200480368]]></name>
+<trkseg>
+<trkpt lat="42.7398" lon="9.344212"></trkpt>
+<trkpt lat="42.718572" lon="9.329325"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239239594]]></name>
+<trkseg>
+<trkpt lat="42.760694" lon="9.340020"></trkpt>
+<trkpt lat="42.7398" lon="9.344212"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239239595]]></name>
+<trkseg>
+<trkpt lat="42.8043721" lon="9.338651"></trkpt>
+<trkpt lat="42.760694" lon="9.340020"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843021]]></name>
+<trkseg>
+<trkpt lat="42.8083007" lon="9.333913"></trkpt>
+<trkpt lat="42.8043721" lon="9.338651"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71851918]]></name>
+<trkseg>
+<trkpt lat="42.8120686" lon="9.326401"></trkpt>
+<trkpt lat="42.8083007" lon="9.333913"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71863908]]></name>
+<trkseg>
+<trkpt lat="42.8177488" lon="9.323913"></trkpt>
+<trkpt lat="42.8120686" lon="9.326401"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71863905]]></name>
+<trkseg>
+<trkpt lat="42.821854" lon="9.321813"></trkpt>
+<trkpt lat="42.8177488" lon="9.323913"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71863901]]></name>
+<trkseg>
+<trkpt lat="42.8275252" lon="9.315643"></trkpt>
+<trkpt lat="42.821854" lon="9.321813"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71864430]]></name>
+<trkseg>
+<trkpt lat="42.8449511" lon="9.319759"></trkpt>
+<trkpt lat="42.8275252" lon="9.315643"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71864421]]></name>
+<trkseg>
+<trkpt lat="42.8597699" lon="9.333426"></trkpt>
+<trkpt lat="42.8449511" lon="9.319759"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[117402456]]></name>
+<trkseg>
+<trkpt lat="42.8611263" lon="9.334429"></trkpt>
+<trkpt lat="42.8597699" lon="9.333426"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71865030]]></name>
+<trkseg>
+<trkpt lat="42.8652753" lon="9.339454"></trkpt>
+<trkpt lat="42.8611263" lon="9.334429"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71865037]]></name>
+<trkseg>
+<trkpt lat="42.8655095" lon="9.340175"></trkpt>
+<trkpt lat="42.8652753" lon="9.339454"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[121531473]]></name>
+<trkseg>
+<trkpt lat="42.8659193" lon="9.340496"></trkpt>
+<trkpt lat="42.8655095" lon="9.340175"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[117402461]]></name>
+<trkseg>
+<trkpt lat="42.8998042" lon="9.322609"></trkpt>
+<trkpt lat="42.8659193" lon="9.340496"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239142331]]></name>
+<trkseg>
+<trkpt lat="42.9233878" lon="9.359682"></trkpt>
+<trkpt lat="42.8998042" lon="9.322609"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843007]]></name>
+<trkseg>
+<trkpt lat="42.9542135" lon="9.347345"></trkpt>
+<trkpt lat="42.9233878" lon="9.359682"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239134398]]></name>
+<trkseg>
+<trkpt lat="42.961634" lon="9.349678"></trkpt>
+<trkpt lat="42.9542135" lon="9.347345"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239134399]]></name>
+<trkseg>
+<trkpt lat="42.9619082" lon="9.348946"></trkpt>
+<trkpt lat="42.961634" lon="9.349678"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239002223]]></name>
+<trkseg>
+<trkpt lat="42.9989597" lon="9.341875"></trkpt>
+<trkpt lat="42.9619082" lon="9.348946"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239002219]]></name>
+<trkseg>
+<trkpt lat="43.0057014" lon="9.404665"></trkpt>
+<trkpt lat="42.9989597" lon="9.341875"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239131827]]></name>
+<trkseg>
+<trkpt lat="42.9614367" lon="9.454608"></trkpt>
+<trkpt lat="43.0057014" lon="9.404665"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239002228]]></name>
+<trkseg>
+<trkpt lat="42.9570313" lon="9.455152"></trkpt>
+<trkpt lat="42.9614367" lon="9.454608"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239142328]]></name>
+<trkseg>
+<trkpt lat="42.9362346" lon="9.469090"></trkpt>
+<trkpt lat="42.9570313" lon="9.455152"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239142316]]></name>
+<trkseg>
+<trkpt lat="42.9001469" lon="9.474418"></trkpt>
+<trkpt lat="42.9362346" lon="9.469090"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239142326]]></name>
+<trkseg>
+<trkpt lat="42.882134" lon="9.477483"></trkpt>
+<trkpt lat="42.9001469" lon="9.474418"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239142330]]></name>
+<trkseg>
+<trkpt lat="42.8602412" lon="9.480071"></trkpt>
+<trkpt lat="42.882134" lon="9.477483"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239228526]]></name>
+<trkseg>
+<trkpt lat="42.8270026" lon="9.487005"></trkpt>
+<trkpt lat="42.8602412" lon="9.480071"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239233630]]></name>
+<trkseg>
+<trkpt lat="42.797548" lon="9.491124"></trkpt>
+<trkpt lat="42.8270026" lon="9.487005"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843006]]></name>
+<trkseg>
+<trkpt lat="42.7750743" lon="9.477156"></trkpt>
+<trkpt lat="42.797548" lon="9.491124"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30712678]]></name>
+<trkseg>
+<trkpt lat="42.7651247" lon="9.469946"></trkpt>
+<trkpt lat="42.7750743" lon="9.477156"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[154705710]]></name>
+<trkseg>
+<trkpt lat="42.7524645" lon="9.468070"></trkpt>
+<trkpt lat="42.7651247" lon="9.469946"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[154705708]]></name>
+<trkseg>
+<trkpt lat="42.7402338" lon="9.461304"></trkpt>
+<trkpt lat="42.7524645" lon="9.468070"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30765212]]></name>
+<trkseg>
+<trkpt lat="42.7181971" lon="9.456032"></trkpt>
+<trkpt lat="42.7402338" lon="9.461304"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[154705711]]></name>
+<trkseg>
+<trkpt lat="42.7083764" lon="9.454661"></trkpt>
+<trkpt lat="42.7181971" lon="9.456032"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[142466425]]></name>
+<trkseg>
+<trkpt lat="42.6623999" lon="9.449777"></trkpt>
+<trkpt lat="42.7083764" lon="9.454661"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30765388]]></name>
+<trkseg>
+<trkpt lat="42.6390397" lon="9.463085"></trkpt>
+<trkpt lat="42.6623999" lon="9.449777"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71817632]]></name>
+<trkseg>
+<trkpt lat="42.6131618" lon="9.486163"></trkpt>
+<trkpt lat="42.6390397" lon="9.463085"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4842999]]></name>
+<trkseg>
+<trkpt lat="42.5893743" lon="9.510916"></trkpt>
+<trkpt lat="42.6131618" lon="9.486163"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30763341]]></name>
+<trkseg>
+<trkpt lat="42.5646894" lon="9.527273"></trkpt>
+<trkpt lat="42.5893743" lon="9.510916"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[214483397]]></name>
+<trkseg>
+<trkpt lat="42.5235435" lon="9.534450"></trkpt>
+<trkpt lat="42.5646894" lon="9.527273"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30763616]]></name>
+<trkseg>
+<trkpt lat="42.5232384" lon="9.534418"></trkpt>
+<trkpt lat="42.5235435" lon="9.534450"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[214483395]]></name>
+<trkseg>
+<trkpt lat="42.5229966" lon="9.534821"></trkpt>
+<trkpt lat="42.5232384" lon="9.534418"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[140046203]]></name>
+<trkseg>
+<trkpt lat="42.4955659" lon="9.530010"></trkpt>
+<trkpt lat="42.5229966" lon="9.534821"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[200450317]]></name>
+<trkseg>
+<trkpt lat="42.4837913" lon="9.531578"></trkpt>
+<trkpt lat="42.4955659" lon="9.530010"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[232213080]]></name>
+<trkseg>
+<trkpt lat="42.4703142" lon="9.536301"></trkpt>
+<trkpt lat="42.4837913" lon="9.531578"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[232336777]]></name>
+<trkseg>
+<trkpt lat="42.4392115" lon="9.541510"></trkpt>
+<trkpt lat="42.4703142" lon="9.536301"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[239930075]]></name>
+<trkseg>
+<trkpt lat="42.4276587" lon="9.543296"></trkpt>
+<trkpt lat="42.4392115" lon="9.541510"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[217992710]]></name>
+<trkseg>
+<trkpt lat="42.4120142" lon="9.538563"></trkpt>
+<trkpt lat="42.4276587" lon="9.543296"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74728248]]></name>
+<trkseg>
+<trkpt lat="42.3941456" lon="9.535444"></trkpt>
+<trkpt lat="42.4120142" lon="9.538563"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74728246]]></name>
+<trkseg>
+<trkpt lat="42.3784209" lon="9.532591"></trkpt>
+<trkpt lat="42.3941456" lon="9.535444"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[142479041]]></name>
+<trkseg>
+<trkpt lat="42.3591972" lon="9.535269"></trkpt>
+<trkpt lat="42.3784209" lon="9.532591"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74728848]]></name>
+<trkseg>
+<trkpt lat="42.3376156" lon="9.541327"></trkpt>
+<trkpt lat="42.3591972" lon="9.535269"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74728847]]></name>
+<trkseg>
+<trkpt lat="42.328412" lon="9.543133"></trkpt>
+<trkpt lat="42.3376156" lon="9.541327"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[200414829]]></name>
+<trkseg>
+<trkpt lat="42.2993576" lon="9.553601"></trkpt>
+<trkpt lat="42.328412" lon="9.543133"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[178597747]]></name>
+<trkseg>
+<trkpt lat="42.2516574" lon="9.555409"></trkpt>
+<trkpt lat="42.2993576" lon="9.553601"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[178597733]]></name>
+<trkseg>
+<trkpt lat="42.2413858" lon="9.553440"></trkpt>
+<trkpt lat="42.2516574" lon="9.555409"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843008]]></name>
+<trkseg>
+<trkpt lat="42.2379799" lon="9.553008"></trkpt>
+<trkpt lat="42.2413858" lon="9.553440"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[200404685]]></name>
+<trkseg>
+<trkpt lat="42.154351" lon="9.554571"></trkpt>
+<trkpt lat="42.2379799" lon="9.553008"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30986524]]></name>
+<trkseg>
+<trkpt lat="42.1428146" lon="9.555561"></trkpt>
+<trkpt lat="42.154351" lon="9.554571"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[207754978]]></name>
+<trkseg>
+<trkpt lat="42.1425776" lon="9.555821"></trkpt>
+<trkpt lat="42.1428146" lon="9.555561"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30986525]]></name>
+<trkseg>
+<trkpt lat="42.0964479" lon="9.540943"></trkpt>
+<trkpt lat="42.1425776" lon="9.555821"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[207754979]]></name>
+<trkseg>
+<trkpt lat="42.0487361" lon="9.497616"></trkpt>
+<trkpt lat="42.0964479" lon="9.540943"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[31256935]]></name>
+<trkseg>
+<trkpt lat="41.9897278" lon="9.442096"></trkpt>
+<trkpt lat="42.0487361" lon="9.497616"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[207754977]]></name>
+<trkseg>
+<trkpt lat="41.9896613" lon="9.442102"></trkpt>
+<trkpt lat="41.9897278" lon="9.442096"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[161796980]]></name>
+<trkseg>
+<trkpt lat="41.9860582" lon="9.438267"></trkpt>
+<trkpt lat="41.9896613" lon="9.442102"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30970808]]></name>
+<trkseg>
+<trkpt lat="41.9380171" lon="9.412924"></trkpt>
+<trkpt lat="41.9860582" lon="9.438267"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30970167]]></name>
+<trkseg>
+<trkpt lat="41.9068971" lon="9.408521"></trkpt>
+<trkpt lat="41.9380171" lon="9.412924"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[31048100]]></name>
+<trkseg>
+<trkpt lat="41.8594781" lon="9.401767"></trkpt>
+<trkpt lat="41.9068971" lon="9.408521"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[31538119]]></name>
+<trkseg>
+<trkpt lat="41.77371" lon="9.396690"></trkpt>
+<trkpt lat="41.8594781" lon="9.401767"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[108585227]]></name>
+<trkseg>
+<trkpt lat="41.74609" lon="9.405805"></trkpt>
+<trkpt lat="41.77371" lon="9.396690"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[108585235]]></name>
+<trkseg>
+<trkpt lat="41.716102" lon="9.402098"></trkpt>
+<trkpt lat="41.74609" lon="9.405805"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[31538015]]></name>
+<trkseg>
+<trkpt lat="41.6394131" lon="9.350572"></trkpt>
+<trkpt lat="41.716102" lon="9.402098"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[31573218]]></name>
+<trkseg>
+<trkpt lat="41.6287608" lon="9.313627"></trkpt>
+<trkpt lat="41.6394131" lon="9.350572"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843022]]></name>
+<trkseg>
+<trkpt lat="41.5837401" lon="9.296000"></trkpt>
+<trkpt lat="41.6287608" lon="9.313627"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[266254072]]></name>
+<trkseg>
+<trkpt lat="41.5849604" lon="9.299162"></trkpt>
+<trkpt lat="41.5837401" lon="9.296000"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[266254071]]></name>
+<trkseg>
+<trkpt lat="41.5850229" lon="9.299415"></trkpt>
+<trkpt lat="41.5849604" lon="9.299162"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[70980536]]></name>
+<trkseg>
+<trkpt lat="41.5980415" lon="9.368159"></trkpt>
+<trkpt lat="41.5850229" lon="9.299415"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[108593170]]></name>
+<trkseg>
+<trkpt lat="41.5739293" lon="9.347934"></trkpt>
+<trkpt lat="41.5980415" lon="9.368159"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[108593171]]></name>
+<trkseg>
+<trkpt lat="41.5557842" lon="9.321577"></trkpt>
+<trkpt lat="41.5739293" lon="9.347934"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[65710618]]></name>
+<trkseg>
+<trkpt lat="41.5454871" lon="9.307640"></trkpt>
+<trkpt lat="41.5557842" lon="9.321577"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[108586460]]></name>
+<trkseg>
+<trkpt lat="41.5289049" lon="9.282548"></trkpt>
+<trkpt lat="41.5454871" lon="9.307640"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[8097573]]></name>
+<trkseg>
+<trkpt lat="41.5227978" lon="9.279026"></trkpt>
+<trkpt lat="41.5289049" lon="9.282548"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[65714822]]></name>
+<trkseg>
+<trkpt lat="41.499196" lon="9.282142"></trkpt>
+<trkpt lat="41.5227978" lon="9.279026"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89667734]]></name>
+<trkseg>
+<trkpt lat="41.4839832" lon="9.287712"></trkpt>
+<trkpt lat="41.499196" lon="9.282142"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[65712073]]></name>
+<trkseg>
+<trkpt lat="41.4623934" lon="9.270507"></trkpt>
+<trkpt lat="41.4839832" lon="9.287712"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[65709161]]></name>
+<trkseg>
+<trkpt lat="41.4242867" lon="9.226383"></trkpt>
+<trkpt lat="41.4623934" lon="9.270507"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89548217]]></name>
+<trkseg>
+<trkpt lat="41.4139267" lon="9.220152"></trkpt>
+<trkpt lat="41.4242867" lon="9.226383"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89548219]]></name>
+<trkseg>
+<trkpt lat="41.4101272" lon="9.229421"></trkpt>
+<trkpt lat="41.4139267" lon="9.220152"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[65713181]]></name>
+<trkseg>
+<trkpt lat="41.4119079" lon="9.256033"></trkpt>
+<trkpt lat="41.4101272" lon="9.229421"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89549193]]></name>
+<trkseg>
+<trkpt lat="41.4109481" lon="9.254924"></trkpt>
+<trkpt lat="41.4119079" lon="9.256033"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89549196]]></name>
+<trkseg>
+<trkpt lat="41.3682143" lon="9.213316"></trkpt>
+<trkpt lat="41.4109481" lon="9.254924"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89549843]]></name>
+<trkseg>
+<trkpt lat="41.3660426" lon="9.208070"></trkpt>
+<trkpt lat="41.3682143" lon="9.213316"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[65709849]]></name>
+<trkseg>
+<trkpt lat="41.385104" lon="9.149010"></trkpt>
+<trkpt lat="41.3660426" lon="9.208070"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[26288055]]></name>
+<trkseg>
+<trkpt lat="41.389468" lon="9.161586"></trkpt>
+<trkpt lat="41.385104" lon="9.149010"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89550137]]></name>
+<trkseg>
+<trkpt lat="41.3867146" lon="9.144412"></trkpt>
+<trkpt lat="41.389468" lon="9.161586"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[65714114]]></name>
+<trkseg>
+<trkpt lat="41.3964117" lon="9.128645"></trkpt>
+<trkpt lat="41.3867146" lon="9.144412"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[65710851]]></name>
+<trkseg>
+<trkpt lat="41.4407518" lon="9.121372"></trkpt>
+<trkpt lat="41.3964117" lon="9.128645"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89834531]]></name>
+<trkseg>
+<trkpt lat="41.4434346" lon="9.120590"></trkpt>
+<trkpt lat="41.4407518" lon="9.121372"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[65708680]]></name>
+<trkseg>
+<trkpt lat="41.4427968" lon="9.119471"></trkpt>
+<trkpt lat="41.4434346" lon="9.120590"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89834478]]></name>
+<trkseg>
+<trkpt lat="41.4490996" lon="9.095200"></trkpt>
+<trkpt lat="41.4427968" lon="9.119471"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89834466]]></name>
+<trkseg>
+<trkpt lat="41.4498128" lon="9.094931"></trkpt>
+<trkpt lat="41.4490996" lon="9.095200"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89834143]]></name>
+<trkseg>
+<trkpt lat="41.4420289" lon="9.077381"></trkpt>
+<trkpt lat="41.4498128" lon="9.094931"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89835591]]></name>
+<trkseg>
+<trkpt lat="41.4660911" lon="9.068082"></trkpt>
+<trkpt lat="41.4420289" lon="9.077381"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[32295296]]></name>
+<trkseg>
+<trkpt lat="41.4775721" lon="9.079377"></trkpt>
+<trkpt lat="41.4660911" lon="9.068082"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89835581]]></name>
+<trkseg>
+<trkpt lat="41.4684391" lon="9.062677"></trkpt>
+<trkpt lat="41.4775721" lon="9.079377"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[65712432]]></name>
+<trkseg>
+<trkpt lat="41.4682418" lon="9.029826"></trkpt>
+<trkpt lat="41.4684391" lon="9.062677"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89836835]]></name>
+<trkseg>
+<trkpt lat="41.4733866" lon="9.016381"></trkpt>
+<trkpt lat="41.4682418" lon="9.029826"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[147054639]]></name>
+<trkseg>
+<trkpt lat="41.4788076" lon="9.015728"></trkpt>
+<trkpt lat="41.4733866" lon="9.016381"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[191059736]]></name>
+<trkseg>
+<trkpt lat="41.4854072" lon="8.995711"></trkpt>
+<trkpt lat="41.4788076" lon="9.015728"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4842998]]></name>
+<trkseg>
+<trkpt lat="41.4738491" lon="8.983770"></trkpt>
+<trkpt lat="41.4854072" lon="8.995711"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[65713502]]></name>
+<trkseg>
+<trkpt lat="41.4901001" lon="8.940240"></trkpt>
+<trkpt lat="41.4738491" lon="8.983770"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71147855]]></name>
+<trkseg>
+<trkpt lat="41.4957652" lon="8.932113"></trkpt>
+<trkpt lat="41.4901001" lon="8.940240"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71147864]]></name>
+<trkseg>
+<trkpt lat="41.4919651" lon="8.921836"></trkpt>
+<trkpt lat="41.4957652" lon="8.932113"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89837171]]></name>
+<trkseg>
+<trkpt lat="41.4937986" lon="8.922319"></trkpt>
+<trkpt lat="41.4919651" lon="8.921836"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89837170]]></name>
+<trkseg>
+<trkpt lat="41.5081635" lon="8.913118"></trkpt>
+<trkpt lat="41.4937986" lon="8.922319"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71147836]]></name>
+<trkseg>
+<trkpt lat="41.5066138" lon="8.889091"></trkpt>
+<trkpt lat="41.5081635" lon="8.913118"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71147816]]></name>
+<trkseg>
+<trkpt lat="41.5139313" lon="8.889147"></trkpt>
+<trkpt lat="41.5066138" lon="8.889091"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71143264]]></name>
+<trkseg>
+<trkpt lat="41.5248533" lon="8.875832"></trkpt>
+<trkpt lat="41.5139313" lon="8.889147"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71152136]]></name>
+<trkseg>
+<trkpt lat="41.5205372" lon="8.858472"></trkpt>
+<trkpt lat="41.5248533" lon="8.875832"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71152138]]></name>
+<trkseg>
+<trkpt lat="41.5186348" lon="8.849729"></trkpt>
+<trkpt lat="41.5205372" lon="8.858472"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71152140]]></name>
+<trkseg>
+<trkpt lat="41.5184337" lon="8.845521"></trkpt>
+<trkpt lat="41.5186348" lon="8.849729"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71152147]]></name>
+<trkseg>
+<trkpt lat="41.5311631" lon="8.849743"></trkpt>
+<trkpt lat="41.5184337" lon="8.845521"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71152134]]></name>
+<trkseg>
+<trkpt lat="41.5339396" lon="8.855639"></trkpt>
+<trkpt lat="41.5311631" lon="8.849743"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[71149386]]></name>
+<trkseg>
+<trkpt lat="41.5387646" lon="8.851082"></trkpt>
+<trkpt lat="41.5339396" lon="8.855639"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74891818]]></name>
+<trkseg>
+<trkpt lat="41.5433292" lon="8.843927"></trkpt>
+<trkpt lat="41.5387646" lon="8.851082"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74891827]]></name>
+<trkseg>
+<trkpt lat="41.5482039" lon="8.832775"></trkpt>
+<trkpt lat="41.5433292" lon="8.843927"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74891821]]></name>
+<trkseg>
+<trkpt lat="41.5456342" lon="8.823999"></trkpt>
+<trkpt lat="41.5482039" lon="8.832775"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74891834]]></name>
+<trkseg>
+<trkpt lat="41.5522599" lon="8.816028"></trkpt>
+<trkpt lat="41.5456342" lon="8.823999"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74891833]]></name>
+<trkseg>
+<trkpt lat="41.5575078" lon="8.791175"></trkpt>
+<trkpt lat="41.5522599" lon="8.816028"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843001]]></name>
+<trkseg>
+<trkpt lat="41.5641681" lon="8.788235"></trkpt>
+<trkpt lat="41.5575078" lon="8.791175"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74891837]]></name>
+<trkseg>
+<trkpt lat="41.5700716" lon="8.796630"></trkpt>
+<trkpt lat="41.5641681" lon="8.788235"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74891832]]></name>
+<trkseg>
+<trkpt lat="41.5753472" lon="8.803986"></trkpt>
+<trkpt lat="41.5700716" lon="8.796630"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74891835]]></name>
+<trkseg>
+<trkpt lat="41.5817665" lon="8.792173"></trkpt>
+<trkpt lat="41.5753472" lon="8.803986"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74891820]]></name>
+<trkseg>
+<trkpt lat="41.5868434" lon="8.792064"></trkpt>
+<trkpt lat="41.5817665" lon="8.792173"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74888820]]></name>
+<trkseg>
+<trkpt lat="41.5851415" lon="8.783140"></trkpt>
+<trkpt lat="41.5868434" lon="8.792064"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[74891822]]></name>
+<trkseg>
+<trkpt lat="41.5900985" lon="8.777501"></trkpt>
+<trkpt lat="41.5851415" lon="8.783140"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843031]]></name>
+<trkseg>
+<trkpt lat="41.5962035" lon="8.788834"></trkpt>
+<trkpt lat="41.5900985" lon="8.777501"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843028]]></name>
+<trkseg>
+<trkpt lat="41.6452946" lon="8.849427"></trkpt>
+<trkpt lat="41.5962035" lon="8.788834"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30759105]]></name>
+<trkseg>
+<trkpt lat="41.6459278" lon="8.869577"></trkpt>
+<trkpt lat="41.6452946" lon="8.849427"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[41401830]]></name>
+<trkseg>
+<trkpt lat="41.6816809" lon="8.916179"></trkpt>
+<trkpt lat="41.6459278" lon="8.869577"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30758615]]></name>
+<trkseg>
+<trkpt lat="41.6908929" lon="8.912888"></trkpt>
+<trkpt lat="41.6816809" lon="8.916179"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30751633]]></name>
+<trkseg>
+<trkpt lat="41.7101624" lon="8.824176"></trkpt>
+<trkpt lat="41.6908929" lon="8.912888"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[89552997]]></name>
+<trkseg>
+<trkpt lat="41.7131408" lon="8.808379"></trkpt>
+<trkpt lat="41.7101624" lon="8.824176"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843000]]></name>
+<trkseg>
+<trkpt lat="41.6994682" lon="8.782260"></trkpt>
+<trkpt lat="41.7131408" lon="8.808379"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30751630]]></name>
+<trkseg>
+<trkpt lat="41.735251" lon="8.784077"></trkpt>
+<trkpt lat="41.6994682" lon="8.782260"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4842994]]></name>
+<trkseg>
+<trkpt lat="41.797675" lon="8.739827"></trkpt>
+<trkpt lat="41.735251" lon="8.784077"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30752292]]></name>
+<trkseg>
+<trkpt lat="41.8122477" lon="8.771872"></trkpt>
+<trkpt lat="41.797675" lon="8.739827"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30754361]]></name>
+<trkseg>
+<trkpt lat="41.8519935" lon="8.788961"></trkpt>
+<trkpt lat="41.8122477" lon="8.771872"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[30755202]]></name>
+<trkseg>
+<trkpt lat="41.8682534" lon="8.788296"></trkpt>
+<trkpt lat="41.8519935" lon="8.788961"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[76646824]]></name>
+<trkseg>
+<trkpt lat="41.905056" lon="8.798120"></trkpt>
+<trkpt lat="41.8682534" lon="8.788296"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[266453568]]></name>
+<trkseg>
+<trkpt lat="41.9079979" lon="8.715691"></trkpt>
+<trkpt lat="41.905056" lon="8.798120"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[266453567]]></name>
+<trkseg>
+<trkpt lat="41.894162" lon="8.608587"></trkpt>
+<trkpt lat="41.9079979" lon="8.715691"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[35560792]]></name>
+<trkseg>
+<trkpt lat="41.9320197" lon="8.622810"></trkpt>
+<trkpt lat="41.894162" lon="8.608587"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[35550766]]></name>
+<trkseg>
+<trkpt lat="41.9439213" lon="8.607245"></trkpt>
+<trkpt lat="41.9320197" lon="8.622810"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[35551999]]></name>
+<trkseg>
+<trkpt lat="41.9520514" lon="8.603900"></trkpt>
+<trkpt lat="41.9439213" lon="8.607245"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[35546130]]></name>
+<trkseg>
+<trkpt lat="41.9587287" lon="8.598193"></trkpt>
+<trkpt lat="41.9520514" lon="8.603900"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[35552703]]></name>
+<trkseg>
+<trkpt lat="41.9611706" lon="8.593112"></trkpt>
+<trkpt lat="41.9587287" lon="8.598193"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[35552582]]></name>
+<trkseg>
+<trkpt lat="41.9669942" lon="8.600051"></trkpt>
+<trkpt lat="41.9611706" lon="8.593112"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[35596968]]></name>
+<trkseg>
+<trkpt lat="41.9704595" lon="8.623170"></trkpt>
+<trkpt lat="41.9669942" lon="8.600051"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[33792522]]></name>
+<trkseg>
+<trkpt lat="41.9816703" lon="8.668658"></trkpt>
+<trkpt lat="41.9704595" lon="8.623170"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[266466916]]></name>
+<trkseg>
+<trkpt lat="41.9864733" lon="8.669832"></trkpt>
+<trkpt lat="41.9816703" lon="8.668658"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843013]]></name>
+<trkseg>
+<trkpt lat="41.989648" lon="8.669521"></trkpt>
+<trkpt lat="41.9864733" lon="8.669832"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[35816162]]></name>
+<trkseg>
+<trkpt lat="41.9906371" lon="8.669093"></trkpt>
+<trkpt lat="41.989648" lon="8.669521"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[266466915]]></name>
+<trkseg>
+<trkpt lat="41.9908647" lon="8.669029"></trkpt>
+<trkpt lat="41.9906371" lon="8.669093"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[266466912]]></name>
+<trkseg>
+<trkpt lat="41.994049" lon="8.665576"></trkpt>
+<trkpt lat="41.9908647" lon="8.669029"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[34338989]]></name>
+<trkseg>
+<trkpt lat="42.0039585" lon="8.657024"></trkpt>
+<trkpt lat="41.994049" lon="8.665576"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[266466914]]></name>
+<trkseg>
+<trkpt lat="42.0347815" lon="8.726742"></trkpt>
+<trkpt lat="42.0039585" lon="8.657024"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[266466917]]></name>
+<trkseg>
+<trkpt lat="42.0405628" lon="8.739073"></trkpt>
+<trkpt lat="42.0347815" lon="8.726742"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[34371858]]></name>
+<trkseg>
+<trkpt lat="42.057058" lon="8.743040"></trkpt>
+<trkpt lat="42.0405628" lon="8.739073"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[33792523]]></name>
+<trkseg>
+<trkpt lat="42.0595582" lon="8.744068"></trkpt>
+<trkpt lat="42.057058" lon="8.743040"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[34371854]]></name>
+<trkseg>
+<trkpt lat="42.078433" lon="8.716963"></trkpt>
+<trkpt lat="42.0595582" lon="8.744068"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[70979172]]></name>
+<trkseg>
+<trkpt lat="42.1115658" lon="8.701581"></trkpt>
+<trkpt lat="42.078433" lon="8.716963"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[70979170]]></name>
+<trkseg>
+<trkpt lat="42.1168162" lon="8.651119"></trkpt>
+<trkpt lat="42.1115658" lon="8.701581"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[34372256]]></name>
+<trkseg>
+<trkpt lat="42.1244984" lon="8.620939"></trkpt>
+<trkpt lat="42.1168162" lon="8.651119"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843017]]></name>
+<trkseg>
+<trkpt lat="42.1766817" lon="8.569900"></trkpt>
+<trkpt lat="42.1244984" lon="8.620939"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[70972520]]></name>
+<trkseg>
+<trkpt lat="42.1831367" lon="8.582969"></trkpt>
+<trkpt lat="42.1766817" lon="8.569900"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843020]]></name>
+<trkseg>
+<trkpt lat="42.238558" lon="8.574316"></trkpt>
+<trkpt lat="42.1831367" lon="8.582969"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[70978333]]></name>
+<trkseg>
+<trkpt lat="42.2632501" lon="8.689127"></trkpt>
+<trkpt lat="42.238558" lon="8.574316"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[70221460]]></name>
+<trkseg>
+<trkpt lat="42.2669847" lon="8.692756"></trkpt>
+<trkpt lat="42.2632501" lon="8.689127"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[70978364]]></name>
+<trkseg>
+<trkpt lat="42.2747213" lon="8.690669"></trkpt>
+<trkpt lat="42.2669847" lon="8.692756"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[188414589]]></name>
+<trkseg>
+<trkpt lat="42.2824428" lon="8.686569"></trkpt>
+<trkpt lat="42.2747213" lon="8.690669"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[188416931]]></name>
+<trkseg>
+<trkpt lat="42.3024062" lon="8.660694"></trkpt>
+<trkpt lat="42.2824428" lon="8.686569"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843014]]></name>
+<trkseg>
+<trkpt lat="42.3021837" lon="8.640448"></trkpt>
+<trkpt lat="42.3024062" lon="8.660694"></trkpt>
+</trkseg>
+</trk>
+<trk><name><![CDATA[4843207]]></name>
+<trkseg>
+<trkpt lat="42.3189832" lon="8.597984"></trkpt>
+<trkpt lat="42.3021837" lon="8.640448"></trkpt>
+</trkseg>
+</trk>
+</gpx>
