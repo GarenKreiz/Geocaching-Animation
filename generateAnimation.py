@@ -645,9 +645,7 @@ class GCAnimation:
       for cachingTime in range(previousTime+24*3600, cacheTime, 24*3600):
           nDays= nDays + 1
           self.drawTracks(cachingTime)
-          # self.drawStats(nDays,nArchived,nUnavailable,nActive,dArchived,dUnavailable,dActive)
           self.generateFlash(self.imResult,self.LX,self.LY,nDays,cachingTime,nCaches,distance)
-
 
       self.drawTracks(cacheTime)
 
@@ -710,7 +708,6 @@ class GCAnimation:
       minUnavailable = min(minUnavailable,dUnavailable)
       minActive = min(minActive,dActive)
       
-      # self.drawStats(nDays,nArchived,nUnavailable,nActive,dArchived,dUnavailable,dActive)
       self.generateFlash(self.imResult,self.LX,self.LY,nDays,cacheTime,nCaches, distance)
 
       previousTime = cacheTime
