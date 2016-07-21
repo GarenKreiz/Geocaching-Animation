@@ -48,15 +48,15 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-# zone to display
-# begin with _ if not a real country
+# zone to display (the last one is used, to change simply change the order)
+# begin with _ if not a real country used in the geocache description
 currentZone = 'France'
-#currentZone = '_World_'
-#currentZone = '_Bretagne_'
+currentZone = '_World_'
 currentZone = '_Europe_'
+currentZone = '_Bretagne_'
 
-# image à positionner dans le fond d'image
-logoImage = 'bzh-geocacheurs_blackj_28.jpg'
+# additionnal picture to draw on each frame of the animation
+logoImage = 'bzh-geocacheurs_blackj_28.jpg' 
 logoX = 1040
 logoY = 505
 
@@ -79,7 +79,7 @@ zones = {
                30.33333,  # south
                -120.150,  # west
                20.5600,   # east 
-               (0.15,0.3)),# adapt to fit video size and preserve X/Y ratio
+               (0.15,0.3)),# adapt to fit to video size and preserve X/Y ratio
   '_Europe_': (80.0,
                27.0,
                -30.0,
@@ -88,15 +88,19 @@ zones = {
   }
 
 (maxLatCountry, minLatCountry, minLonCountry, maxLonCountry, scaleXY) = zones[currentZone]
-  
-xSize,ySize=1120,1080    # size of output image
-xSize,ySize=1280,720     # size of output image
+
+# size of output image : 720p or 1080p (HD)
+videoRes = 720
+if videoRes == 720:
+  xSize,ySize=1280,720     # 720p
+else:
+  xSize,ySize=1120,1080    # HD 1080p
 
 xOrigin,yOrigin=100,0
 
-bigPixels = 1            # draw big pixels (2x2), otherwise (1x1)
+bigPixels = 2            # draw big pixels (2x2), otherwise (1x1)
 
-# cache types
+# color types of items (caches, lines,...) 
 ARCHIVED    = 0
 ACTIVE      = 1
 UNAVAILABLE = 2
@@ -146,12 +150,11 @@ class GCAnimation:
       fontPath = "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf"
       fontPathFixed = "/usr/share/fonts/truetype/freefont/FreeMono.ttf"
 
-    #self.fontArial = ImageFont.truetype ( fontPath, 40 ) # 1080p
-    print fontPath
-    self.fontArial = ImageFont.truetype ( fontPath, 32 ) # 720p
-    self.fontArialMedium = ImageFont.truetype ( fontPath, 24 )
-    #self.fontArialSmall = ImageFont.truetype ( fontPath, 24 ) # 1080p
-    self.fontArialSmall = ImageFont.truetype ( fontPath, 16 ) # 1080p
+    if videoRes == 720:
+      self.fontArial = ImageFont.truetype ( fontPath, 32 )
+    else:
+      self.fontArial = ImageFont.truetype ( fontPath, 40 ) # 1080p
+    self.fontArialSmall = ImageFont.truetype ( fontPath, 16 )
     self.fontFixed = ImageFont.truetype ( fontPathFixed, 32 ) 
 
     print "Size :", xSize, ySize
