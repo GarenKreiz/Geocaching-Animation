@@ -56,7 +56,7 @@ currentZone = '_Europe_'
 currentZone = '_Bretagne_'
 
 # additionnal picture to draw on each frame of the animation
-logoImage = 'bzh-geocacheurs_blackj_28.jpg' 
+logoImage = 'logo_breizh_geocacheurs.jpg' 
 logoX = 1040
 logoY = 505
 
@@ -98,7 +98,7 @@ else:
 
 xOrigin,yOrigin=100,0
 
-bigPixels = 2            # draw big pixels (2x2), otherwise (1x1)
+bigPixels = 1            # draw big pixels (2x2), otherwise (1x1)
 
 # color types of items (caches, lines,...) 
 ARCHIVED    = 0
@@ -365,9 +365,7 @@ class GCAnimation:
     while l <> '':
       fields = re.sub('[\n\r]*','',l)
       fields = re.sub('\|','&#108;',fields)      # cache names containing character |
-      print fields
       fields = re.sub('","','|',fields[1:-1])    # getting rid of all double quotes used by GSAK
-      print fields
       fields = string.split(fields,"|")
       (name,cacheType,note,last4logs,dateLastLog,wpName,placedBy,datePlaced,dateLastFound,found,country,latitude,longitude,status,url,dateFoundByMe,ownerId) = fields
       if name == "Code GC" or name == "Code":
@@ -497,6 +495,8 @@ class GCAnimation:
       text = text+" - %.0f kms"%distance
     self.imTempDraw.text((130,self.LY-43), text, font=self.fontFixed, fill="blue")
     self.imTemp.save('map%04d.png'%nDays,"PNG")
+    sys.stdout.write('.')
+    sys.stdout.flush()
 
   def drawStats(self,nDays,nArchived,nUnavailable,nActive,dArchived,dUnavailable,dActive):
     day = nDays % 700
