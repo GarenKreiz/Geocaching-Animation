@@ -10,7 +10,7 @@
 # Example:
 #   http://www.youtube.com/watch?v=dQEG5hvDyGs
 # Requires:
-#   Python environment (tested with version 2.6.5)
+#   Python environment (tested with version 2.6.5, 2.7.10)
 #   GPXParser module from http://pinguin.uni-psych.gwdg.de/~ihrke/wiki/index.php/GPXParser.py
 #   PIL the Python Imaging Library to generate the images of the animation
 #   mencoder from MPlayer package to generate the video from images
@@ -50,10 +50,10 @@ from PIL import ImageFont
 
 # zone to display (the last one is used, to change simply change the order)
 # begin with _ if not a real country used in the geocache description
-currentZone = 'France'
 currentZone = '_World_'
 currentZone = '_Europe_'
 currentZone = '_Bretagne_'
+currentZone = 'France'
 
 # additionnal picture to draw on each frame of the animation
 logoImage = 'logo_breizh_geocacheurs.jpg' 
@@ -96,9 +96,11 @@ if videoRes == 720:
 else:
   xSize,ySize=1120,1080    # HD 1080p
 
-xOrigin,yOrigin=100,0
+xOrigin,yOrigin=200,0
 
 bigPixels = 1            # draw big pixels (2x2), otherwise (1x1)
+
+imagesDir = 'Images/'    # directory of generated images
 
 # color types of items (caches, lines,...) 
 ARCHIVED    = 0
@@ -494,7 +496,7 @@ class GCAnimation:
     if distance > 0:
       text = text+" - %.0f kms"%distance
     self.imTempDraw.text((130,self.LY-43), text, font=self.fontFixed, fill="blue")
-    self.imTemp.save('map%04d.png'%nDays,"PNG")
+    self.imTemp.save(imagesDir+'map%04d.png'%nDays,"PNG")
     sys.stdout.write('.')
     sys.stdout.flush()
 
@@ -562,7 +564,13 @@ class GCAnimation:
   def generateImages(self, tracing):
 
     print "Generating images"
-    
+
+    try:
+      os.mkdir(imagesDir)
+      print 'Created directory ' + imagesDir
+    except:
+      print 'Images in directory ' + imagesDir
+      
     today = time.time()
 
     self.imResult = Image.new('RGB',(self.LX,self.LY),0)
@@ -577,7 +585,7 @@ class GCAnimation:
           imDraw.line([(xOld, yOld),(x,y)], self.cacheColor[FRONTIER])
         xOld, yOld = x, y
       
-    self.imResult.save('Geocaching_France_frontieres.png',"PNG")
+    self.imResult.save(imagesDir+'Geocaching_France_frontieres.png',"PNG")
 
 
     logo = Image.open(logoImage)
@@ -702,7 +710,7 @@ class GCAnimation:
       minUnavailable = min(minUnavailable,dUnavailable)
       minActive = min(minActive,dActive)
       
-      #self.drawStats(nDays,nArchived,nUnavailable,nActive,dArchived,dUnavailable,dActive)
+      # self.drawStats(nDays,nArchived,nUnavailable,nActive,dArchived,dUnavailable,dActive)
       self.generateFlash(self.imResult,self.LX,self.LY,nDays,cacheTime,nCaches, distance)
 
       previousTime = cacheTime
@@ -714,20 +722,20 @@ class GCAnimation:
     	self.generateFlash(self.imResult,self.LX,self.LY,i,cacheTime,nCaches, distance)
 
     # final view of all caches
-    self.imResult.save('Geocaching_France.jpg')
-    self.imResult.save('Geocaching_France.png',"PNG")
+    self.imResult.save(imagesDir+'Geocaching_France.jpg')
+    self.imResult.save(imagesDir+'Geocaching_France.png',"PNG")
     print ''
     print 'Processed ', nCaches, 'caches'
     print 'Processed ', nActive, 'active caches'
     print 'Processed ', nUnavailable, 'unavailable caches'
     print 'Processed ', nArchived, 'archived caches'
 
-    fOut = open('listPNG.txt','w')
+    fOut = open(imagesDir+'listPNG.txt','w')
     # fill some images at the end, synchronising with music 
     for i in range(0,nDays+1):
-      fOut.write('map%04d.png\n'%i)
+      fOut.write(imagesDir+'map%04d.png\n'%i)
     for i in range(nDays+1,max(nDays+100,5400)):
-      fOut.write('map%04d.png\n'%nDays)
+      fOut.write(imagesDir+'map%04d.png\n'%nDays)
     fOut.close()
     
 if __name__=='__main__':
