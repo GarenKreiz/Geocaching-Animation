@@ -57,9 +57,9 @@ currentZone = '_Bretagne_'
 
 # additionnal pictures to draw on each frame of the animation
 logoImages = [
-  ('logo_breizh_geocacheurs.jpg',1040,505),
-  ('Geocaching_15_years.png',1050,310),
-  ('Garenkreiz_cercle_noir.png',990,20)
+  ('Breizh_Geocacheurs_blanc.png',1020,490),
+  ('Geocaching_15_years.png',1040,287),
+  ('Garenkreiz_cercle_noir.png',1020,20)
   ]
 
 # bounding rectangle of the country or state
@@ -82,8 +82,10 @@ zones = {
                47.24, 
                -5.17, 
                -0.8,  
-               (180,250),
-               (200,50)),
+               #(180,250),
+               #(200,280),
+               (250,330),
+               (45,50)),
   '_Europe_': (80.0,
                27.0,
                -30.0,
@@ -113,9 +115,10 @@ ARCHIVED    = 0
 ACTIVE      = 1
 UNAVAILABLE = 2
 EVENT       = 3
-TRACK       = 4
+TRACK       = 4  # visit to cache location by the chosen geocacher
 BLACK       = 5
-FRONTIER    = 6
+FRONTIER    = 6  # drawing natural or articial topographic features
+PLACED      = 7  # cache placed by geocacher
 
 def getDistance(lat1, lng1, lat2, lng2):
   #
@@ -161,6 +164,7 @@ class GCAnimation:
     if videoRes == 720:
       self.fontArial = ImageFont.truetype ( fontPath, 32 )
       self.fontArial = ImageFont.truetype ( fontPath, 40 )
+      self.fontArial = ImageFont.truetype ( fontPath, 48 )
     else:
       self.fontArial = ImageFont.truetype ( fontPath, 40 ) # 1080p
     self.fontArialSmall = ImageFont.truetype ( fontPath, 16 )
@@ -247,6 +251,7 @@ class GCAnimation:
     self.flashColor = {
       ARCHIVED    : (255,0,255), # purple for archiving
       ACTIVE      : (255,255,0), # yellow for creation
+      PLACED      : (255,255,0), # yellow for creation
       }
     self.cacheColor = {
       ARCHIVED    : (255,0,0),   # red
@@ -256,6 +261,7 @@ class GCAnimation:
       TRACK       : (255,0,255), # purple
       BLACK       : (0,0,0),     # black
       FRONTIER    : (0,0,255),   # blue
+      PLACED      : (255,255,0), # yellow
       }
       
     self.flashCursor = 0
@@ -266,20 +272,30 @@ class GCAnimation:
       for i in range(0,self.flashLength):
         self.flashList[active][i] = []
 
-  def drawPoint(self,active,x,y):
-
-    self.imResult.putpixel((x,y),self.cacheColor[active])
+  def drawPoint(self,status,x,y):
+    print "Point :",status
+    self.imResult.putpixel((x,y),self.cacheColor[status])
     if bigPixels > 0:
-      self.imResult.putpixel((x+1,y),self.cacheColor[active]) 
-      self.imResult.putpixel((x,y+1),self.cacheColor[active]) 
-      self.imResult.putpixel((x+1,y+1),self.cacheColor[active])
-    if bigPixels > 1: 
-      self.imResult.putpixel((x-1,y),self.cacheColor[active]) 
-      self.imResult.putpixel((x,y-1),self.cacheColor[active]) 
-      self.imResult.putpixel((x-1,y-1),self.cacheColor[active])
-      self.imResult.putpixel((x-1,y+1),self.cacheColor[active]) 
-      self.imResult.putpixel((x+1,y-1),self.cacheColor[active])
-  
+      self.imResult.putpixel((x+1,y),self.cacheColor[status]) 
+      self.imResult.putpixel((x,y+1),self.cacheColor[status]) 
+      self.imResult.putpixel((x+1,y+1),self.cacheColor[status])
+    if bigPixels > 1 or status == PLACED: 
+      self.imResult.putpixel((x-1,y),self.cacheColor[status]) 
+      self.imResult.putpixel((x,y-1),self.cacheColor[status]) 
+      self.imResult.putpixel((x-1,y-1),self.cacheColor[status])
+      self.imResult.putpixel((x-1,y+1),self.cacheColor[status]) 
+      self.imResult.putpixel((x+1,y-1),self.cacheColor[status])
+    if status == PLACED:
+      print "Placed"
+      self.imResult.putpixel((x-2,y),self.cacheColor[status]) 
+      self.imResult.putpixel((x,y-2),self.cacheColor[status]) 
+      self.imResult.putpixel((x+2,y),self.cacheColor[status])
+      self.imResult.putpixel((x,y+2),self.cacheColor[status]) 
+      self.imResult.putpixel((x-2,y-2),self.cacheColor[status]) 
+      self.imResult.putpixel((x+2,y-2),self.cacheColor[status]) 
+      self.imResult.putpixel((x+2,y+2),self.cacheColor[status])
+      self.imResult.putpixel((x+2,y+2),self.cacheColor[status]) 
+      
   def newItem(self,name,lat,lon,active,eventTime):
     try:
       self.coords[name] = (lat,lon)
@@ -417,20 +433,32 @@ class GCAnimation:
       lastLogTime = self.convertDate(dateLastLog)
       foundByMeTime = self.convertDate(dateFoundByMe)
       
+      print name,status
       if status <> EVENT:
         # a non-event cache is active for a while after being placed
-        self.newItem(name,lat,lon,1,cacheTime)
-        if status <> ACTIVE:
+        # uncertainty between placed date and publication date
+        # cache placed by geocacher : only work if no change in pseudos
+        if re.search(geocacher,placedBy.upper()):
+          print "Status: PLACED"
+          self.newItem(name,lat,lon,PLACED,cacheTime)
+        else:
+          self.newItem(name,lat,lon,ACTIVE,cacheTime)
+        if status <> ACTIVE and status <> PLACED:
           # the cache isn't active anymore
           if lastLogTime == 0:
+            # dummy date for archiving time
             lastLogTime = cacheTime + 24*3600
           self.newItem(name,lat,lon,status,lastLogTime)
       else:
         self.newItem(name,lat,lon,status,cacheTime)
       if geocacher <> None:
+        # cache found by geocacher : if geocacher generated the cache list
         if foundByMeTime <> 0:
+          print "Found : "+name
           self.newItem(name,lat,lon,TRACK,foundByMeTime)
+        # cache placed by geocacher : only work if no change in pseudos
         if re.search(geocacher,placedBy.upper()):
+          print "Placed: "+name
           self.newItem(name,lat,lon,TRACK,cacheTime)
       l = fInput.readline()
     fInput.close()
@@ -511,14 +539,16 @@ class GCAnimation:
     self.imTempDraw = ImageDraw.Draw(self.imTemp)
     text = time.strftime("%d/%m/%Y : ",time.localtime(cacheTime))
     text += "%5d caches"%nCaches
+    if currentZone == '_Bretagne_':
+      text += " bretonnes"
     if geocacher:
-      self.imTempDraw.text((40,self.LY-83), text, font=self.fontFixed, fill="blue")
-      text = geocacher + " : %04d visites / "%nVisits
+      self.imTempDraw.text((40,self.LY-83), text, font=self.fontFixed, fill="white")
+      text = geocacher + " : %04d visites "%nVisits
       if distance > 0:
         text += " - %.0f kms"%distance
-        self.imTempDraw.text((40,self.LY-43), text, font=self.fontFixed, fill="blue")
+        self.imTempDraw.text((40,self.LY-43), text, font=self.fontFixed, fill="white")
     else:
-      self.imTempDraw.text((40,self.LY-43), text, font=self.fontFixed, fill="blue")
+      self.imTempDraw.text((40,self.LY-43), text, font=self.fontFixed, fill="white")
       
     self.imTemp.save(imagesDir+'map%04d.png'%nDays,"PNG")
     sys.stdout.write('.')
@@ -586,10 +616,10 @@ class GCAnimation:
       self.imResult.paste(logo,(logoX,logoY))
     
     #imDraw.text((30,5),  u"Géocaches en France"                      , font=self.fontArial     , fill="red")
-    imDraw.text((30,5),   u"15 ans de géocaching en Bretagne"                      , font=self.fontArial     , fill="red")
-    imDraw.text((35,50),  u"animation: GarenKreiz"                     , font=self.fontArialSmall, fill="red")
-    imDraw.text((35,80),  u"musique: Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
-    imDraw.text((36,110), u"licence: CC BY-NC-SA"                      , font=self.fontArialSmall, fill="red")
+    imDraw.text((30,5),   u"15 ans de géocaching en Bretagne"                      , font=self.fontArial     , fill="green")
+    imDraw.text((35,55),  u"animation: GarenKreiz"                     , font=self.fontArialSmall, fill="red")
+    imDraw.text((35,85),  u"musique: Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
+    imDraw.text((36,115), u"licence: CC BY-NC-SA"                      , font=self.fontArialSmall, fill="red")
 
     #imDraw.text((35,80),  u"musique: Pedro Collares (Gothic)", font=self.fontArialSmall, fill="red")
     #imDraw.text((35,80),  u"musique: ProleteR (April Showers)", font=self.fontArialSmall, fill="red")
@@ -620,7 +650,7 @@ class GCAnimation:
     maxUnavailable, minUnavailable = 0, 0
     maxActive, minActive = 0, 0
     
-    nbStatuses = { ACTIVE: 0, UNAVAILABLE: 0, ARCHIVED: 0, EVENT:0, TRACK:0}
+    nbStatuses = { ACTIVE: 0, UNAVAILABLE: 0, ARCHIVED: 0, EVENT:0, TRACK:0, PLACED: 0}
     nbStatusesPrevious = dict(nbStatuses)
     
     print self.tracks
@@ -665,7 +695,7 @@ class GCAnimation:
         if status == UNAVAILABLE:
           nUnavailable += 1
           self.flashList[1][self.flashCursor].append((x,y))
-        elif status == ACTIVE:
+        elif status == ACTIVE or status == PLACED:
           nActive += 1
           self.flashList[1][self.flashCursor].append((x,y))
         elif status == ARCHIVED:
@@ -673,9 +703,10 @@ class GCAnimation:
           self.flashList[0][self.flashCursor].append((x,y))
 
 
-        if status == ACTIVE or status == EVENT:          # active caches or events
+        if status == ACTIVE or status == PLACED or status == EVENT:          # active caches or events
           nCaches = nCaches + 1
         try:
+          print "Item:",status
           if status == TRACK:                            # drawing moves of a geocacher
             if (xOld,yOld) <> (0,0):
               self.draw.line([(xOld, yOld),(x,y)], self.cacheColor[TRACK])
@@ -752,7 +783,6 @@ if __name__=='__main__':
   frontiers = []
   tracks = []
   logs = []
-  currentZone = "_World_"
   
   print sys.argv[1:]
   
