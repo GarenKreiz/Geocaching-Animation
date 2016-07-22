@@ -65,31 +65,34 @@ logoImages = [
 # bounding rectangle of the country or state
 
 zones = {
-  'France' :  (51.08917,  # dunes du Perroquet, Bray-Dunes près de Zuydcoote
-               41.33333,  # cap di u Beccu, Iles Lavezzi, Corse
-               -5.15083,  # phare de Nividic, Ouessant
-               9.56000,   # plage Fiorentine, Alistro, Corse
-               #(75,107)),
-               (50,70)),
+  '_World_':  (55.08917,   # north
+               30.33333,   # south
+               -120.150,   # west
+               20.5600,    # east 
+               (0.15,0.3), # scale : adapt to fit to video size and preserve X/Y ratio
+               (200,10)),  # offset for x,y coordinates
+  'France' :  (51.08917,   # dunes du Perroquet, Bray-Dunes près de Zuydcoote
+               41.33333,   # cap di u Beccu, Iles Lavezzi, Corse
+               -5.15083,   # phare de Nividic, Ouessant
+               9.56000,    # plage Fiorentine, Alistro, Corse
+               (50,70),
+               (200,10)),
   '_Bretagne_' :
               (48.92, 
                47.24, 
                -5.17, 
                -0.8,  
-               (180,250)),
-  '_World_':  (55.08917,  # north
-               30.33333,  # south
-               -120.150,  # west
-               20.5600,   # east 
-               (0.15,0.3)),# adapt to fit to video size and preserve X/Y ratio
+               (180,250),
+               (200,50)),
   '_Europe_': (80.0,
                27.0,
                -30.0,
                40.0,
-               (10 ,20)),
+               (10 ,20),
+               (200,10)),
   }
 
-(maxLatCountry, minLatCountry, minLonCountry, maxLonCountry, scaleXY) = zones[currentZone]
+(maxLatCountry, minLatCountry, minLonCountry, maxLonCountry, scaleXY, offsetXY) = zones[currentZone]
 
 # size of output image : 720p or 1080p (HD)
 videoRes = 720
@@ -99,7 +102,7 @@ else:
   xSize,ySize=1120,1080    # HD 1080p
 
 # positionning topographic items within image
-xOrigin,yOrigin=200,10
+(xOrigin,yOrigin) = offsetXY
 
 bigPixels = 2            # draw big pixels (2x2), otherwise (1x1)
 
@@ -157,6 +160,7 @@ class GCAnimation:
 
     if videoRes == 720:
       self.fontArial = ImageFont.truetype ( fontPath, 32 )
+      self.fontArial = ImageFont.truetype ( fontPath, 40 )
     else:
       self.fontArial = ImageFont.truetype ( fontPath, 40 ) # 1080p
     self.fontArialSmall = ImageFont.truetype ( fontPath, 16 )
