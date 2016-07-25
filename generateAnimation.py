@@ -150,6 +150,7 @@ class GCAnimation:
     self.frontiers = []
     self.xOrigin = xOrigin
     self.yOrigin = yOrigin
+    self.guids = {}
     
     if os.name <> 'posix' or sys.platform == 'cygwin':
       # Windows fonts
@@ -273,7 +274,6 @@ class GCAnimation:
         self.flashList[active][i] = []
 
   def drawPoint(self,status,x,y):
-    print "Point :",status
     self.imResult.putpixel((x,y),self.cacheColor[status])
     if bigPixels > 0:
       self.imResult.putpixel((x+1,y),self.cacheColor[status]) 
@@ -286,7 +286,6 @@ class GCAnimation:
       self.imResult.putpixel((x-1,y+1),self.cacheColor[status]) 
       self.imResult.putpixel((x+1,y-1),self.cacheColor[status])
     if status == PLACED:
-      print "Placed"
       self.imResult.putpixel((x-2,y),self.cacheColor[status]) 
       self.imResult.putpixel((x,y-2),self.cacheColor[status]) 
       self.imResult.putpixel((x+2,y),self.cacheColor[status])
@@ -317,7 +316,6 @@ class GCAnimation:
           t = int(time.mktime(time.strptime(strTime, "%Y/%m/%d %H:%M:%SZ")))
         except:
           print "Pb in time 1", strTime
-        print "Pb in time 2 [", strTime, "]"
       return t
     else:
       return 0
@@ -332,6 +330,10 @@ class GCAnimation:
   def loadLogsFromCSV(self,myCSV):
 
     print 'Processing logs file:', myCSV
+    if myCSV[-5:].lower() == '.html' or myCSV[-4:].lower() == '.htm':
+      self.loadLogsFromHTML(myCSV)
+      return
+  
     logs = {}
     
     fInput = open(myCSV,'r')
@@ -339,13 +341,13 @@ class GCAnimation:
     while l <> '':
       try:
         (cacheName, dateFound) = string.split(l.strip(),"|")
-        foundTime = self.convertDate(dateFound)
+        dateLog = self.convertDate(dateFound)
         try:
           # reverse order for each day
-          logs[foundTime].insert(0,cacheName)
+          logs[dateLog].insert(0,cacheName)
         except:
-          logs[foundTime] = [cacheName]
-        print dateFound, logs[foundTime]
+          logs[dateLog] = [cacheName]
+        print dateFound, logs[dateLog]
       except Exception, msg:
         print "Pb logs:",msg
       l = fInput.readline()
@@ -355,6 +357,59 @@ class GCAnimation:
     self.tracks.append(logs)
     self.tracksCoords.append((0,0))
       
+  def loadLogsFromHTML(self,myHTML):
+
+    print 'Processing tracks file:', myHTML
+    logs = {}
+    
+    fInput = open(myHTML,'r')
+    l = fInput.readline()
+    searching = 0
+    nbLogs = 0
+    while l <> '':
+      if searching == 0 and re.search("All Logs",l):
+        searching = 1
+      elif searching == 1 and re.search("<tr class",l):
+        searching = 2
+      elif searching == 2 and re.search("<img src",l):
+        type = re.sub('.*alt="','',l.strip())
+        type = re.sub('".*','',type)
+        print "Type :", type,
+        nbLogs += 1
+        searching = 3
+      elif searching == 3 and re.search("<td>",l):
+        searching = 4
+      elif searching == 4 and re.search("<td>",l):
+        dateString = fInput.readline().strip()
+        dateLog = self.convertDate(dateString)
+        print "Date:",dateString,dateLog,
+        searching = 5
+      elif searching == 5 and re.search("<a href",l):
+        guid = re.sub('.*guid=','',l.strip())
+        guid = re.sub('".*','',guid)
+        print "Cache",guid,
+        logTypes =['Found it','Didn\'t find it','Attended','Owner Maintenance']
+        if type in logTypes:
+          print ' =============== ',
+          try:
+            (name, lat,lon) = self.guids[guid]
+            try:
+              # reverse order for each day
+              logs[dateLog].insert(0,(float(lat),float(lon)))
+            except:
+              logs[dateLog] = [(float(lat),float(lon))]
+            print ":", name, lat, lon
+          except:
+            print ": not present"
+
+        searching = 1
+      l = fInput.readline()
+
+    print '  Logs loaded:',nbLogs
+    
+    self.tracks.append(logs)
+    self.tracksCoords.append((0,0))
+
   def loadTracksFromCSV(self,myCSV):
 
     print 'Processing tracks file:', myCSV
@@ -365,13 +420,13 @@ class GCAnimation:
     while l <> '':
       try:
         (dateFound,lat,lon) = string.split(l.strip(),"|")
-        foundTime = self.convertDate(dateFound)
+        dateLog = self.convertDate(dateFound)
         try:
           # reverse order for each day
-          logs[foundTime].insert(0,(float(lat),float(lon)))
+          logs[dateLog].insert(0,(float(lat),float(lon)))
         except:
-          logs[foundTime] = [(float(lat),float(lon))]
-        print dateFound, logs[foundTime]
+          logs[dateLog] = [(float(lat),float(lon))]
+        print dateFound, logs[dateLog]
       except Exception, msg:
         print "Pb logs:",msg
       l = fInput.readline()
@@ -412,7 +467,8 @@ class GCAnimation:
         print '!!! Pb cache outside',currentZone,':',name
         l = fInput.readline()
         continue
-
+      guid = re.sub('.*guid=','',url)
+      self.guids[guid] = (name,latitude,longitude)
       if cacheType == "Event Cache" or cacheType == "Cache In Trash Out Event":
         status = EVENT                     # Event cache
       elif status == 'X':
@@ -433,13 +489,11 @@ class GCAnimation:
       lastLogTime = self.convertDate(dateLastLog)
       foundByMeTime = self.convertDate(dateFoundByMe)
       
-      print name,status
       if status <> EVENT:
         # a non-event cache is active for a while after being placed
         # uncertainty between placed date and publication date
         # cache placed by geocacher : only work if no change in pseudos
-        if re.search(geocacher,placedBy.upper()):
-          print "Status: PLACED"
+        if geocacher <> None and re.search(geocacher,placedBy.upper()):
           self.newItem(name,lat,lon,PLACED,cacheTime)
         else:
           self.newItem(name,lat,lon,ACTIVE,cacheTime)
@@ -495,8 +549,6 @@ class GCAnimation:
         continue
 
       name =  p.attribs['name']
-      print name
-      
       strTime = p.attribs['time']
       cacheTime = int(time.mktime(time.strptime(strTime, "%Y-%m-%dT%H:%M:%SZ")))
       if p.attribs['type'] == 'Geocache|Event Cache' or p.attribs['type'] == 'Geocache|Cache In Trash Out Event':
@@ -706,7 +758,6 @@ class GCAnimation:
         if status == ACTIVE or status == PLACED or status == EVENT:          # active caches or events
           nCaches = nCaches + 1
         try:
-          print "Item:",status
           if status == TRACK:                            # drawing moves of a geocacher
             if (xOld,yOld) <> (0,0):
               self.draw.line([(xOld, yOld),(x,y)], self.cacheColor[TRACK])
