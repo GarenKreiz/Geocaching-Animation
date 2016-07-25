@@ -57,9 +57,9 @@ currentZone = '_Bretagne_'
 
 # additionnal pictures to draw on each frame of the animation
 logoImages = [
-  ('Breizh_Geocacheurs_blanc.png',1020,490),
-  ('Geocaching_15_years.png',1040,287),
-  ('Garenkreiz_cercle_noir.png',1020,20)
+  ('Breizh_Geocacheurs_blanc.png',1030,490),
+  ('Geocaching_15_years.png',1050,287),
+  ('Garenkreiz_cercle_noir.png',1030,20)
   ]
 
 # bounding rectangle of the country or state
@@ -85,7 +85,7 @@ zones = {
                #(180,250),
                #(200,280),
                (250,330),
-               (45,50)),
+               (35,50)),
   '_Europe_': (80.0,
                27.0,
                -30.0,
