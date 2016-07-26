@@ -107,7 +107,7 @@ else:
 # positionning topographic items within image
 (xOrigin,yOrigin) = offsetXY
 
-bigPixels = 2            # draw big pixels (2x2), otherwise (1x1)
+bigPixels = 1           # draw big pixels (2x2), otherwise (1x1)
 
 imagesDir = 'Images/'    # directory of generated images
 
@@ -277,26 +277,16 @@ class GCAnimation:
 
   def drawPoint(self,status,x,y):
     self.imResult.putpixel((x,y),self.cacheColor[status])
+    shape = []
     if bigPixels > 0:
-      self.imResult.putpixel((x+1,y),self.cacheColor[status]) 
-      self.imResult.putpixel((x,y+1),self.cacheColor[status]) 
-      self.imResult.putpixel((x+1,y+1),self.cacheColor[status])
-    if bigPixels > 1 or status == PLACED: 
-      self.imResult.putpixel((x-1,y),self.cacheColor[status]) 
-      self.imResult.putpixel((x,y-1),self.cacheColor[status]) 
-      self.imResult.putpixel((x-1,y-1),self.cacheColor[status])
-      self.imResult.putpixel((x-1,y+1),self.cacheColor[status]) 
-      self.imResult.putpixel((x+1,y-1),self.cacheColor[status])
+      shape += [(1,0),(0,1),(1,1)]
+    if bigPixels > 1 or status == PLACED:
+      shape += [(-1,0),(0,-1),(-1,-1),(-1,1),(1,-1)]
     if status == PLACED:
-      self.imResult.putpixel((x-2,y),self.cacheColor[status]) 
-      self.imResult.putpixel((x,y-2),self.cacheColor[status]) 
-      self.imResult.putpixel((x+2,y),self.cacheColor[status])
-      self.imResult.putpixel((x,y+2),self.cacheColor[status]) 
-      self.imResult.putpixel((x-2,y-2),self.cacheColor[status]) 
-      self.imResult.putpixel((x+2,y-2),self.cacheColor[status]) 
-      self.imResult.putpixel((x-2,y+2),self.cacheColor[status])
-      self.imResult.putpixel((x+2,y+2),self.cacheColor[status]) 
-      
+      shape += [(-2,0),(0,-2),(2,0),(0,2),(-2,-2),(-2,2),(2,-2),(2,2)]
+    for (dx,dy) in shape:
+      self.imResult.putpixel((x+dx,y+dy),self.cacheColor[status]) 
+
   def newItem(self,name,lat,lon,active,eventTime):
     try:
       self.coords[name] = (lat,lon)
