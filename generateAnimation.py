@@ -152,6 +152,7 @@ class GCAnimation:
     self.xOrigin = xOrigin
     self.yOrigin = yOrigin
     self.guids = {}
+    self.geocacher = None
     
     if os.name <> 'posix' or sys.platform == 'cygwin':
       # Windows fonts
@@ -293,7 +294,7 @@ class GCAnimation:
       self.imResult.putpixel((x,y+2),self.cacheColor[status]) 
       self.imResult.putpixel((x-2,y-2),self.cacheColor[status]) 
       self.imResult.putpixel((x+2,y-2),self.cacheColor[status]) 
-      self.imResult.putpixel((x+2,y+2),self.cacheColor[status])
+      self.imResult.putpixel((x-2,y+2),self.cacheColor[status])
       self.imResult.putpixel((x+2,y+2),self.cacheColor[status]) 
       
   def newItem(self,name,lat,lon,active,eventTime):
@@ -322,7 +323,11 @@ class GCAnimation:
       return 0
 
   def loadFromFile(self,file,geocacher=None):
-        
+    
+    if geocacher <> None and re.search("\|",geocacher):
+        self.geocacher = re.sub("\(([^|]+)\|.*\)","\\1",geocacher)
+    else:
+        self.geocacher = geocacher
     if file[-4:].lower() == '.gpx':
       self.loadFromGPX(file,status=ACTIVE)
     else:
@@ -608,7 +613,32 @@ class GCAnimation:
           self.tracksCoords[i] = (x,y)
       except Exception, msg:
         pass
-      
+
+  def generatePreview(self, geocacher=None):
+    # generate a preview of all caches
+    tempImg = self.imResult
+    box = self.imResult.crop((0,0,self.LX,self.LY))
+    imTemp = Image.new('RGB',(self.LX,self.LY),0)
+    imTemp.paste(box,(0,0,self.LX,self.LY))
+    self.imResult = imTemp
+    for cacheTime in self.allWpts.keys():
+      for (lat,lon,name,status) in self.allWpts[cacheTime]:
+        # x = int(self.scaleX*(lon-self.XMinLon)) # 720p
+        (x,y) = self.latlon2xy(lat,lon)
+        if not geocacher or status == PLACED:
+          self.drawPoint(status,x,y)
+    if geocacher:
+      fileName = 'Geocaching_'+currentZone+'_'+geocacher
+    else:
+      fileName = 'Geocaching_'+currentZone
+    print "Preview image : "+imagesDir+fileName+'.png'
+    self.imResult.save(imagesDir+fileName+'.png',"PNG")
+    if geocacher:
+      self.drawTracks(time.time())
+      print "Preview image : "+imagesDir+fileName+'_tracks.png'
+      self.imResult.save(imagesDir+fileName+'_tracks.png',"PNG")
+    self.imResult = tempImg
+    
   def generateImages(self, tracing):
 
     print "Generating images"
@@ -633,7 +663,7 @@ class GCAnimation:
           imDraw.line([(xOld, yOld),(x,y)], self.cacheColor[FRONTIER])
         xOld, yOld = x, y
       
-    self.imResult.save(imagesDir+'Geocaching_France_frontieres.png',"PNG")
+    self.imResult.save(imagesDir+'Geocaching_'+currentZone+'_frontieres.png',"PNG")
 
 
     for (logoImage,logoX,logoY) in logoImages:
@@ -677,7 +707,11 @@ class GCAnimation:
     
     nbStatuses = { ACTIVE: 0, UNAVAILABLE: 0, ARCHIVED: 0, EVENT:0, TRACK:0, PLACED: 0}
     nbStatusesPrevious = dict(nbStatuses)
-    
+
+    self.generatePreview()
+    if geocacher:
+      self.generatePreview(self.geocacher)
+      
     for cacheTime in cacheTimes:
       # don't display future dates corresponding to future events
       if cacheTime > today:
@@ -767,13 +801,17 @@ class GCAnimation:
     	self.generateFlash(self.imResult,self.LX,self.LY,i,cacheTime,nCaches,nVisits,distance)
 
     # final view of all caches
-    self.imResult.save(imagesDir+'Geocaching_France.jpg')
-    self.imResult.save(imagesDir+'Geocaching_France.png',"PNG")
+    self.imResult.save(imagesDir+'Geocaching_'+currentZone+'.jpg')
+    self.imResult.save(imagesDir+'Geocaching_'+currentZone+'.png',"PNG")
+    if geocacher:
+      self.generatePreview(self.geocacher)
+
     print ''
     print 'Processed ', nCaches, 'caches'
     print 'Processed ', nActive, 'active caches'
     print 'Processed ', nUnavailable, 'unavailable caches'
     print 'Processed ', nArchived, 'archived caches'
+
 
     fOut = open(imagesDir+'listPNG.txt','w')
     # fill some images at the end, synchronising with music 
