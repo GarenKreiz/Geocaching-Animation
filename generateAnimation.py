@@ -57,9 +57,9 @@ currentZone = '_Bretagne_'
 
 # additionnal pictures to draw on each frame of the animation
 logoImages = [
-  ('Breizh_Geocacheurs_blanc.png',1030,490),
-  ('Geocaching_15_years.png',1050,287),
-  ('Garenkreiz_cercle_noir.png',1030,20)
+  ('Breizh_Geocacheurs_blanc.png',1035,490),
+  ('Geocaching_15_years.png',1050,272),
+  ('Garenkreiz_cercle_noir.png',1035,20)
   ]
 
 # bounding rectangle of the country or state
@@ -84,8 +84,9 @@ zones = {
                -0.8,  
                #(180,250),
                #(200,280),
-               (250,330),
-               (35,50)),
+               #(242,320),
+               (246,325),
+               (20,50)),
   '_Europe_': (80.0,
                27.0,
                -30.0,
@@ -410,31 +411,6 @@ class GCAnimation:
     self.tracks.append(logs)
     self.tracksCoords.append((0,0))
 
-  def loadTracksFromCSV(self,myCSV):
-
-    print 'Processing tracks file:', myCSV
-    logs = {}
-    
-    fInput = open(myCSV,'r')
-    l = fInput.readline()
-    while l <> '':
-      try:
-        (dateFound,lat,lon) = string.split(l.strip(),"|")
-        dateLog = self.convertDate(dateFound)
-        try:
-          # reverse order for each day
-          logs[dateLog].insert(0,(float(lat),float(lon)))
-        except:
-          logs[dateLog] = [(float(lat),float(lon))]
-        print dateFound, logs[dateLog]
-      except Exception, msg:
-        print "Pb logs:",msg
-      l = fInput.readline()
-
-    print '  Logs loaded:',len(logs)
-    
-    self.tracks.append(logs)
-    self.tracksCoords.append((0,0))
       
   def loadFromCSV(self,myCSV,geocacher=None):
 
@@ -507,7 +483,7 @@ class GCAnimation:
         self.newItem(name,lat,lon,status,cacheTime)
       if geocacher <> None:
         # cache found by geocacher : if geocacher generated the cache list
-        if foundByMeTime <> 0:
+        if 1 == 0 and foundByMeTime <> 0:
           print "Found : "+name
           self.newItem(name,lat,lon,TRACK,foundByMeTime)
         # cache placed by geocacher : only work if no change in pseudos
@@ -620,17 +596,14 @@ class GCAnimation:
       try:
         caches = t[cachingTime]
         (oldX,oldY) = self.tracksCoords[i]
-        print "Visits:",caches, (oldX,oldY),
         for c in caches:
           if c[0:2] == 'GC':
             (lat,lon) = self.coords[c]
           else:
             (lat,lon) = c
           (x,y) = self.latlon2xy(lat,lon)
-          print x,y
           if (oldX,oldY) <> (0,0):
             draw.line([(oldX, oldY),(x,y)], self.cacheColor[TRACK])
-          print 'Cache visit :',time.asctime(time.localtime(cachingTime)), c, (lat,lon),(oldX,oldY),x,y
           oldX,oldY = x,y
           self.tracksCoords[i] = (x,y)
       except Exception, msg:
@@ -669,9 +642,9 @@ class GCAnimation:
     
     #imDraw.text((30,5),  u"Géocaches en France"                      , font=self.fontArial     , fill="red")
     imDraw.text((30,5),   u"15 ans de géocaching en Bretagne"                      , font=self.fontArial     , fill="green")
-    imDraw.text((35,55),  u"animation: GarenKreiz"                     , font=self.fontArialSmall, fill="red")
-    imDraw.text((35,85),  u"musique: Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
-    imDraw.text((36,115), u"licence: CC BY-NC-SA"                      , font=self.fontArialSmall, fill="red")
+    imDraw.text((35,85),  u"génération: GarenKreiz"                     , font=self.fontArialSmall, fill="red")
+    #imDraw.text((35,60),  u"musique: Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
+    imDraw.text((36,110), u"licence: CC BY-NC-SA"                      , font=self.fontArialSmall, fill="red")
 
     #imDraw.text((35,80),  u"musique: Pedro Collares (Gothic)", font=self.fontArialSmall, fill="red")
     #imDraw.text((35,80),  u"musique: ProleteR (April Showers)", font=self.fontArialSmall, fill="red")
@@ -704,8 +677,6 @@ class GCAnimation:
     
     nbStatuses = { ACTIVE: 0, UNAVAILABLE: 0, ARCHIVED: 0, EVENT:0, TRACK:0, PLACED: 0}
     nbStatusesPrevious = dict(nbStatuses)
-    
-    print self.tracks
     
     for cacheTime in cacheTimes:
       # don't display future dates corresponding to future events
@@ -818,14 +789,14 @@ if __name__=='__main__':
   def usage():
     print 'Usage: python generationAnimation.py <active_caches.gpx> [ ... <archived_caches.gpx> ]'
     print 'Usage: python generationAnimation.py <gsak_extract.csv> [ <name of geocacher> ]'
-    print '-g <geocacher name>'
-    print '-f <frontier gpx file>'
-    print '-a <archived caches file>'
-    print '-l <logged caches file>'
-    print '<active caches file>'
+    print '-g <geocacher name> : display activity of the geocacher'
+    print '-f <frontier gpx file> : display the frontiers or coastlines'
+    print '-l <logged caches file> : process "all logs" HTML file'
+    print '-z <zone> : restrict display to zone'
+    print '<caches file> : CSV table of caches'
     print ''
-    print 'Note : some arguments can be used multiple times (-f, -a, -l, etc...)'
-    print 'Note : some parameters are set in the source code (zone, title, music, logo, etc...)'
+    print 'Note : some arguments can be used multiple times (-f, -l, etc...)'
+    print 'Note : some parameters are set in the source code (title, music, logo, etc...)'
     
     sys.exit(2)
     
@@ -834,11 +805,12 @@ if __name__=='__main__':
   frontiers = []
   tracks = []
   logs = []
+  excludeCaches = ''
   
   print sys.argv[1:]
   
   try:
-    opts, args = getopt.getopt(sys.argv[1:],"ha:g:f:l:t:z:")
+    opts, args = getopt.getopt(sys.argv[1:],"hg:f:l:x:z:")
   except getopt.GetoptError:
     usage()
 
@@ -850,14 +822,12 @@ if __name__=='__main__':
       usage()
     elif opt in ("-g", "--geocacher"):
       geocacher = arg
-    elif opt in ("-a", "--archived"):
-      archived.append(arg)
     elif opt in ("-f", "--frontiers"):
       frontiers.append(arg)
     elif opt in ("-z", "--zone"):
       currentZone = arg
-    elif opt in ("-t", "--tracks"):
-      tracks.append(arg)
+    elif opt in ("-x", "--exclude"):
+      excludeCaches = arg
     elif opt in ("-l", "--logs"):
       logs.append(arg)
   print archived
@@ -869,14 +839,8 @@ if __name__=='__main__':
     print "Loading file:", file
     myAnimation.loadFromFile(file,geocacher)
 
-  for file in archived:
-    myAnimation.loadFromGPX(file,status=ARCHIVED)
-    
   for file in frontiers:
     myAnimation.loadFromGPX(file,status=FRONTIER)
-
-  for file in tracks:
-    myAnimation.loadTracksFromCSV(file)
 
   for file in logs:
     myAnimation.loadLogsFromCSV(file)
