@@ -48,19 +48,9 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-# zone to display (the last one is used, to change simply change the order)
-# begin with _ if not a real country used in the geocache description
-currentZone = '_World_'
-currentZone = '_Europe_'
-currentZone = 'France'
+# zone to display (can be changed with the -z argument)
+# begins with _ if not a real country used in the geocache description
 currentZone = '_Bretagne_'
-
-# additionnal pictures to draw on each frame of the animation
-logoImages = [
-  ('Breizh_Geocacheurs_blanc.png',1035,490),
-  ('Geocaching_15_years.png',1050,272),
-  ('Garenkreiz_cercle_noir.png',1035,20)
-  ]
 
 # bounding rectangle of the country or state
 
@@ -95,6 +85,13 @@ zones = {
                (200,10)),
   }
 
+# additionnal pictures to draw on each frame of the animation
+logoImages = [
+  ('Breizh_Geocacheurs_blanc.png',1035,490),
+  ('Geocaching_15_years.png',1050,272),
+  ('Garenkreiz_cercle_noir.png',1035,20)
+  ]
+
 (maxLatCountry, minLatCountry, minLonCountry, maxLonCountry, scaleXY, offsetXY) = zones[currentZone]
 
 # size of output image : 720p or 1080p (HD)
@@ -107,7 +104,7 @@ else:
 # positionning topographic items within image
 (xOrigin,yOrigin) = offsetXY
 
-bigPixels = 1           # draw big pixels (2x2), otherwise (1x1)
+bigPixels = 2           # draw big pixels (2x2), otherwise (1x1)
 
 imagesDir = 'Images/'    # directory of generated images
 
@@ -117,9 +114,8 @@ ACTIVE      = 1
 UNAVAILABLE = 2
 EVENT       = 3
 TRACK       = 4  # visit to cache location by the chosen geocacher
-BLACK       = 5
-FRONTIER    = 6  # drawing natural or articial topographic features
-PLACED      = 7  # cache placed by geocacher
+FRONTIER    = 5  # drawing natural or articial topographic features
+PLACED      = 6  # cache placed by geocacher
 
 def getDistance(lat1, lng1, lat2, lng2):
   #
@@ -144,7 +140,7 @@ def getDistance(lat1, lng1, lat2, lng2):
 
 class GCAnimation:
 
-  def __init__(self,(scaleX,scaleY),minLon,maxLon,minLat,maxLat):
+  def __init__(self,(scaleX,scaleY),minLon,maxLon,minLat,maxLat,printing=False):
 
     self.minLon, self.maxLon = minLon, maxLon
     self.minLat, self.maxLat = minLat, maxLat
@@ -153,8 +149,17 @@ class GCAnimation:
     self.yOrigin = yOrigin
     self.guids = {}
     self.geocacher = None
+    self.printing = printing
+    if printing:
+      self.background = "white"
+      self.foreground = "black"
+    else:
+      self.background = "black"
+      self.foreground = "white"
+
+    print "os.name=",os.name,"sys.platform=",sys.platform
     
-    if os.name <> 'posix' or sys.platform == 'cygwin':
+    if os.name <> 'posix' or sys.platform == 'cygwin' or sys.platform == "linux2":
       # Windows fonts
       # fontPath = "c:\Windows\Fonts\ARIAL.TTF"
       fontPath = "arial.ttf"
@@ -164,14 +169,16 @@ class GCAnimation:
       fontPath = "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf"
       fontPathFixed = "/usr/share/fonts/truetype/freefont/FreeMono.ttf"
 
-    if videoRes == 720:
-      self.fontArial = ImageFont.truetype ( fontPath, 32 )
-      self.fontArial = ImageFont.truetype ( fontPath, 40 )
-      self.fontArial = ImageFont.truetype ( fontPath, 48 )
-    else:
-      self.fontArial = ImageFont.truetype ( fontPath, 40 ) # 1080p
-    self.fontArialSmall = ImageFont.truetype ( fontPath, 16 )
-    self.fontFixed = ImageFont.truetype ( fontPathFixed, 32 ) 
+    try:
+      if videoRes == 720:
+        self.fontArial = ImageFont.truetype ( fontPath, 48 )
+      else:
+        self.fontArial = ImageFont.truetype ( fontPath, 40 ) # 1080p
+      self.fontArialSmall = ImageFont.truetype ( fontPath, 16 )
+      self.fontFixed = ImageFont.truetype ( fontPathFixed, 32 )
+    except:
+      print "Problem initializing fonts"
+      sys.exit()
 
     print "Size :", xSize, ySize
     print "Scale origine:", scaleX, scaleY
@@ -179,31 +186,23 @@ class GCAnimation:
     self.XMinLon,self.XMaxLon = (minLon - 0.05),(maxLon + 0.15)
     self.YMinLat,self.YMaxLat = (minLat - 0.1),(maxLat + 0.1)
 
-    print "X MinMax:", self.XMinLon,self.XMaxLon
-    print "Y MinMax:", self.YMinLat,self.YMaxLat
-    #self.scaleY = ySize/(self.YMaxLat-self.YMinLat)
-    #self.scaleX = xSize/(self.XMaxLon-self.XMinLon)
-    print "Scale computed :",self.scaleX, self.scaleY
-    #self.scaleX = self.scaleY*scaleX/scaleY
-    print "Scale finale:", self.scaleX, self.scaleY
-
     self.LX = int((self.XMaxLon-self.XMinLon)*self.scaleX)
     self.LY = int((self.YMaxLat-self.YMinLat)*self.scaleY)
     
     print 'Dimensions:', self.LX, self.LY
+
     if (self.LX > xSize) or (self.LY > ySize):
       print "Scale too large"
       self.LX,self.LY = xSize,ySize
-    # self.LX,self.LY = xSize,ySize
     print 'Final dimensions:', self.LX, self.LY
     self.LX,self.LY = xSize,ySize
     print 'Original dimensions:', self.LX, self.LY
 
-    self.allWpts = {}     # list of all GC waypoints
-    self.coords = {}      # coordinates of GC waypoints
-    self.wptStatus = {}
-    self.tracks = []      # visit tracks to display
-    self.tracksCoords = []    # last coordinate of visit displayed on track
+    self.allWpts = {}       # list of all GC waypoints
+    self.coords = {}        # coordinates of GC waypoints
+    self.wptStatus = {}     # status of GC waypoints (active, archived, ...)
+    self.tracks = []        # list of visit tracks to display
+    self.tracksCoords = []  # last coordinate on track displayed
     
     # animation of the creation or disparition of a cache : list of pixels to lighten up for each animation frame
     # the position is relative to the location of the cache
@@ -252,20 +251,30 @@ class GCAnimation:
     # 0,255,0 : green - 0,255,255 : light blue - 255,0,0 : red
     # 255,255,0 : yellow - 255,0,255 : purple - 0,0,255 : blue
     self.flashColor = {
-      ARCHIVED    : (255,0,255), # purple for archiving
-      ACTIVE      : (255,255,0), # yellow for creation
-      PLACED      : (255,255,0), # yellow for creation
-      }
-    self.cacheColor = {
-      ARCHIVED    : (255,0,0),   # red
-      ACTIVE      : (0,255,255), # light blue
-      UNAVAILABLE : (255,102,0), # orange
-      EVENT       : (0,255,0),   # green
-      TRACK       : (255,0,255), # purple
-      BLACK       : (0,0,0),     # black
-      FRONTIER    : (0,0,255),   # blue
-      PLACED      : (255,255,0), # yellow
-      }
+        ARCHIVED    : (255,0,255), # purple for archiving
+        ACTIVE      : (255,255,0), # yellow for creation
+        PLACED      : (255,255,0), # yellow for creation
+        }
+    if printing:
+      self.cacheColor = {
+        ARCHIVED    : (178,34,34),   # firebrick
+        ACTIVE      : (0,0,128),     # navy
+        UNAVAILABLE : (255,102,0),   # orange
+        EVENT       : (0,255,0),     # green
+        TRACK       : (255,0,255),   # purple
+        FRONTIER    : (0,0,255),     # blue
+        PLACED      : (255,255,0),     # darkgreen
+        }
+    else:
+      self.cacheColor = {
+        ARCHIVED    : (255,0,0),   # red
+        ACTIVE      : (0,255,255), # light blue
+        UNAVAILABLE : (255,102,0), # orange
+        EVENT       : (0,255,0),   # green
+        TRACK       : (255,0,255), # purple
+        FRONTIER    : (0,0,255),   # blue
+        PLACED      : (255,255,0), # yellow
+        }
       
     self.flashCursor = 0
     self.flashLength = len(self.flashAnimation[0])
@@ -539,10 +548,25 @@ class GCAnimation:
     print 'Caches :',len(self.foundWpts)
 
 
+  def generateText(self,img,cacheTime,nCaches,geocacher,distance,nVisits):
+    self.imTempDraw = ImageDraw.Draw(img)
+    text = time.strftime("%d/%m/%Y : ",time.localtime(cacheTime))
+    text += "%5d caches"%nCaches
+    if currentZone == '_Bretagne_':
+      text += " bretonnes"
+    if geocacher:
+      self.imTempDraw.text((40,self.LY-83), text, font=self.fontFixed, fill=self.foreground)
+      text = geocacher + " : %04d visites "%nVisits
+      if distance > 0: 
+        text += " - %.0f kms"%distance
+        self.imTempDraw.text((40,self.LY-43), text, font=self.fontFixed, fill=self.foreground)
+    else:
+      self.imTempDraw.text((40,self.LY-43), text, font=self.fontFixed, fill=self.foreground)
+
   def generateFlash(self,myImage,LX,LY,nDays,cacheTime,nCaches,nVisits,distance):
     
     box = myImage.crop((0,0,self.LX,self.LY))
-    self.imTemp = Image.new('RGB',(self.LX,self.LY),0)
+    self.imTemp = Image.new('RGB',(self.LX,self.LY),self.background)
     self.imTemp.paste(box,(0,0,self.LX,self.LY))
 
     for status in range(0,2):
@@ -558,21 +582,9 @@ class GCAnimation:
     self.flashCursor = (self.flashCursor - 1) % self.flashLength
     for status in range(0,2):
       self.flashList[status][self.flashCursor] = []
-
-    self.imTempDraw = ImageDraw.Draw(self.imTemp)
-    text = time.strftime("%d/%m/%Y : ",time.localtime(cacheTime))
-    text += "%5d caches"%nCaches
-    if currentZone == '_Bretagne_':
-      text += " bretonnes"
-    if geocacher:
-      self.imTempDraw.text((40,self.LY-83), text, font=self.fontFixed, fill="white")
-      text = geocacher + " : %04d visites "%nVisits
-      if distance > 0:
-        text += " - %.0f kms"%distance
-        self.imTempDraw.text((40,self.LY-43), text, font=self.fontFixed, fill="white")
-    else:
-      self.imTempDraw.text((40,self.LY-43), text, font=self.fontFixed, fill="white")
       
+    self.generateText(self.imTemp,cacheTime,nCaches,geocacher,distance,nVisits)
+    
     self.imTemp.save(imagesDir+'map%04d.png'%nDays,"PNG")
     sys.stdout.write('.')
     sys.stdout.flush()
@@ -580,7 +592,6 @@ class GCAnimation:
   def latlon2xy(self,lat,lon):
     x = self.xOrigin + int(self.scaleX*(lon-self.XMinLon)) # 720p
     y = self.yOrigin + int(self.scaleY*(self.YMaxLat-lat))
-    # print (lat,lon), (self.xOrigin, self.yOrigin), (self.scaleX, self.scaleY), (self.XMinLon, self.YMaxLat), "=>", (x,y)
     return (x,y)
 
   def drawTracks(self, cachingTime):
@@ -608,8 +619,9 @@ class GCAnimation:
     # generate a preview of all caches
     tempImg = self.imResult
     box = self.imResult.crop((0,0,self.LX,self.LY))
-    imTemp = Image.new('RGB',(self.LX,self.LY),0)
-    imTemp.paste(box,(0,0,self.LX,self.LY))
+    imTemp = Image.new('RGB',(self.LX,self.LY),self.background)
+    imTemp.paste(box,(0,0,self.LX,self.
+                      LY))
     self.imResult = imTemp
     for cacheTime in self.allWpts.keys():
       for (lat,lon,name,status) in self.allWpts[cacheTime]:
@@ -641,7 +653,7 @@ class GCAnimation:
       
     today = time.time()
 
-    self.imResult = Image.new('RGB',(self.LX,self.LY),0)
+    self.imResult = Image.new('RGB',(self.LX,self.LY),self.background)
 
     imDraw = ImageDraw.Draw(self.imResult)
 
@@ -658,8 +670,12 @@ class GCAnimation:
 
     for (logoImage,logoX,logoY) in logoImages:
       logo = Image.open(logoImage)
-      self.imResult.paste(logo,(logoX,logoY))
-    
+      #logo.load()
+      #print logoImage, logo.mode
+      logo = logo.convert("RGBA")
+      #print logoImage, logo.mode
+      self.imResult.paste(logo,(logoX,logoY),logo)
+
     #imDraw.text((30,5),  u"Géocaches en France"                      , font=self.fontArial     , fill="red")
     imDraw.text((30,5),   u"15 ans de géocaching en Bretagne"                      , font=self.fontArial     , fill="green")
     imDraw.text((35,85),  u"génération: GarenKreiz"                     , font=self.fontArialSmall, fill="red")
@@ -701,7 +717,7 @@ class GCAnimation:
     self.generatePreview()
     if geocacher:
       self.generatePreview(self.geocacher)
-      
+
     for cacheTime in cacheTimes:
       # don't display future dates corresponding to future events
       if cacheTime > today:
@@ -717,7 +733,8 @@ class GCAnimation:
       for cachingTime in range(previousTime+24*3600, cacheTime, 24*3600):
           nDays= nDays + 1
           self.drawTracks(cachingTime)
-          self.generateFlash(self.imResult,self.LX,self.LY,nDays,cachingTime,nCaches,nVisits,distance)
+          if not printing:
+            self.generateFlash(self.imResult,self.LX,self.LY,nDays,cachingTime,nCaches,nVisits,distance)
 
       self.drawTracks(cacheTime)
 
@@ -780,16 +797,21 @@ class GCAnimation:
       minUnavailable = min(minUnavailable,dUnavailable)
       minActive = min(minActive,dActive)
       
-      self.generateFlash(self.imResult,self.LX,self.LY,nDays,cacheTime,nCaches,nVisits,distance)
+      if not printing:
+        self.generateFlash(self.imResult,self.LX,self.LY,nDays,cacheTime,nCaches,nVisits,distance)
 
       previousTime = cacheTime
 
     print 'Max:', maxArchived, maxUnavailable, maxActive
     print 'Min:', minArchived, minUnavailable, minActive
     # display the final situation during a few seconds
-    for i in range(nDays,nDays+100):
+    if not printing:
+      for i in range(nDays,nDays+100):
     	self.generateFlash(self.imResult,self.LX,self.LY,i,cacheTime,nCaches,nVisits,distance)
 
+    self.generateFlash(self.imResult,self.LX,self.LY,0,cacheTime,nCaches,nVisits,distance)
+    self.generateText(self.imResult,cacheTime,nCaches,geocacher,distance,nVisits)
+    
     # final view of all caches
     self.imResult.save(imagesDir+'Geocaching_'+currentZone+'.jpg')
     self.imResult.save(imagesDir+'Geocaching_'+currentZone+'.png',"PNG")
@@ -803,13 +825,14 @@ class GCAnimation:
     print 'Processed ', nArchived, 'archived caches'
 
 
-    fOut = open(imagesDir+'listPNG.txt','w')
-    # fill some images at the end, synchronising with music 
-    for i in range(0,nDays+1):
-      fOut.write('map%04d.png\n'%i)
-    for i in range(nDays+1,max(nDays+100,5400)):
-      fOut.write('map%04d.png\n'%nDays)
-    fOut.close()
+    if not printing:
+      fOut = open(imagesDir+'listPNG.txt','w')
+      # fill some images at the end, synchronising with music 
+      for i in range(0,nDays+1):
+        fOut.write('map%04d.png\n'%i)
+      for i in range(nDays+1,max(nDays+100,5400)):
+        fOut.write('map%04d.png\n'%nDays)
+      fOut.close()
     
 if __name__=='__main__':
   
@@ -821,6 +844,7 @@ if __name__=='__main__':
     print '-f <frontier gpx file> : display the frontiers or coastlines'
     print '-l <logged caches file> : process "all logs" HTML file'
     print '-z <zone> : restrict display to zone'
+    print '-p : white background for printing'
     print '<caches file> : CSV table of caches'
     print ''
     print 'Note : some arguments can be used multiple times (-f, -l, etc...)'
@@ -829,6 +853,7 @@ if __name__=='__main__':
     sys.exit(2)
     
   geocacher = None
+  printing = False
   archived = []
   frontiers = []
   tracks = []
@@ -838,7 +863,7 @@ if __name__=='__main__':
   print sys.argv[1:]
   
   try:
-    opts, args = getopt.getopt(sys.argv[1:],"hg:f:l:x:z:")
+    opts, args = getopt.getopt(sys.argv[1:],"hpg:f:l:x:z:")
   except getopt.GetoptError:
     usage()
 
@@ -848,6 +873,8 @@ if __name__=='__main__':
   for opt, arg in opts:
     if opt == '-h':
       usage()
+    elif opt == "-p":
+      printing = True
     elif opt in ("-g", "--geocacher"):
       geocacher = arg
     elif opt in ("-f", "--frontiers"):
@@ -861,7 +888,7 @@ if __name__=='__main__':
   print archived
   print frontiers
   
-  myAnimation = GCAnimation(scaleXY,minLonCountry,maxLonCountry,minLatCountry,maxLatCountry)
+  myAnimation = GCAnimation(scaleXY,minLonCountry,maxLonCountry,minLatCountry,maxLatCountry,printing)
 
   for file in args:
     print "Loading file:", file
