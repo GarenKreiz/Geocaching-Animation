@@ -44,6 +44,7 @@ import string
 import getopt
 import GPXParser
 
+import PIL
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
@@ -89,7 +90,8 @@ zones = {
 logoImages = [
   ('Breizh_Geocacheurs_blanc.png',1035,490),
   ('Geocaching_15_years.png',1050,272),
-  ('Garenkreiz_cercle_noir.png',1035,20)
+  #('Garenkreiz_cercle_noir.png',1035,20)
+  ('Avatar_c2ic.png',1035,20)
   ]
 
 (maxLatCountry, minLatCountry, minLonCountry, maxLonCountry, scaleXY, offsetXY) = zones[currentZone]
@@ -651,7 +653,7 @@ class GCAnimation:
     except:
       print 'Images in directory ' + imagesDir
       
-    today = time.time()
+    today = time.time()+3600*24*6
 
     self.imResult = Image.new('RGB',(self.LX,self.LY),self.background)
 
@@ -673,6 +675,8 @@ class GCAnimation:
       #logo.load()
       #print logoImage, logo.mode
       logo = logo.convert("RGBA")
+      if logo.size[0] > 224:
+        logo = logo.resize((224,224), PIL.Image.ANTIALIAS)
       #print logoImage, logo.mode
       self.imResult.paste(logo,(logoX,logoY),logo)
 
@@ -766,7 +770,6 @@ class GCAnimation:
           nArchived += 1
           self.flashList[0][self.flashCursor].append((x,y))
 
-
         if status == ACTIVE or status == PLACED or status == EVENT:          # active caches or events
           nCaches = nCaches + 1
         try:
@@ -774,6 +777,7 @@ class GCAnimation:
             if (xOld,yOld) <> (0,0):
               self.draw.line([(xOld, yOld),(x,y)], self.cacheColor[TRACK])
               distance += getDistance(latOld,lonOld,lat,lon)
+              nVisits += 1
             # del draw
             xOld,yOld = x,y
             latOld,lonOld = lat,lon
@@ -809,8 +813,7 @@ class GCAnimation:
       for i in range(nDays,nDays+100):
     	self.generateFlash(self.imResult,self.LX,self.LY,i,cacheTime,nCaches,nVisits,distance)
 
-    self.generateFlash(self.imResult,self.LX,self.LY,0,cacheTime,nCaches,nVisits,distance)
-    self.generateText(self.imResult,cacheTime,nCaches,geocacher,distance,nVisits)
+    self.generateText(self.imResult,cacheTime,nCaches,self.geocacher,distance,nVisits)
     
     # final view of all caches
     self.imResult.save(imagesDir+'Geocaching_'+currentZone+'.jpg')
