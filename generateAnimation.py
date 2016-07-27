@@ -91,7 +91,7 @@ logoImages = [
   ('Breizh_Geocacheurs_blanc.png',1035,490),
   ('Geocaching_15_years.png',1050,272),
   #('Garenkreiz_cercle_noir.png',1035,20)
-  ('Avatar_c2ic.png',1035,20)
+  #('Avatar_c2ic.png',1035,20)
   ]
 
 (maxLatCountry, minLatCountry, minLonCountry, maxLonCountry, scaleXY, offsetXY) = zones[currentZone]
@@ -119,6 +119,14 @@ TRACK       = 4  # visit to cache location by the chosen geocacher
 FRONTIER    = 5  # drawing natural or articial topographic features
 PLACED      = 6  # cache placed by geocacher
 
+# searching for a string pattern in a previously opened file
+def fileFindNext(f,pattern):
+  l = f.readline()
+  while l <> '' and not re.search(pattern,l):
+    l = f.readline()
+  return l
+
+# compute distance between two points on Earth surface
 def getDistance(lat1, lng1, lat2, lng2):
   #
   # calculate the distance (air) in km between 2 points given their coordinates
@@ -312,23 +320,26 @@ class GCAnimation:
   def convertDate(self,dateString):
     if dateString <> "":
       strTime = dateString+" 00:00:01Z"
-      try:
-        t = int(time.mktime(time.strptime(strTime, "%d/%m/%Y %H:%M:%SZ")))
-      except:
+      for pattern in ["%d/%m/%Y %H:%M:%SZ", "%Y/%m/%d %H:%M:%SZ", "%d %b %y %H:%M:%SZ"]:
         try:
-          t = int(time.mktime(time.strptime(strTime, "%Y/%m/%d %H:%M:%SZ")))
+          t = int(time.mktime(time.strptime(strTime, pattern)))
+          return t
         except:
-          print "Pb in time 1", strTime
-      return t
-    else:
+          pass
+      print "Problem in date format:",dateString
       return 0
 
   def loadFromFile(self,file,geocacher=None):
     
-    if geocacher <> None and re.search("\|",geocacher):
+    if geocacher:
+      if re.search("\|",geocacher):
         self.geocacher = re.sub("\(([^|]+)\|.*\)","\\1",geocacher)
-    else:
+      else:
         self.geocacher = geocacher
+      logoGeocacher = 'Avatar_'+self.geocacher+'.png'
+      if os.path.isfile(logoGeocacher):
+        logoImages.append((logoGeocacher,1035,20))
+        
     if file[-4:].lower() == '.gpx':
       self.loadFromGPX(file,status=ACTIVE)
     else:
@@ -370,53 +381,46 @@ class GCAnimation:
     logs = {}
     
     fInput = open(myHTML,'r')
-    l = fInput.readline()
     searching = 0
     nbLogs = 0
-    while l <> '':
-      if searching == 0 and re.search("All Logs",l):
-        searching = 1
-      elif searching == 1 and re.search("<tr class",l):
-        searching = 2
-      elif searching == 2 and re.search("<img src",l):
-        type = re.sub('.*alt="','',l.strip())
-        type = re.sub('".*','',type)
-        print "Type :", type,
-        nbLogs += 1
-        searching = 3
-      elif searching == 3 and re.search("<td>",l):
-        searching = 4
-      elif searching == 4 and re.search("<td>",l):
-        dateString = fInput.readline().strip()
-        dateLog = self.convertDate(dateString)
-        print "Date:",dateString,dateLog,
-        searching = 5
-      elif searching == 5 and re.search("<a href",l):
-        guid = re.sub('.*guid=','',l.strip())
-        guid = re.sub('".*','',guid)
-        print "Cache",guid,
-        logTypes =['Found it','Didn\'t find it','Attended','Owner Maintenance']
-        if type in logTypes:
-          print ' =============== ',
-          try:
-            (name, lat,lon) = self.guids[guid]
-            try:
-              # reverse order for each day
-              logs[dateLog].insert(0,(float(lat),float(lon)))
-            except:
-              logs[dateLog] = [(float(lat),float(lon))]
-            print ":", name, lat, lon
-          except:
-            print ": not present"
 
-        searching = 1
-      l = fInput.readline()
+    # parsing HTML to find earch log entry
+    l = fileFindNext(fInput,"All Logs")
+    while l <> '':
+      l = fileFindNext(fInput,"<tr class")
+      l = fileFindNext(fInput,"<img src")
+      type = re.sub('.*alt="','',l.strip())
+      type = re.sub('".*','',type)
+      print "Type :", type,
+      nbLogs += 1
+      l = fileFindNext(fInput,"<td>")
+      l = fileFindNext(fInput,"<td>")
+      dateString = fInput.readline().strip()
+      dateLog = self.convertDate(dateString)
+      print "Date:",dateString,dateLog,
+      l = fileFindNext(fInput,"<a href")
+      guid = re.sub('.*guid=','',l.strip())
+      guid = re.sub('".*','',guid)
+      print "Cache",guid,
+      logTypes =['Found it','Didn\'t find it','Attended','Owner Maintenance']
+      if type in logTypes:
+        print ' =============== ',
+        try:
+          (name, lat,lon) = self.guids[guid]
+          try:
+            # reverse order for each day
+            logs[dateLog].insert(0,(float(lat),float(lon)))
+          except:
+            logs[dateLog] = [(float(lat),float(lon))]
+          print ":", name, lat, lon
+        except:
+          print ": not present"
 
     print '  Logs loaded:',nbLogs
     
     self.tracks.append(logs)
     self.tracksCoords.append((0,0))
-
+    return
       
   def loadFromCSV(self,myCSV,geocacher=None):
 
@@ -622,8 +626,7 @@ class GCAnimation:
     tempImg = self.imResult
     box = self.imResult.crop((0,0,self.LX,self.LY))
     imTemp = Image.new('RGB',(self.LX,self.LY),self.background)
-    imTemp.paste(box,(0,0,self.LX,self.
-                      LY))
+    imTemp.paste(box,(0,0,self.LX,self.LY))
     self.imResult = imTemp
     for cacheTime in self.allWpts.keys():
       for (lat,lon,name,status) in self.allWpts[cacheTime]:
@@ -681,7 +684,7 @@ class GCAnimation:
       self.imResult.paste(logo,(logoX,logoY),logo)
 
     #imDraw.text((30,5),  u"Géocaches en France"                      , font=self.fontArial     , fill="red")
-    imDraw.text((30,5),   u"15 ans de géocaching en Bretagne"                      , font=self.fontArial     , fill="green")
+    imDraw.text((30,15),   u"15 ans de géocaching en Bretagne"                      , font=self.fontArial     , fill="green")
     imDraw.text((35,85),  u"génération: GarenKreiz"                     , font=self.fontArialSmall, fill="red")
     #imDraw.text((35,60),  u"musique: Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
     imDraw.text((36,110), u"licence: CC BY-NC-SA"                      , font=self.fontArialSmall, fill="red")
@@ -720,7 +723,7 @@ class GCAnimation:
 
     self.generatePreview()
     if geocacher:
-      self.generatePreview(self.geocacher)
+      self.generatePreview(self.geocacher+"_")
 
     for cacheTime in cacheTimes:
       # don't display future dates corresponding to future events
