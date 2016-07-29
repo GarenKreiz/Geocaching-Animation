@@ -88,7 +88,8 @@ zones = {
 
 # additionnal pictures to draw on each frame of the animation
 logoImages = [
-  ('Breizh_Geocacheurs_blanc.png',1035,490),
+  #('Breizh_Geocacheurs_blanc.png',1035,490),
+  ('breizh-geocacheurs-cercle.png',1035,490),
   ('Geocaching_15_years.png',1050,272),
   #('Garenkreiz_cercle_noir.png',1035,20)
   #('Avatar_c2ic.png',1035,20)
@@ -150,7 +151,7 @@ def getDistance(lat1, lng1, lat2, lng2):
 
 class GCAnimation:
 
-  def __init__(self,(scaleX,scaleY),minLon,maxLon,minLat,maxLat,printing=False):
+  def __init__(self,(scaleX,scaleY),minLon,maxLon,minLat,maxLat,printing=False, clear=False):
 
     self.minLon, self.maxLon = minLon, maxLon
     self.minLat, self.maxLat = minLat, maxLat
@@ -160,7 +161,8 @@ class GCAnimation:
     self.guids = {}
     self.geocacher = None
     self.printing = printing
-    if printing:
+    self.clear = clear
+    if clear:
       self.background = "white"
       self.foreground = "black"
     else:
@@ -265,7 +267,7 @@ class GCAnimation:
         ACTIVE      : (255,255,0), # yellow for creation
         PLACED      : (255,255,0), # yellow for creation
         }
-    if printing:
+    if clear:
       self.cacheColor = {
         ARCHIVED    : (178,34,34),   # firebrick
         ACTIVE      : (0,0,128),     # navy
@@ -850,7 +852,8 @@ if __name__=='__main__':
     print '-f <frontier gpx file> : display the frontiers or coastlines'
     print '-l <logged caches file> : process "all logs" HTML file'
     print '-z <zone> : restrict display to zone'
-    print '-p : white background for printing'
+    print '-p : printing'
+    print '-c : clear background'
     print '<caches file> : CSV table of caches'
     print ''
     print 'Note : some arguments can be used multiple times (-f, -l, etc...)'
@@ -859,6 +862,7 @@ if __name__=='__main__':
     sys.exit(2)
     
   geocacher = None
+  clear = False
   printing = False
   archived = []
   frontiers = []
@@ -869,7 +873,7 @@ if __name__=='__main__':
   print sys.argv[1:]
   
   try:
-    opts, args = getopt.getopt(sys.argv[1:],"hpg:f:l:x:z:")
+    opts, args = getopt.getopt(sys.argv[1:],"hcpg:f:l:x:z:")
   except getopt.GetoptError:
     usage()
 
@@ -881,6 +885,8 @@ if __name__=='__main__':
       usage()
     elif opt == "-p":
       printing = True
+    elif opt == "-c":
+      clear = True
     elif opt in ("-g", "--geocacher"):
       geocacher = arg
     elif opt in ("-f", "--frontiers"):
@@ -894,7 +900,7 @@ if __name__=='__main__':
   print archived
   print frontiers
   
-  myAnimation = GCAnimation(scaleXY,minLonCountry,maxLonCountry,minLatCountry,maxLatCountry,printing)
+  myAnimation = GCAnimation(scaleXY,minLonCountry,maxLonCountry,minLatCountry,maxLatCountry,printing,clear)
 
   for file in args:
     print "Loading file:", file
