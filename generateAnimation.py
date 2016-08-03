@@ -89,6 +89,7 @@ zones = {
 # additionnal pictures to draw on each frame of the animation
 logoImages = [
   #('Breizh_Geocacheurs_blanc.png',1035,490),
+  ('breizh-geocacheurs-cercle.png',1035,20),
   ('breizh-geocacheurs-cercle.png',1035,490),
   ('Geocaching_15_years.png',1050,272),
   #('Garenkreiz_cercle_noir.png',1035,20)
@@ -108,6 +109,7 @@ else:
 (xOrigin,yOrigin) = offsetXY
 
 bigPixels = 2           # draw big pixels (2x2), otherwise (1x1)
+noText = False          # drawing text and logos
 
 imagesDir = 'Images/'    # directory of generated images
 
@@ -151,7 +153,7 @@ def getDistance(lat1, lng1, lat2, lng2):
 
 class GCAnimation:
 
-  def __init__(self,(scaleX,scaleY),minLon,maxLon,minLat,maxLat,printing=False, clear=False):
+  def __init__(self,(scaleX,scaleY),minLon,maxLon,minLat,maxLat,printing=False, clear=False, excludedCaches=[]):
 
     self.minLon, self.maxLon = minLon, maxLon
     self.minLat, self.maxLat = minLat, maxLat
@@ -162,6 +164,8 @@ class GCAnimation:
     self.geocacher = None
     self.printing = printing
     self.clear = clear
+    self.excludedCaches = excludedCaches
+    
     if clear:
       self.background = "white"
       self.foreground = "black"
@@ -303,8 +307,10 @@ class GCAnimation:
       shape += [(1,0),(0,1),(1,1)]
     if bigPixels > 1 or status == PLACED:
       shape += [(-1,0),(0,-1),(-1,-1),(-1,1),(1,-1)]
-    if status == PLACED:
+    if bigPixels > 2 or status == PLACED:
       shape += [(-2,0),(0,-2),(2,0),(0,2),(-2,-2),(-2,2),(2,-2),(2,2)]
+      shape += [(-2,1),(1,-2),(2,1),(1,2)]
+      shape += [(-2,-1),(-1,-2),(2,-1),(-1,2)]
     for (dx,dy) in shape:
       self.imResult.putpixel((x+dx,y+dy),self.cacheColor[status]) 
 
@@ -332,7 +338,7 @@ class GCAnimation:
       return 0
 
   def loadFromFile(self,file,geocacher=None):
-    
+
     if geocacher:
       if re.search("\|",geocacher):
         self.geocacher = re.sub("\(([^|]+)\|.*\)","\\1",geocacher)
@@ -341,7 +347,7 @@ class GCAnimation:
       logoGeocacher = 'Avatar_'+self.geocacher+'.png'
       if os.path.isfile(logoGeocacher):
         logoImages.append((logoGeocacher,1035,20))
-        
+      
     if file[-4:].lower() == '.gpx':
       self.loadFromGPX(file,status=ACTIVE)
     else:
@@ -446,7 +452,7 @@ class GCAnimation:
       except Exception, msg:
         print msg, fields
         break
-      if name == "Code GC" or name == "Code":
+      if name == "Code GC" or name == "Code" or name in self.excludedCaches:
         # first line of headers in export file of GSAK
         # tested for French and English
         l = fInput.readline()
@@ -559,9 +565,13 @@ class GCAnimation:
   def generateText(self,img,cacheTime,nCaches,geocacher,distance,nVisits):
     self.imTempDraw = ImageDraw.Draw(img)
     text = time.strftime("%d/%m/%Y : ",time.localtime(cacheTime))
-    text += "%5d caches"%nCaches
+    text += "%5d cache"%nCaches
+    if nCaches <> 1:
+      text += "s"
     if currentZone == '_Bretagne_':
-      text += " bretonnes"
+      text += " bretonne"
+      if nCaches <> 1:
+        text += "s"
     if geocacher:
       self.imTempDraw.text((40,self.LY-83), text, font=self.fontFixed, fill=self.foreground)
       text = geocacher + " : %04d visites "%nVisits
@@ -658,7 +668,7 @@ class GCAnimation:
     except:
       print 'Images in directory ' + imagesDir
       
-    today = time.time()+3600*24*6
+    today = time.time() - 3600*24*1
 
     self.imResult = Image.new('RGB',(self.LX,self.LY),self.background)
 
@@ -674,26 +684,27 @@ class GCAnimation:
       
     self.imResult.save(imagesDir+'Geocaching_'+currentZone+'_frontieres.png',"PNG")
 
+    if not noText:
+      for (logoImage,logoX,logoY) in logoImages:
+        logo = Image.open(logoImage)
+        #logo.load()
+        #print logoImage, logo.mode
+        logo = logo.convert("RGBA")
+        if logo.size[0] > 224:
+          logo = logo.resize((224,224), PIL.Image.ANTIALIAS)
+        #print logoImage, logo.mode
+        self.imResult.paste(logo,(logoX,logoY),logo)
 
-    for (logoImage,logoX,logoY) in logoImages:
-      logo = Image.open(logoImage)
-      #logo.load()
-      #print logoImage, logo.mode
-      logo = logo.convert("RGBA")
-      if logo.size[0] > 224:
-        logo = logo.resize((224,224), PIL.Image.ANTIALIAS)
-      #print logoImage, logo.mode
-      self.imResult.paste(logo,(logoX,logoY),logo)
+    if not noText:
+      #imDraw.text((30,5),  u"Géocaches en France"                      , font=self.fontArial     , fill="red")
+      imDraw.text((30,15),   u"15 ans de géocaching en Bretagne"                      , font=self.fontArial     , fill="green")
+      imDraw.text((35,85),  u"génération: GarenKreiz"                     , font=self.fontArialSmall, fill="red")
+      #imDraw.text((35,60),  u"musique: Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
+      imDraw.text((36,110), u"licence: CC BY-NC-SA"                      , font=self.fontArialSmall, fill="red")
 
-    #imDraw.text((30,5),  u"Géocaches en France"                      , font=self.fontArial     , fill="red")
-    imDraw.text((30,15),   u"15 ans de géocaching en Bretagne"                      , font=self.fontArial     , fill="green")
-    imDraw.text((35,85),  u"génération: GarenKreiz"                     , font=self.fontArialSmall, fill="red")
-    #imDraw.text((35,60),  u"musique: Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
-    imDraw.text((36,110), u"licence: CC BY-NC-SA"                      , font=self.fontArialSmall, fill="red")
-
-    #imDraw.text((35,80),  u"musique: Pedro Collares (Gothic)", font=self.fontArialSmall, fill="red")
-    #imDraw.text((35,80),  u"musique: ProleteR (April Showers)", font=self.fontArialSmall, fill="red")
-    #imDraw.text((35,80),  u"musique: Söd'Araygua (Somni Cristallitzat)", font=self.fontArialSmall, fill="red")
+      #imDraw.text((35,80),  u"musique: Pedro Collares (Gothic)", font=self.fontArialSmall, fill="red")
+      #imDraw.text((35,80),  u"musique: ProleteR (April Showers)", font=self.fontArialSmall, fill="red")
+      #imDraw.text((35,80),  u"musique: Söd'Araygua (Somni Cristallitzat)", font=self.fontArialSmall, fill="red")
 
     # misc counters
     nDays = 0
@@ -852,6 +863,7 @@ if __name__=='__main__':
     print '-f <frontier gpx file> : display the frontiers or coastlines'
     print '-l <logged caches file> : process "all logs" HTML file'
     print '-z <zone> : restrict display to zone'
+    print '-x <file of cache ids> : exclude the caches from the animation'
     print '-p : printing'
     print '-c : clear background'
     print '<caches file> : CSV table of caches'
@@ -868,7 +880,8 @@ if __name__=='__main__':
   frontiers = []
   tracks = []
   logs = []
-  excludeCaches = ''
+  excludeCaches = None
+  excludedCaches = []
   
   print sys.argv[1:]
   
@@ -900,7 +913,13 @@ if __name__=='__main__':
   print archived
   print frontiers
   
-  myAnimation = GCAnimation(scaleXY,minLonCountry,maxLonCountry,minLatCountry,maxLatCountry,printing,clear)
+  myAnimation = GCAnimation(scaleXY,minLonCountry,maxLonCountry,minLatCountry,maxLatCountry,printing,clear,excludedCaches)
+
+  if excludeCaches and os.path.isfile(excludeCaches):
+    with open(excludeCaches,'r') as f:
+      for x in f.readlines():
+        excludedCaches.append(x.strip())
+  print excludedCaches
 
   for file in args:
     print "Loading file:", file
