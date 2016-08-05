@@ -283,7 +283,7 @@ class GCAnimation:
         EVENT       : (0,255,0),     # green
         TRACK       : (255,0,255),   # purple
         FRONTIER    : (0,0,255),     # blue
-        PLACED      : (255,255,0),   # darkgreen
+        PLACED      : (255,255,0),   # yellow
         }
     else:
       self.cacheColor = {
@@ -326,7 +326,7 @@ class GCAnimation:
     try:
       self.coords[name] = (lat,lon)
       if not (lat,lon,name,active) in self.allWpts[eventTime]:
-        self.allWpts[eventTime].append((lat,lon,name,active))
+        self.allWpts[eventTime].insert((lat,lon,name,active))
         self.nAddedCaches += 1
     except:
       self.allWpts[eventTime] = [(lat,lon,name,active)]
@@ -673,8 +673,11 @@ class GCAnimation:
     imTemp = Image.new('RGB',(self.LX,self.LY),self.background)
     imTemp.paste(box,(0,0,self.LX,self.LY))
     self.imResult = imTemp
-    for cacheTime in self.allWpts.keys():
+    keys = self.allWpts.keys()
+    keys.sort()
+    for cacheTime in keys:
       for (lat,lon,name,status) in self.allWpts[cacheTime]:
+        print cacheTime, name, status
         # x = int(self.scaleX*(lon-self.XMinLon)) # 720p
         (x,y) = self.latlon2xy(lat,lon)
         if not geocacher or status == PLACED:
@@ -731,9 +734,9 @@ class GCAnimation:
     if not noText:
       #imDraw.text((30,5),   u"Géocaches en France"                      , font=self.fontArial     , fill="red")
       imDraw.text((30,15),   u"GC6GFKY - 15 ans de géocaching en Bretagne"                      , font=self.fontArial     , fill="green")
-      #imDraw.text((35,85),  u"génération: GarenKreiz"                     , font=self.fontArialSmall, fill="red")
+      imDraw.text((35,85),  u"génération: Garenkreiz"                     , font=self.fontArialSmall, fill=(1,1,1))
+      imDraw.text((36,110), u"licence: CC BY-NC-SA"                       , font=self.fontArialSmall, fill="red")
       #imDraw.text((35,60),  u"musique: Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
-      #imDraw.text((36,110), u"licence: CC BY-NC-SA"                      , font=self.fontArialSmall, fill="red")
 
       #imDraw.text((35,80),  u"musique: Pedro Collares (Gothic)", font=self.fontArialSmall, fill="red")
       #imDraw.text((35,80),  u"musique: ProleteR (April Showers)", font=self.fontArialSmall, fill="red")
