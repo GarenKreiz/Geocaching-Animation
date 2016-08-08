@@ -15,7 +15,22 @@
 #   PIL the Python Imaging Library to generate the images of the animation
 #   mencoder from MPlayer package to generate the video from images
 #   GPX file or CSV export file containing the caches' information (see loadFromCSV method)
-
+#
+# Command line parameters:
+#   use --help command
+#
+# Examples:
+#   generateAnimation.py -f Cote_Bretagne.gpx -f Cote_Atlantique.gpx -f Cote_Manche.gpx\
+#     -l Geocaching_all_logs_garenkreiz.html -g "Garenkreiz" -z _Bretagne_ -x GC_Bretagne_errors.txt -c -p GC_Bretagne.csv
+#
+# Additionnal parameters in the code:
+#   - zones      : definition of the zone to display (region, country, ...)
+#   - logoImages : to decorate the images
+#   - showCaches : to emphasize special caches (colored circle)
+#   - bigPixels  : to choose the size of the dots for caches
+#   - noText     : don't display any text
+#   - miscellanous sizes for text, images, etc...
+# 
 # Notes:
 #   Many thanks to VNC (www.geocaching-france.com) and eolas (www.mides.fr) for the data on France
 #   If you use this program, I'd appreciate to hear from you!
@@ -51,30 +66,34 @@ from PIL import ImageFont
 
 # zone to display (can be changed with the -z argument)
 # begins with _ if not a real country used in the geocache description
-currentZone = '_Bretagne_'
+currentZone = 'France'
 
 # bounding rectangle of the zone (country or state)
 
 zones = {
-  '_World_':  (55.08917,   # north
+  '_World_':  ("Evolution of geocaching",
+               55.08917,   # north
                30.33333,   # south
                -120.150,   # west
                20.5600,    # east 
                (0.15,0.3), # scale : adapt to fit to video size and preserve X/Y ratio
                (200,10)),  # offset for x,y coordinates
-  'France' :  (51.08917,   # dunes du Perroquet, Bray-Dunes près de Zuydcoote
+  'France' :  (u"Evolution du géocaching en France",
+               51.08917,   # dunes du Perroquet, Bray-Dunes près de Zuydcoote
                41.33333,   # cap di u Beccu, Iles Lavezzi, Corse
                -5.15083,   # phare de Nividic, Ouessant
                9.56000,    # plage Fiorentine, Alistro, Corse
                (50,70),
                (200,10)),
-  '_Bretagne_' : (48.92,   # Roches Douvres?
+  '_Bretagne_' : (u"GC6GFKY - 15 ans de géocaching en Bretagne",
+               48.92,      # Roches Douvres?
                47.24,      # Pointe sud de Belle Ile?
                -5.17,      # Phare de Nividic?
                -0.8,       # Sud du péage de la Gravelle?
                (246,325),
                (20,50)),
-  '_Europe_': (70.0,
+  '_Europe_': ("Geocaching evolution in Europe",
+               70.0,
                27.0,
                -30.0,
                40.0,
@@ -158,15 +177,16 @@ class GCAnimation:
   def __init__(self,currentZone,printing=False, clear=False, excludedCaches=[]):
 
     # getting zone parameters
-    (maxLat, minLat, minLon, maxLon, scaleXY, offsetXY) = zones[currentZone]
+    (title, maxLat, minLat, minLon, maxLon, scaleXY, offsetXY) = zones[currentZone]
     # positionning topographic items within image
     (xOrigin,yOrigin) = offsetXY
     (scaleX,scaleY) = scaleXY
-    
     self.minLon, self.maxLon = minLon, maxLon
     self.minLat, self.maxLat = minLat, maxLat
-    self.frontiers = []
     self.xOrigin, self.yOrigin = xOrigin, yOrigin
+    self.title = title
+    
+    self.frontiers = []
     self.geocacher = None
     self.printing = printing
     self.clear = clear
@@ -682,7 +702,6 @@ class GCAnimation:
 
   def generatePreview(self, geocacher=None):
 
-    print "Generating previews"
     # generate a preview of all caches
     tempImg = self.imResult
     box = self.imResult.crop((0,0,self.LX,self.LY))
@@ -709,7 +728,6 @@ class GCAnimation:
       print "Preview image : "+imagesDir+fileName+'_tracks.png'
       self.imResult.save(imagesDir+fileName+'_tracks.png',"PNG")
     self.imResult = tempImg
-    print "Previews generated"
 
 
   def generateImages(self, tracing):
@@ -750,7 +768,7 @@ class GCAnimation:
 
     if not noText:
       #imDraw.text((30,5),   u"Géocaches en France"                      , font=self.fontArial     , fill="red")
-      imDraw.text((30,15),   u"GC6GFKY - 15 ans de géocaching en Bretagne"                      , font=self.fontArial     , fill="green")
+      imDraw.text((30,15),   self.title                      , font=self.fontArial     , fill="green")
       if self.clear:
         imDraw.text((35,85),  u"génération: Garenkreiz"                     , font=self.fontArialSmall, fill=(254,254,254))
       else:
@@ -788,8 +806,6 @@ class GCAnimation:
     if geocacher:
       self.generatePreview(self.geocacher+"_")
 
-    print "Times:",len(self.allWpts)
-    
     cacheTimes = self.allWpts.keys()
     cacheTimes.sort()
 
@@ -881,9 +897,6 @@ class GCAnimation:
 
       previousTime = cacheTime
 
-    print 'Max:', maxArchived, maxUnavailable, maxActive
-    print 'Min:', minArchived, minUnavailable, minActive
-
     # display the final situation during a few seconds
     if not printing:
       for i in range(nDays,nDays+100):
@@ -894,12 +907,10 @@ class GCAnimation:
     self.generateText(self.imResult,cacheTime)
     draw = ImageDraw.Draw(self.imResult)
     for (cache,size,color) in showCaches:
-      print "Showing cache:",cache
+      print "Showing special cache:",cache
       try:
         (lat,lon) = self.coords[cache]
-        print lat,lon
         (x, y) = self.latlon2xy(lat,lon)
-        print "Showing cache ",cache, lat,lon,x,y,size,color
         draw.ellipse((x-size,y-size,x+size,y+size), fill=color)
       except:
         pass
@@ -912,8 +923,6 @@ class GCAnimation:
     if self.geocacher:
       self.generatePreview(self.geocacher)
 
-    print "After preview generation"
-    
     print ''
     print 'Processed ', self.nCaches, 'caches'
     print 'Processed ', nActive, 'active caches'
