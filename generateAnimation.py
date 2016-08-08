@@ -68,17 +68,13 @@ zones = {
                9.56000,    # plage Fiorentine, Alistro, Corse
                (50,70),
                (200,10)),
-  '_Bretagne_' :
-              (48.92,      # Roches Douvres?
+  '_Bretagne_' : (48.92,   # Roches Douvres?
                47.24,      # Pointe sud de Belle Ile?
                -5.17,      # Phare de Nividic?
                -0.8,       # Sud du péage de la Gravelle?
-               #(180,250),
-               #(200,280),
-               #(242,320),
                (246,325),
                (20,50)),
-  '_Europe_': (80.0,
+  '_Europe_': (70.0,
                27.0,
                -30.0,
                40.0,
@@ -99,7 +95,6 @@ showCaches = [
   ("GC6GFKY",10,"green"),
   ]
 
-(maxLatCountry, minLatCountry, minLonCountry, maxLonCountry, scaleXY, offsetXY) = zones[currentZone]
 
 # size of output image : 720p or 1080p (HD)
 videoRes = 720
@@ -108,10 +103,8 @@ if videoRes == 720:
 else:
   xSize,ySize=1120,1080    # HD 1080p
 
-# positionning topographic items within image
-(xOrigin,yOrigin) = offsetXY
 
-bigPixels = 2           # draw big pixels (2x2), otherwise (1x1)
+bigPixels = 1           # draw big pixels (2x2), otherwise (1x1)
 noText = False          # drawing text and logos
 
 imagesDir = 'Images/'    # directory of generated images
@@ -130,7 +123,7 @@ PLACED      = 6  # cache placed by geocacher
 def fileFindNext(f,pattern):
 
   l = f.readline()
-  while l <> '' and not re.search(pattern,l):
+  while l <> '' and not re.search(pattern,l, re.IGNORECASE):
     l = f.readline()
   return l
 
@@ -162,8 +155,14 @@ def getDistance(lat1, lng1, lat2, lng2):
 
 class GCAnimation:
 
-  def __init__(self,(scaleX,scaleY),minLon,maxLon,minLat,maxLat,printing=False, clear=False, excludedCaches=[]):
+  def __init__(self,currentZone,printing=False, clear=False, excludedCaches=[]):
 
+    # getting zone parameters
+    (maxLat, minLat, minLon, maxLon, scaleXY, offsetXY) = zones[currentZone]
+    # positionning topographic items within image
+    (xOrigin,yOrigin) = offsetXY
+    (scaleX,scaleY) = scaleXY
+    
     self.minLon, self.maxLon = minLon, maxLon
     self.minLat, self.maxLat = minLat, maxLat
     self.frontiers = []
@@ -173,7 +172,8 @@ class GCAnimation:
     self.clear = clear
     self.excludedCaches = excludedCaches
     self.guids = {}
-    
+
+
     if clear:
       self.background, self.foreground = "white","black"
       self.foreground = "black"
@@ -327,6 +327,9 @@ class GCAnimation:
 
   def newItem(self,name,lat,lon,status,eventTime):
 
+    if eventTime == None:
+      print "Problem with time of cache ",name
+      sys.exit()
     self.coords[name] = (lat,lon)
     try:
       if not (lat,lon,name,status) in self.allWpts[eventTime]:
@@ -348,8 +351,7 @@ class GCAnimation:
           return t
         except:
           pass
-      print "Problem in date format:",dateString
-      return 0
+    return 0
 
 
   def loadFromFile(self,file,geocacher=None):
@@ -415,17 +417,22 @@ class GCAnimation:
     # parsing HTML to find earch log entry
     l = fileFindNext(fInput,"All Logs")
     while l <> '':
-      l = fileFindNext(fInput,"<tr class")
-      l = fileFindNext(fInput,"<img src")
+      l = fileFindNext(fInput,"<tr")
+      l = fileFindNext(fInput,"<img")
       type = re.sub('.*alt="','',l.strip())
       type = re.sub('".*','',type)
       nbLogs += 1
       l = fileFindNext(fInput,"<td>")
       l = fileFindNext(fInput,"<td>")
-      dateString = fInput.readline().strip()
+      if re.search('</TD',l,re.IGNORECASE):
+        dateString = re.sub('.*<(TD|td)> *','',l)
+        dateString = re.sub(' .*','',dateString)
+        dateString = dateString.strip()
+      else:
+        dateString = fInput.readline().strip()
       cacheTime = self.convertDate(dateString)
       print dateString,
-      l = fileFindNext(fInput,"<a href")
+      l = fileFindNext(fInput,"<a")
       guid = re.sub('.*guid=','',l.strip())
       guid = re.sub('".*','',guid)
       print guid,
@@ -496,6 +503,7 @@ class GCAnimation:
         status = UNAVAILABLE               # Temporarily unavailable
       else:
         status = ACTIVE                    # Active cache 
+
       lat,lon = float(latitude),float(longitude)
       if (lat > self.maxLat) or (lat < self.minLat) or \
          (lon > self.maxLon) or (lon < self.minLon) or (currentZone[0] <> '_' and country <> currentZone and country <> ''):
@@ -507,7 +515,6 @@ class GCAnimation:
       lastFoundTime = self.convertDate(dateLastFound)
       lastLogTime = self.convertDate(dateLastLog)
       foundByMeTime = self.convertDate(dateFoundByMe)
-      
 
       if status <> EVENT:
         # a non-event cache is active for a while after being placed
@@ -702,7 +709,8 @@ class GCAnimation:
       print "Preview image : "+imagesDir+fileName+'_tracks.png'
       self.imResult.save(imagesDir+fileName+'_tracks.png',"PNG")
     self.imResult = tempImg
-    
+    print "Previews generated"
+
 
   def generateImages(self, tracing):
 
@@ -714,7 +722,7 @@ class GCAnimation:
     except:
       print 'Images in directory ' + imagesDir
       
-    today = time.time() - 3600*24*3
+    today = time.time() - 3600*24*6
 
     self.imResult = Image.new('RGB',(self.LX,self.LY),self.background)
 
@@ -780,6 +788,8 @@ class GCAnimation:
     if geocacher:
       self.generatePreview(self.geocacher+"_")
 
+    print "Times:",len(self.allWpts)
+    
     cacheTimes = self.allWpts.keys()
     cacheTimes.sort()
 
@@ -793,7 +803,7 @@ class GCAnimation:
       if cacheTime > today:
           cacheTime = today
           break
-        
+
       dArchived = 0
       dUnavailable = 0
       dActive = 0
@@ -895,17 +905,20 @@ class GCAnimation:
         pass
     
     # final view of all caches
-    self.imResult.save(imagesDir+'Geocaching_'+currentZone+'.jpg')
     self.imResult.save(imagesDir+'Geocaching_'+currentZone+'.png',"PNG")
+
+    print "Global view:",imagesDir+'Geocaching_'+currentZone+'.png'
+    
     if self.geocacher:
       self.generatePreview(self.geocacher)
 
+    print "After preview generation"
+    
     print ''
     print 'Processed ', self.nCaches, 'caches'
     print 'Processed ', nActive, 'active caches'
     print 'Processed ', nUnavailable, 'unavailable caches'
     print 'Processed ', nArchived, 'archived caches'
-
 
     if not printing:
       fOut = open(imagesDir+'listPNG.txt','w')
@@ -975,7 +988,7 @@ if __name__=='__main__':
   print archived
   print frontiers
   
-  myAnimation = GCAnimation(scaleXY,minLonCountry,maxLonCountry,minLatCountry,maxLatCountry,printing,clear,excludedCaches)
+  myAnimation = GCAnimation(currentZone,printing,clear,excludedCaches)
 
   if excludeCaches and os.path.isfile(excludeCaches):
     with open(excludeCaches,'r') as f:
@@ -993,11 +1006,11 @@ if __name__=='__main__':
   for file in logs:
     myAnimation.loadLogsFromFile(file)
 
-  try:
-    myAnimation.generateImages(tracing=True)
-  except Exception, msg:
-    print "Pb:",msg
-
+  #try:
+  myAnimation.generateImages(tracing=True)
+  #except Exception, msg:
+  #  print "Problem in generation:", msg
+    
   print 'That\'s all folks!'
   print 'Next step : mencoder "mf://map*.png" -mf fps=24 -o Film.avi -ovc lavc -lavcopts vcodec=mpeg4 -vf scale=1280:720'
   print 'Next step : mencoder "mf://@listPNG.txt" -mf fps=24 -o Film.avi -ovc lavc -lavcopts vcodec=mpeg4 -vf scale=1280:720'
