@@ -21,7 +21,7 @@
 #
 # Examples:
 #   generateAnimation.py -f Cote_Bretagne.gpx -f Cote_Atlantique.gpx -f Cote_Manche.gpx\
-#     -l Geocaching_all_logs_garenkreiz.html -g "Garenkreiz" -z _Bretagne_ -x GC_Bretagne_errors.txt -c -p GC_Bretagne.csv
+#     -l Geocaching_all_logs_Garenkreiz.htm -g "Garenkreiz"  -c white -p -z _Bretagne_ -x GC_Bretagne_errors.txt GC_Bretagne.csv
 #
 # Additionnal parameters in the code:
 #   - zones      : definition of the zone to display (region, country, ...)
@@ -29,8 +29,9 @@
 #   - showCaches : to emphasize special caches (colored circle)
 #   - bigPixels  : to choose the size of the dots for caches
 #   - noText     : don't display any text
+#   - today      : last day of the animation period
 #   - miscellanous sizes for text, images, etc...
-# 
+#   
 # Notes:
 #   Many thanks to VNC (www.geocaching-france.com) and eolas (www.mides.fr) for the data on France
 #   If you use this program, I'd appreciate to hear from you!
@@ -174,7 +175,7 @@ def getDistance(lat1, lng1, lat2, lng2):
 
 class GCAnimation:
 
-  def __init__(self,currentZone,printing=False, clear=False, excludedCaches=[]):
+  def __init__(self,currentZone,printing=False, backgroundColor="black", excludedCaches=[]):
 
     # getting zone parameters
     (title, maxLat, minLat, minLon, maxLon, scaleXY, offsetXY) = zones[currentZone]
@@ -189,12 +190,12 @@ class GCAnimation:
     self.frontiers = []
     self.geocacher = None
     self.printing = printing
-    self.clear = clear
+    self.color = backgroundColor
     self.excludedCaches = excludedCaches
     self.guids = {}
 
-
-    if clear:
+    print "Background color:",self.color
+    if self.color == "white":
       self.background, self.foreground = "white","black"
       self.foreground = "black"
       logoImages.append(('Plaque_15_ans_black.png',30,440, 240, 200))
@@ -299,7 +300,7 @@ class GCAnimation:
         ACTIVE      : (255,255,0), # yellow for creation
         PLACED      : (255,255,0), # yellow for creation
         }
-    if clear:
+    if self.color == "white":
       self.cacheColor = {
         ARCHIVED    : (178,34,34),   # firebrick
         ACTIVE      : (0,0,128),     # navy
@@ -739,8 +740,9 @@ class GCAnimation:
       print 'Created directory ' + imagesDir
     except:
       print 'Images in directory ' + imagesDir
-      
-    today = time.time() - 3600*24*6
+
+    # last day of displayed period
+    today = time.time() - 3600*24*9
 
     self.imResult = Image.new('RGB',(self.LX,self.LY),self.background)
 
@@ -769,7 +771,7 @@ class GCAnimation:
     if not noText:
       #imDraw.text((30,5),   u"Géocaches en France"                      , font=self.fontArial     , fill="red")
       imDraw.text((30,15),   self.title                      , font=self.fontArial     , fill="green")
-      if self.clear:
+      if self.color == "white":
         imDraw.text((35,85),  u"génération: Garenkreiz"                     , font=self.fontArialSmall, fill=(254,254,254))
       else:
         imDraw.text((35,85),  u"génération: Garenkreiz"                     , font=self.fontArialSmall, fill=(1,1,1))
@@ -949,7 +951,7 @@ if __name__=='__main__':
     print '-z <zone> : restrict display to zone'
     print '-x <file of cache ids> : exclude the caches from the animation'
     print '-p : printing'
-    print '-c : clear background'
+    print '-c <color>: background color (white or black)'
     print '<caches file> : CSV table of caches'
     print ''
     print 'Note : some arguments can be used multiple times (-f, -l, etc...)'
@@ -958,7 +960,7 @@ if __name__=='__main__':
     sys.exit(2)
     
   geocacher = None
-  clear = False
+  color = False
   printing = False
   archived = []
   frontiers = []
@@ -970,7 +972,7 @@ if __name__=='__main__':
   print sys.argv[1:]
   
   try:
-    opts, args = getopt.getopt(sys.argv[1:],"hcpg:f:l:x:z:")
+    opts, args = getopt.getopt(sys.argv[1:],"hpg:c:f:l:x:z:")
   except getopt.GetoptError:
     usage()
 
@@ -983,7 +985,7 @@ if __name__=='__main__':
     elif opt == "-p":
       printing = True
     elif opt == "-c":
-      clear = True
+      color = arg
     elif opt in ("-g", "--geocacher"):
       geocacher = arg
     elif opt in ("-f", "--frontiers"):
@@ -997,7 +999,7 @@ if __name__=='__main__':
   print archived
   print frontiers
   
-  myAnimation = GCAnimation(currentZone,printing,clear,excludedCaches)
+  myAnimation = GCAnimation(currentZone,printing,color,excludedCaches)
 
   if excludeCaches and os.path.isfile(excludeCaches):
     with open(excludeCaches,'r') as f:
