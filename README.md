@@ -15,14 +15,17 @@ Inputs
 - GPX file or CSV export file containing the caches' information (see loadFromCSV method)
 - GPX files used for drawing the coastline or frontiers of the choosen area
 
-Some reuse of the code or idea
-- [Switzerland] ( http://www.youtube.com/watch?v=NPoFT96Ve50 )
-- [Germany](http://www.youtube.com/watch?v=LmbHcbF2XcU )
-- [Portugal]( http://www.youtube.com/watch?v=MddsTfFeSIQ )
-- [Sweden]( http://www.youtube.com/watch?v=Y2JaJ5ki9lc )
-- [Denmark] ( http://www.youtube.com/watch?v=ZEz2f2F5PKo )
+Some reuses of the code or the idea
 - [Australia] ( http://www.youtube.com/watch?v=wXrVHSm3oGg ) 
 - [Canada] ( http://www.youtube.com/watch?v=a1bvCO5-zpY )
+- [Czech Republic] (https://www.youtube.com/watch?v=AGxuluYDlBk)
+- [Denmark] ( http://www.youtube.com/watch?v=ZEz2f2F5PKo )
+- [Europe] (https://www.youtube.com/watch?v=DkU56zSPgR0)
+- [Germany](https://www.youtube.com/watch?v=pOiHPPlSxi4 )
+- [Portugal]( http://www.youtube.com/watch?v=MddsTfFeSIQ )
+- [Sweden]( http://www.youtube.com/watch?v=Y2JaJ5ki9lc )
+- [Switzerland] ( http://www.youtube.com/watch?v=NPoFT96Ve50 )
+- [United Kingdom] (https://www.youtube.com/watch?v=ayhYVRVE9Ac)
 
 Notes
 * The version of the GPX parser used can't ingest large GPX files (30000 geocaches). 
