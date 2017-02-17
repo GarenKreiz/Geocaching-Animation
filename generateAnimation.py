@@ -375,7 +375,7 @@ class GCAnimation:
     return 0
 
 
-  def loadFromFile(self,file,geocacher=None):
+  def loadFromFile(self,file,geocacher=None,status=ACTIVE):
 
     if geocacher:
       if re.search("\|",geocacher):
@@ -387,7 +387,7 @@ class GCAnimation:
         logoImages.append((logoGeocacher,1035,20, 224, 224))
       
     if file[-4:].lower() == '.gpx':
-      self.loadFromGPX(file,status=ACTIVE)
+      self.loadFromGPX(file,status=status)
     else:
       self.loadFromCSV(file,geocacher)
 
@@ -943,7 +943,7 @@ class GCAnimation:
 if __name__=='__main__':
   
   def usage():
-    print 'Usage: python generationAnimation.py <active_caches.gpx> [ ... <archived_caches.gpx> ]'
+    print 'Usage: python generationAnimation.py <active_caches.gpx>'
     print 'Usage: python generationAnimation.py <gsak_extract.csv> [ <name of geocacher> ]'
     print '-g <geocacher name> : display activity of the geocacher'
     print '-f <frontier gpx file> : display the frontiers or coastlines'
@@ -952,6 +952,7 @@ if __name__=='__main__':
     print '-x <file of cache ids> : exclude the caches from the animation'
     print '-p : printing'
     print '-c <color>: background color (white or black)'
+    print '-a <archived_caches.gpx>: list of cache that are now archived'
     print '<caches file> : CSV table of caches'
     print ''
     print 'Note : some arguments can be used multiple times (-f, -l, etc...)'
@@ -972,7 +973,7 @@ if __name__=='__main__':
   print sys.argv[1:]
   
   try:
-    opts, args = getopt.getopt(sys.argv[1:],"hpg:c:f:l:x:z:")
+    opts, args = getopt.getopt(sys.argv[1:],"hpg:a:c:f:l:x:z:")
   except getopt.GetoptError:
     usage()
 
@@ -986,6 +987,8 @@ if __name__=='__main__':
       printing = True
     elif opt == "-c":
       color = arg
+    elif opt == "-a":
+      archived.append(arg)
     elif opt in ("-g", "--geocacher"):
       geocacher = arg
     elif opt in ("-f", "--frontiers"):
@@ -1011,6 +1014,10 @@ if __name__=='__main__':
     print "Loading file:", file
     myAnimation.loadFromFile(file,geocacher)
 
+  for file in archived:
+    print "Loading archived file", file
+    myAnimation.loadFromFile(file,geocacher,status=ARCHIVED)
+    
   for file in frontiers:
     myAnimation.loadFromGPX(file,status=FRONTIER)
 
