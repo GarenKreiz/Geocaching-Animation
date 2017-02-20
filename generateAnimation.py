@@ -73,12 +73,19 @@ currentZone = 'France'
 
 zones = {
   '_World_':  ("Evolution of geocaching",
-               55.08917,   # north
-               30.33333,   # south
-               -120.150,   # west
-               20.5600,    # east 
-               (0.15,0.3), # scale : adapt to fit to video size and preserve X/Y ratio
-               (200,10)),  # offset for x,y coordinates
+               90.00,      # north
+               -90.00,     # south
+               -180.0  ,   # west
+               180.0,      # east 
+               (3,3),      # scale : adapt to fit to video size and preserve X/Y ratio
+               (100,100)),  # offset for x,y coordinates
+  'Finland':  ("Evolution of geocaching in Finland",
+               71.0,
+               59.0,
+               19.0,
+               32.0,
+               (25,55),
+               (200,30)),
   'France' :  (u"Evolution du géocaching en France",
                51.08917,   # dunes du Perroquet, Bray-Dunes près de Zuydcoote
                41.33333,   # cap di u Beccu, Iles Lavezzi, Corse
@@ -106,13 +113,13 @@ zones = {
 #    (image file, position x, position y, size x, size y
 
 logoImages = [
-  ('breizh-geocacheurs-cercle.png',1035,20, 224, 224),
-  ('breizh-geocacheurs-cercle.png',1035,480, 224, 224),
-  ('Geocaching_15_years.png',1053,272, 224,224),
+  #('breizh-geocacheurs-cercle.png',1035,20, 224, 224),
+  #('breizh-geocacheurs-cercle.png',1035,480, 224, 224),
+  #('Geocaching_15_years.png',1053,272, 224,224),
   ]
 
 showCaches = [
-  ("GC6GFKY",10,"green"),
+  #("GC6GFKY",10,"green"),
   ]
 
 
@@ -198,9 +205,7 @@ class GCAnimation:
     if self.color == "white":
       self.background, self.foreground = "white","black"
       self.foreground = "black"
-      logoImages.append(('Plaque_15_ans_black.png',30,440, 240, 200))
     else:
-      logoImages.append(('Plaque_15_ans_white.png',30,440, 240, 200))
       self.background, self.foreground = "black", "white"
 
     if os.name <> 'posix' or sys.platform == 'cygwin' or sys.platform == "linux2":
@@ -528,7 +533,7 @@ class GCAnimation:
       lat,lon = float(latitude),float(longitude)
       if (lat > self.maxLat) or (lat < self.minLat) or \
          (lon > self.maxLon) or (lon < self.minLon) or (currentZone[0] <> '_' and country <> currentZone and country <> ''):
-        print '!!! Pb point outside the drawing zone:',name
+        print '!!! Pb point outside the drawing zone:',name, lat, ' not in ', self.minLat, self.maxLat, self.minLon, self.maxLon
         l = fInput.readline()
         continue
 
@@ -583,6 +588,9 @@ class GCAnimation:
     self.nAddedCaches = 0
       
     for p in myGPX.wpts:
+      name =  p.attribs['name']
+      if (name[0:2] <> 'GC'):
+          continue
       lat,lon = p.lat,p.lon
 
       try:
@@ -591,13 +599,15 @@ class GCAnimation:
         country = ''
 
       if (lat > self.maxLat) or (lat < self.minLat) or \
-         (lon > self.maxLon) or (lon < self.minLon) or (country <> 'France' and country <> ''):
-        print '!!! Pb point outside the drawing area :', p.attribs['name'], lat, lon
+         (lon > self.maxLon) or (lon < self.minLon):
+        print '!!! Pb point outside the drawing area :', p.attribs['name'], lat, lon, ' not in ', self.minLat, self.maxLat, self.minLon, self.maxLon
         continue
 
-      name =  p.attribs['name']
       strTime = p.attribs['time']
-      cacheTime = int(time.mktime(time.strptime(strTime, "%Y-%m-%dT%H:%M:%SZ")))
+      strTime = re.sub('\..*','',strTime)
+      strTime = re.sub('Z$','',strTime)
+      cacheTime = int(time.mktime(time.strptime(strTime, "%Y-%m-%dT%H:%M:%S")))
+
       if p.attribs['type'] == 'Geocache|Event Cache' or p.attribs['type'] == 'Geocache|Cache In Trash Out Event':
         cacheStatus = EVENT
       else:
@@ -741,8 +751,10 @@ class GCAnimation:
     except:
       print 'Images in directory ' + imagesDir
 
-    # last day of displayed period
-    today = time.time() - 3600*24*9
+    # today as last day of displayed period
+    # can be set to another specific date int(time.mktime(time.strptime("2016-08-02", "%Y-%m-%d")))
+ 
+    today = time.time()
 
     self.imResult = Image.new('RGB',(self.LX,self.LY),self.background)
 
