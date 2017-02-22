@@ -77,8 +77,8 @@ zones = {
                -90.00,     # south
                -180.0  ,   # west
                180.0,      # east 
-               (3,3),      # scale : adapt to fit to video size and preserve X/Y ratio
-               (100,100)),  # offset for x,y coordinates
+               (3.2,4.5),  # scale : adapt to fit to video size and preserve X/Y ratio
+               (80,0)),    # offset for x,y coordinates
   'Finland':  ("Evolution of geocaching in Finland",
                71.0,
                59.0,
