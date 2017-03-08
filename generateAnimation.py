@@ -72,13 +72,13 @@ currentZone = 'France'
 # bounding rectangle of the zone (country or state)
 
 zones = {
-  '_World_':  ("Evolution of geocaching",
+  '_World_':  (u"16 ans de géocaching dans les territoires français",
                90.00,      # north
                -90.00,     # south
                -180.0  ,   # west
                180.0,      # east 
-               (3.2,4.5),  # scale : adapt to fit to video size and preserve X/Y ratio
-               (80,0)),    # offset for x,y coordinates
+               (3.5,4.4),  # scale : adapt to fit to video size and preserve X/Y ratio
+               (10,-10)),    # offset for x,y coordinates
   'Finland':  ("Evolution of geocaching in Finland",
                71.0,
                59.0,
@@ -86,13 +86,13 @@ zones = {
                32.0,
                (25,55),
                (200,30)),
-  'France' :  (u"Evolution du géocaching en France",
+  'France' :  (u"16 ans de géocaching en France métropolitaine",
                51.08917,   # dunes du Perroquet, Bray-Dunes près de Zuydcoote
                41.33333,   # cap di u Beccu, Iles Lavezzi, Corse
                -5.15083,   # phare de Nividic, Ouessant
                9.56000,    # plage Fiorentine, Alistro, Corse
-               (50,70),
-               (200,10)),
+               (48,64),
+               (200,80)),
   '_Bretagne_' : (u"GC6GFKY - 15 ans de géocaching en Bretagne",
                48.92,      # Roches Douvres?
                47.24,      # Pointe sud de Belle Ile?
@@ -782,14 +782,14 @@ class GCAnimation:
 
     if not noText:
       #imDraw.text((30,5),   u"Géocaches en France"                      , font=self.fontArial     , fill="red")
-      imDraw.text((30,15),   self.title                      , font=self.fontArial     , fill="green")
+      imDraw.text((30,15),   self.title                      , font=self.fontArial     , fill="red")
       if self.color == "white":
-        imDraw.text((35,85),  u"génération: Garenkreiz"                     , font=self.fontArialSmall, fill=(254,254,254))
+        imDraw.text((35,95),  u"génération: Garenkreiz"                     , font=self.fontArialSmall, fill=(254,254,254))
       else:
-        imDraw.text((35,85),  u"génération: Garenkreiz"                     , font=self.fontArialSmall, fill=(1,1,1))
-      #imDraw.text((36,110), u"licence: CC BY-NC-SA"                       , font=self.fontArialSmall, fill="red")
-      #imDraw.text((35,60),  u"musique: Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
-
+        imDraw.text((35,625),  u"génération: Garenkreiz (CC BY-NC-SA)"                     , font=self.fontArialSmall, fill="red")
+      #imDraw.text((35,655), u"licence: CC BY-NC-SA"                       , font=self.fontArialSmall, fill="red")
+      imDraw.text((35,650),  u"musique: Winter Is Coming (Andrey Avkhimovich)"         , font=self.fontArialSmall, fill="red")
+      # 95 120 70
       #imDraw.text((35,80),  u"musique: Pedro Collares (Gothic)", font=self.fontArialSmall, fill="red")
       #imDraw.text((35,80),  u"musique: ProleteR (April Showers)", font=self.fontArialSmall, fill="red")
       #imDraw.text((35,80),  u"musique: Söd'Araygua (Somni Cristallitzat)", font=self.fontArialSmall, fill="red")
@@ -825,6 +825,10 @@ class GCAnimation:
 
     if len(cacheTimes) == 0:
       return
+
+    # generate the first image without any cache
+    self.generateFlash(self.LX,self.LY,nDays,cacheTimes[0])
+
     # initialize the time of the current frame to the first date
     previousTime = cacheTimes[0]
 
@@ -948,7 +952,7 @@ class GCAnimation:
       # fill some images at the end, synchronising with music 
       for i in range(0,nDays+1):
         fOut.write('map%04d.png\n'%i)
-      for i in range(nDays+1,max(nDays+100,5400)):
+      for i in range(nDays+1,nDays+100):
         fOut.write('map%04d.png\n'%nDays)
       fOut.close()
     
