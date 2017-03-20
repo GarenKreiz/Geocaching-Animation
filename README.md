@@ -29,6 +29,7 @@ Some reuses of the code or the idea
 - [2012/05 New Zealand] (https://www.youtube.com/watch?v=tmttkCPdO3Q)
 - [2015/06 United Kingdom] (https://www.youtube.com/watch?v=ayhYVRVE9Ac)
 - [2016/10 Europe] (https://www.youtube.com/watch?v=DkU56zSPgR0)
+- [2017/03 Finland] (https://www.youtube.com/watch?v=0cKnomvwFPs)
 
 Notes
 * The version of the GPX parser used can't ingest large GPX files (30000 geocaches). 
