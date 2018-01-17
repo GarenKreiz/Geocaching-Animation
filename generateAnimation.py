@@ -93,6 +93,13 @@ zones = {
                -0.8,       # Sud du péage de la Gravelle?
                (246,325),
                (20,50)),
+  '_Centre_' : (u"Evolution du géocaching en région Centre",
+               49,      # Roches Douvres?
+               46,      # Pointe sud de Belle Ile?
+               -1,      # Phare de Nividic?
+               4,       # Sud du péage de la Gravelle?
+               (150,210),
+               (40,30)),
   '_Europe_': ("Geocaching evolution in Europe",
                70.0,
                27.0,
@@ -106,13 +113,13 @@ zones = {
 #    (image file, position x, position y, size x, size y
 
 logoImages = [
-  ('Logo_Breizh_Geocacheurs.png',1035,20, 224, 224),
-  ('Logo_Breizh_Geocacheurs.png',1035,480, 224, 224),
-  ('Logo_Geocaching_15_years.png',1053,272, 224,224),
+  ('Logo_Loir-et-Cher.jpg',1035,20, 224, 224),
+  #('Logo_Breizh_Geocacheurs.png',1035,480, 224, 224),
+  ('Logo_16ans.png',1053,272, 224,224),
   ]
 
 showCaches = [
-  ("GC6GFKY",10,"green"),
+  ("GC39D0",10,"green"),
   ]
 
 
@@ -501,7 +508,7 @@ class GCAnimation:
       fields = re.sub('","','|',fields[1:-1])    # getting rid of all double quotes used by GSAK
       fields = string.split(fields,"|")
       try:
-        (name,cacheType,note,last4logs,dateLastLog,wpName,placedBy,datePlaced,dateLastFound,found,country,latitude,longitude,status,url,dateFoundByMe,ownerId) = fields
+        (name,cacheType,note,last4logs,dateLastLog,wpName,placedBy,datePlaced,dateLastFound,found,country,latitude,longitude,status,url,dateFoundByMe,ownerId) = fields[0:17]
       except Exception, msg:
         print msg, fields
         break
@@ -717,7 +724,10 @@ class GCAnimation:
         # x = int(self.scaleX*(lon-self.XMinLon)) # 720p
         (x,y) = self.latlon2xy(lat,lon)
         if not geocacher or status == PLACED:
-          self.drawPoint(status,x,y)
+          try:
+              self.drawPoint(status,x,y)
+          except:
+              print "!!! Drawing outside area ",x,y
     if geocacher:
       fileName = 'Geocaching_'+currentZone+'_'+geocacher
     else:
