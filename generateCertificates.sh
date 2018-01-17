@@ -28,6 +28,6 @@ generate Philfat29 "Philfat29"
 generate Arlok78 "Arlok78"
 generate Garenkreiz "Garenkreiz"
 generate Kavadell "Kavadell"
-generate cukcelte "Cukcelte"
+generate Cukcelte "Cukcelte"
 
 
