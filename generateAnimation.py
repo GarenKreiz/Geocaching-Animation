@@ -115,7 +115,7 @@ zones = {
 logoImages = [
   ('Logo_Loir-et-Cher.jpg',1035,20, 224, 224),
   #('Logo_Breizh_Geocacheurs.png',1035,480, 224, 224),
-  ('Logo_16ans.png',1053,272, 224,224),
+  ('Logo_Geocaching_16_years.png',1035,272, 224,224),
   ]
 
 showCaches = [
@@ -205,10 +205,10 @@ class GCAnimation:
     if self.color == "white":
       self.background, self.foreground = "white","black"
       self.foreground = "black"
-      logoImages.append(('Plaque_15_ans_black.png',30,440, 240, 200))
+      # logoImages.append(('Plaque_15_ans_black.png',30,440, 240, 200))
     else:
       logoImages.append(('Plaque_15_ans_white.png',30,440, 240, 200))
-      self.background, self.foreground = "black", "white"
+      # self.background, self.foreground = "black", "white"
 
     if os.name <> 'posix' or sys.platform == 'cygwin' or sys.platform == "linux2":
       # Windows fonts
