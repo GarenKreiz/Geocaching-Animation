@@ -23,11 +23,13 @@ class GPXTrack:
          self.attribs[a[0].strip()] = a[1].strip()    
  
       for seg in segs:
-         points = re.findall(re.compile("<trkpt.+?>.*?</trkpt>", re.DOTALL+re.I), seg)   
-         for p in points:
-            w = GPXWaypoint()    
-            w.from_string(p.strip())
+         index = seg.find("<trkpt", 0)
+         while (index <> -1):
+            indexFin = seg.index(">",index)
+            w = GPXWaypoint()
+            w.from_string(seg[index:indexFin+1]) 
             self.wpts.append(w)
+            index = seg.find("<trkpt", indexFin)
  
    def __repr__(self):
       r = "Track:   "+self.attribs.__repr__()+"\nPoints: "
@@ -45,7 +47,7 @@ class GPXWaypoint:
       self.lon, self.lat = lon, lat 
       self.attribs={}
    def from_string(self, c):
-      f = re.search("<(trk|w)pt(?P<opts>.*?)>(?P<content>.*?)</(trk|w)pt>", c, re.DOTALL+re.I)
+      f = re.search("<(trk|w)pt(?P<opts>.*?)>(?P<content>.*?)", c, re.DOTALL+re.I)
       # print "Wpt"
       if not f: return 1
       c = re.compile(".*?=\".*?\"", re.DOTALL)
