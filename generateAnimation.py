@@ -72,7 +72,7 @@ currentZone = 'France'
 # bounding rectangle of the zone (country or state)
 
 zones = {
-  '_World_':  (u"16 ans de géocaching dans les territoires français",
+  '_World_':  (u"Evolution du géocaching dans les territoires français",
                90.00,      # north
                -90.00,     # south
                -180.0  ,   # west
@@ -93,7 +93,7 @@ zones = {
                9.56000,    # plage Fiorentine, Alistro, Corse
                (48,64),
                (200,80)),
-  '_Bretagne_' : (u"GC6GFKY - 15 ans de géocaching en Bretagne",
+  '_Bretagne_' : (u"Evolution du géocaching en Bretagne",
                48.92,      # Roches Douvres?
                47.24,      # Pointe sud de Belle Ile?
                -5.17,      # Phare de Nividic?
@@ -113,9 +113,9 @@ zones = {
 #    (image file, position x, position y, size x, size y
 
 logoImages = [
-  #('breizh-geocacheurs-cercle.png',1035,20, 224, 224),
-  #('breizh-geocacheurs-cercle.png',1035,480, 224, 224),
-  #('Geocaching_15_years.png',1053,272, 224,224),
+  #('Logo_1.png',1035,20, 224, 224),
+  #('Logo_2.png',1035,480, 224, 224),
+  #('Logo_3.png',1053,272, 224,224),
   ]
 
 showCaches = [
@@ -179,7 +179,28 @@ def getDistance(lat1, lng1, lat2, lng2):
   distance = circ * angle / (2.0 * math.pi)
   return distance
 
+def isInsideZone(x, y, points):
+    """
+    Return True if a coordinate (x, y) is inside a polygon defined by
+    a list of verticies [(x1, y1), (x2, x2), ... , (xN, yN)].
 
+    Reference: http://www.ariel.com.au/a/python-point-int-poly.html
+    """
+    n = len(points)-1
+    inside = False
+    p1x, p1y = points[0].xy()
+    for i in range(1, n + 1):
+        p2x, p2y = points[i % n].xy()
+        if y > min(p1y, p2y):
+            if y <= max(p1y, p2y):
+                if x <= max(p1x, p2x):
+                    if p1y != p2y:
+                        xinters = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
+                    if p1x == p2x or x <= xinters:
+                        inside = not inside
+        p1x, p1y = p2x, p2y
+    return inside
+include = True
 class GCAnimation:
 
   def __init__(self,currentZone,printing=False, backgroundColor="black", excludedCaches=[]):
@@ -207,6 +228,7 @@ class GCAnimation:
       self.foreground = "black"
     else:
       self.background, self.foreground = "black", "white"
+      #logoImages.append(('Logo_bas_gauche_black.png',30,440, 240, 200))
 
     if os.name <> 'posix' or sys.platform == 'cygwin' or sys.platform == "linux2":
       # Windows fonts
@@ -506,7 +528,7 @@ class GCAnimation:
       fields = re.sub('","','|',fields[1:-1])    # getting rid of all double quotes used by GSAK
       fields = string.split(fields,"|")
       try:
-        (name,cacheType,note,last4logs,dateLastLog,wpName,placedBy,datePlaced,dateLastFound,found,country,latitude,longitude,status,url,dateFoundByMe,ownerId) = fields
+        (name,cacheType,note,last4logs,dateLastLog,wpName,placedBy,datePlaced,dateLastFound,found,country,latitude,longitude,status,url,dateFoundByMe,ownerId) = fields[0:17]
       except Exception, msg:
         print msg, fields
         break
@@ -519,6 +541,12 @@ class GCAnimation:
         print '!!! Pb cache outside',currentZone,':',name
         l = fInput.readline()
         continue
+      if include and self.frontiers <> [] and not isInsideZone(float(latitude), float(longitude), self.frontiers[0].wpts):
+          # print'!!! Outside of zone polygon', name, latitude, longitude
+          # print "= NOK =",l
+          l = fInput.readline()
+          continue
+      print "= OK =",l,
       guid = re.sub('.*guid=','',url)
       self.guids[guid] = (name,float(latitude),float(longitude))
       if cacheType == "Event Cache" or cacheType == "Cache In Trash Out Event":
@@ -581,7 +609,11 @@ class GCAnimation:
     
     if status == FRONTIER:
       for t in myGPX.trcks:
-        self.frontiers.append(t)
+        print len(t.segs)
+        # print t.segs[0]
+        # self.frontiers.append(t)
+        for s in t.segs:
+            self.frontiers.append(s)
       return
     
     self.foundWpts = {}
@@ -1026,6 +1058,9 @@ if __name__=='__main__':
         excludedCaches.append(x.strip())
   print excludedCaches
 
+  for file in frontiers:
+    myAnimation.loadFromGPX(file,status=FRONTIER)
+
   for file in args:
     print "Loading file:", file
     myAnimation.loadFromFile(file,geocacher)
@@ -1034,9 +1069,6 @@ if __name__=='__main__':
     print "Loading archived file", file
     myAnimation.loadFromFile(file,geocacher,status=ARCHIVED)
     
-  for file in frontiers:
-    myAnimation.loadFromGPX(file,status=FRONTIER)
-
   for file in logs:
     myAnimation.loadLogsFromFile(file)
 
