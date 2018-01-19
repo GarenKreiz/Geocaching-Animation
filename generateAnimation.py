@@ -144,6 +144,7 @@ EVENT       = 3
 TRACK       = 4  # visit to cache location by the chosen geocacher
 FRONTIER    = 5  # drawing natural or articial topographic features
 PLACED      = 6  # cache placed by geocacher
+POLYGON     = 7  # polygon to select a drawing area
 
 # searching for a string pattern in a previously opened file
 
@@ -216,6 +217,7 @@ class GCAnimation:
     self.title = title
     
     self.frontiers = []
+    self.polygons = []
     self.geocacher = None
     self.printing = printing
     self.color = backgroundColor
@@ -531,7 +533,8 @@ class GCAnimation:
         (name,cacheType,note,last4logs,dateLastLog,wpName,placedBy,datePlaced,dateLastFound,found,country,latitude,longitude,status,url,dateFoundByMe,ownerId) = fields[0:17]
       except Exception, msg:
         print msg, fields
-        break
+        break 
+      
       if name == "Code GC" or name == "Code" or name in self.excludedCaches:
         # first line of headers in export file of GSAK
         # tested for French and English
@@ -541,14 +544,28 @@ class GCAnimation:
         print '!!! Pb cache outside',currentZone,':',name
         l = fInput.readline()
         continue
-      if include and self.frontiers <> [] and not isInsideZone(float(latitude), float(longitude), self.frontiers[0].wpts):
-          # print'!!! Outside of zone polygon', name, latitude, longitude
-          # print "= NOK =",l
+
+      lat, lon = float(latitude), float(longitude)
+
+      if include and self.polygons <> []:
+        # find if cache is inside one of the polygons
+        inside = False
+        p = 0 
+        while not inside and p < len(self.polygons):
+          (latMin, latMax, lonMin, lonMax) = self.polygons[p].bbox()
+          if lat >= latMin and lat <= latMax and lon >= lonMin and lon <= lonMax:
+            inside = isInsideZone(lat, lon, self.polygons[p].wpts)  
+          p += 1
+        if not inside:
+          #print'!!! Outside of zone polygon', name, latitude, longitude
+          #print "= NOK =",l
           l = fInput.readline()
           continue
+
       print "= OK =",l,
+
       guid = re.sub('.*guid=','',url)
-      self.guids[guid] = (name,float(latitude),float(longitude))
+      self.guids[guid] = (name,latitude,longitude)
       if cacheType == "Event Cache" or cacheType == "Cache In Trash Out Event":
         status = EVENT                     # Event cache
       elif status == 'X':
@@ -607,13 +624,15 @@ class GCAnimation:
     print '  Waypoints found :',len(myGPX.wpts)
     print '  Tracks found :',len(myGPX.trcks)
     
-    if status == FRONTIER:
+    if status == FRONTIER or status == POLYGON:
       for t in myGPX.trcks:
         print len(t.segs)
         # print t.segs[0]
         # self.frontiers.append(t)
         for s in t.segs:
             self.frontiers.append(s)
+            if status == POLYGON:
+              self.polygons.append(s)
       return
     
     self.foundWpts = {}
@@ -1013,6 +1032,7 @@ if __name__=='__main__':
   printing = False
   archived = []
   frontiers = []
+  polygons = []
   tracks = []
   logs = []
   excludeCaches = None
@@ -1021,7 +1041,7 @@ if __name__=='__main__':
   print sys.argv[1:]
   
   try:
-    opts, args = getopt.getopt(sys.argv[1:],"hpg:a:c:f:l:x:z:")
+    opts, args = getopt.getopt(sys.argv[1:],"hpa:c:f:g:i:l:x:z:")
   except getopt.GetoptError:
     usage()
 
@@ -1030,23 +1050,36 @@ if __name__=='__main__':
     
   for opt, arg in opts:
     if opt == '-h':
+      # help
       usage()
     elif opt == "-p":
+      # generate a image for printing (no animation)
       printing = True
     elif opt == "-c":
+      # choos the main background color (black ou white)
       color = arg
     elif opt == "-a":
+      # load a file of archived caches
       archived.append(arg)
     elif opt in ("-g", "--geocacher"):
+      # name of the geocacher
       geocacher = arg
     elif opt in ("-f", "--frontiers"):
+      # load GPX file to display a frontier or coast
       frontiers.append(arg)
+    elif opt in ("-i", "--inside"):
+      # display only geocaches inside the given GPX polygon
+      polygons.append(arg)
     elif opt in ("-z", "--zone"):
+      # use the template to display the named zone (scale and offset)
       currentZone = arg
     elif opt in ("-x", "--exclude"):
+      # exclude a list of caches (when the region is wrong)
       excludeCaches = arg
     elif opt in ("-l", "--logs"):
+      # load a file containing the logs of a cacher to display the moves
       logs.append(arg)
+      
   print archived
   print frontiers
   
@@ -1060,6 +1093,9 @@ if __name__=='__main__':
 
   for file in frontiers:
     myAnimation.loadFromGPX(file,status=FRONTIER)
+
+  for file in polygons:
+    myAnimation.loadFromGPX(file,status=POLYGON)
 
   for file in args:
     print "Loading file:", file
