@@ -6,6 +6,12 @@ class GPXTrack:
       self.attribs = {}
       self.wpts = []
       self.segs = []
+      self._bbox_ = None
+      
+   def bbox(self, latMin=None, latMax=None, lonMin=None,lonMax=None):
+     if latMin == None:
+       return self._bbox_
+     self._bbox_ = (latMin, latMax, lonMin, lonMax)
  
    def from_string(self, c):
       f = re.search("<trk(?P<opts>.*?)>(?P<content>.*?)</trk>", c, re.DOTALL+re.I)   
@@ -26,13 +32,19 @@ class GPXTrack:
       for seg in segs:
          newSeg = GPXTrack()
          index = seg.find("<trkpt", 0)
+         latMin, latMax = 100.0, -100.0
+         lonMin, lonMax = 181.0, -181.0
          while (index <> -1):
             indexFin = seg.index(">",index)
             w = GPXWaypoint()
             w.from_string(seg[index:indexFin+1]) 
             self.wpts.append(w)
             newSeg.wpts.append(w)
+            x,y = w.xy()
+            latMin, latMax = min(x,latMin), max(x, latMax)
+            lonMin, lonMax = min(y,lonMin), max(y, lonMax)
             index = seg.find("<trkpt", indexFin)
+         newSeg.bbox(latMin,latMax,lonMin,lonMax)
          self.segs.append(newSeg)
  
    def __repr__(self):
