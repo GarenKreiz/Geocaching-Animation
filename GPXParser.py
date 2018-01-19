@@ -5,6 +5,7 @@ class GPXTrack:
    def __init__(self):
       self.attribs = {}
       self.wpts = []
+      self.segs = []
  
    def from_string(self, c):
       f = re.search("<trk(?P<opts>.*?)>(?P<content>.*?)</trk>", c, re.DOTALL+re.I)   
@@ -23,22 +24,23 @@ class GPXTrack:
          self.attribs[a[0].strip()] = a[1].strip()    
  
       for seg in segs:
+         newSeg = GPXTrack()
          index = seg.find("<trkpt", 0)
          while (index <> -1):
             indexFin = seg.index(">",index)
             w = GPXWaypoint()
             w.from_string(seg[index:indexFin+1]) 
             self.wpts.append(w)
+            newSeg.wpts.append(w)
             index = seg.find("<trkpt", indexFin)
+         self.segs.append(newSeg)
  
    def __repr__(self):
       r = "Track:   "+self.attribs.__repr__()+"\nPoints: "
       for w in self.wpts:
          r += w.__repr__() 
       return r+"\n"   
- 
- 
- 
+
 class GPXWaypoint:
    #lon = 0 # -180.0 - +180.0
    #lat = 0 # -90.0 - +90.0
@@ -70,7 +72,8 @@ class GPXWaypoint:
       return "WP (lon="+str(self.lon)+", lat="+str(self.lat)+")\n  Attributes: "+self.attribs.__repr__()+"\n"
    def __repr__(self):
       return self.__str__()
- 
+   def xy(self):
+       return(self.lat,self.lon)
  
  
  
@@ -129,6 +132,7 @@ class GPXParser:
       for trk in gpx_trks:
          t = GPXTrack()
          t.from_string(trk)
+         print len(t.segs)
          self.trcks.append(t)
       # print "Init from string end"
  
