@@ -86,7 +86,7 @@ zones = {
                9.56000,    # plage Fiorentine, Alistro, Corse
                (50,70),
                (200,10)),
-  '_Bretagne_' : (u"GC6GFKY - 15 ans de géocaching en Bretagne",
+  '_Bretagne_' : (u"Evolution du géocaching en Bretagne",
                48.92,      # Roches Douvres?
                47.24,      # Pointe sud de Belle Ile?
                -5.17,      # Phare de Nividic?
@@ -100,6 +100,13 @@ zones = {
                4,       # Sud du péage de la Gravelle?
                (150,210),
                (40,30)),
+  '_Loir-et-Cher_' : (u"Evolution du géocaching en Loir-et-Cher",
+               48.2,      # Roches Douvres?
+               47.18,      # Pointe sud de Belle Ile?
+               0.5,      # Phare de Nividic?
+               2.4,       # Sud du péage de la Gravelle?
+               (435,609),
+               (70,-20)),
   '_Europe_': ("Geocaching evolution in Europe",
                70.0,
                27.0,
@@ -119,7 +126,7 @@ logoImages = [
   ]
 
 showCaches = [
-  ("GC39D0",10,"green"),
+  ("GC39D0",5,"cyan"),
   ]
 
 
@@ -131,7 +138,7 @@ else:
   xSize,ySize=1120,1080    # HD 1080p
 
 
-bigPixels = 1           # draw big pixels (2x2), otherwise (1x1)
+bigPixels = 2           # draw big pixels (2x2), otherwise (1x1)
 noText = False          # drawing text and logos
 
 imagesDir = 'Images/'    # directory of generated images
@@ -144,6 +151,7 @@ EVENT       = 3
 TRACK       = 4  # visit to cache location by the chosen geocacher
 FRONTIER    = 5  # drawing natural or articial topographic features
 PLACED      = 6  # cache placed by geocacher
+POLYGON     = 7  # polygon to select a drawing area
 
 # searching for a string pattern in a previously opened file
 
@@ -179,7 +187,28 @@ def getDistance(lat1, lng1, lat2, lng2):
   distance = circ * angle / (2.0 * math.pi)
   return distance
 
+def isInsideZone(x, y, points):
+    """
+    Return True if a coordinate (x, y) is inside a polygon defined by
+    a list of verticies [(x1, y1), (x2, x2), ... , (xN, yN)].
 
+    Reference: http://www.ariel.com.au/a/python-point-int-poly.html
+    """
+    n = len(points)-1
+    inside = False
+    p1x, p1y = points[0].xy()
+    for i in range(1, n + 1):
+        p2x, p2y = points[i % n].xy()
+        if y > min(p1y, p2y):
+            if y <= max(p1y, p2y):
+                if x <= max(p1x, p2x):
+                    if p1y != p2y:
+                        xinters = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
+                    if p1x == p2x or x <= xinters:
+                        inside = not inside
+        p1x, p1y = p2x, p2y
+    return inside
+include = True
 class GCAnimation:
 
   def __init__(self,currentZone,printing=False, backgroundColor="black", excludedCaches=[]):
@@ -195,6 +224,7 @@ class GCAnimation:
     self.title = title
     
     self.frontiers = []
+    self.polygons = []
     self.geocacher = None
     self.printing = printing
     self.color = backgroundColor
@@ -207,8 +237,8 @@ class GCAnimation:
       self.foreground = "black"
       # logoImages.append(('Plaque_15_ans_black.png',30,440, 240, 200))
     else:
-      logoImages.append(('Plaque_15_ans_white.png',30,440, 240, 200))
-      # self.background, self.foreground = "black", "white"
+      self.background, self.foreground = "black", "white"
+      #logoImages.append(('Logo_bas_gauche_black.png',30,440, 240, 200))
 
     if os.name <> 'posix' or sys.platform == 'cygwin' or sys.platform == "linux2":
       # Windows fonts
@@ -382,7 +412,7 @@ class GCAnimation:
     return 0
 
 
-  def loadFromFile(self,file,geocacher=None):
+  def loadFromFile(self,file,geocacher=None,status=ACTIVE):
 
     if geocacher:
       if re.search("\|",geocacher):
@@ -394,7 +424,7 @@ class GCAnimation:
         logoImages.append((logoGeocacher,1035,20, 224, 224))
       
     if file[-4:].lower() == '.gpx':
-      self.loadFromGPX(file,status=ACTIVE)
+      self.loadFromGPX(file,status=status)
     else:
       self.loadFromCSV(file,geocacher)
 
@@ -511,7 +541,8 @@ class GCAnimation:
         (name,cacheType,note,last4logs,dateLastLog,wpName,placedBy,datePlaced,dateLastFound,found,country,latitude,longitude,status,url,dateFoundByMe,ownerId) = fields[0:17]
       except Exception, msg:
         print msg, fields
-        break
+        break 
+      
       if name == "Code GC" or name == "Code" or name in self.excludedCaches:
         # first line of headers in export file of GSAK
         # tested for French and English
@@ -521,8 +552,28 @@ class GCAnimation:
         print '!!! Pb cache outside',currentZone,':',name
         l = fInput.readline()
         continue
+
+      lat, lon = float(latitude), float(longitude)
+
+      if include and self.polygons <> []:
+        # find if cache is inside one of the polygons
+        inside = False
+        p = 0 
+        while not inside and p < len(self.polygons):
+          (latMin, latMax, lonMin, lonMax) = self.polygons[p].bbox()
+          if lat >= latMin and lat <= latMax and lon >= lonMin and lon <= lonMax:
+            inside = isInsideZone(lat, lon, self.polygons[p].wpts)  
+          p += 1
+        if not inside:
+          #print'!!! Outside of zone polygon', name, latitude, longitude
+          #print "= NOK =",l
+          l = fInput.readline()
+          continue
+
+      print "= OK =",l,
+
       guid = re.sub('.*guid=','',url)
-      self.guids[guid] = (name,float(latitude),float(longitude))
+      self.guids[guid] = (name,latitude,longitude)
       if cacheType == "Event Cache" or cacheType == "Cache In Trash Out Event":
         status = EVENT                     # Event cache
       elif status == 'X':
@@ -535,7 +586,7 @@ class GCAnimation:
       lat,lon = float(latitude),float(longitude)
       if (lat > self.maxLat) or (lat < self.minLat) or \
          (lon > self.maxLon) or (lon < self.minLon) or (currentZone[0] <> '_' and country <> currentZone and country <> ''):
-        print '!!! Pb point outside the drawing zone:',name
+        print '!!! Pb point outside the drawing zone:',name, lat, ' not in ', self.minLat, self.maxLat, self.minLon, self.maxLon
         l = fInput.readline()
         continue
 
@@ -581,15 +632,24 @@ class GCAnimation:
     print '  Waypoints found :',len(myGPX.wpts)
     print '  Tracks found :',len(myGPX.trcks)
     
-    if status == FRONTIER:
+    if status == FRONTIER or status == POLYGON:
       for t in myGPX.trcks:
-        self.frontiers.append(t)
+        print len(t.segs)
+        # print t.segs[0]
+        # self.frontiers.append(t)
+        for s in t.segs:
+            self.frontiers.append(s)
+            if status == POLYGON:
+              self.polygons.append(s)
       return
     
     self.foundWpts = {}
     self.nAddedCaches = 0
       
     for p in myGPX.wpts:
+      name =  p.attribs['name']
+      if (name[0:2] <> 'GC'):
+          continue
       lat,lon = p.lat,p.lon
 
       try:
@@ -598,11 +658,10 @@ class GCAnimation:
         country = ''
 
       if (lat > self.maxLat) or (lat < self.minLat) or \
-         (lon > self.maxLon) or (lon < self.minLon) or (country <> 'France' and country <> ''):
-        print '!!! Pb point outside the drawing area :', p.attribs['name'], lat, lon
+         (lon > self.maxLon) or (lon < self.minLon):
+        print '!!! Pb point outside the drawing area :', p.attribs['name'], lat, lon, ' not in ', self.minLat, self.maxLat, self.minLon, self.maxLon
         continue
 
-      name =  p.attribs['name']
       strTime = p.attribs['time']
       cacheTime = int(time.mktime(time.strptime(strTime, "%Y-%m-%dT%H:%M:%SZ")))
       if p.attribs['type'] == 'Geocache|Event Cache' or p.attribs['type'] == 'Geocache|Cache In Trash Out Event':
@@ -724,10 +783,7 @@ class GCAnimation:
         # x = int(self.scaleX*(lon-self.XMinLon)) # 720p
         (x,y) = self.latlon2xy(lat,lon)
         if not geocacher or status == PLACED:
-          try:
-              self.drawPoint(status,x,y)
-          except:
-              print "!!! Drawing outside area ",x,y
+          self.drawPoint(status,x,y)
     if geocacher:
       fileName = 'Geocaching_'+currentZone+'_'+geocacher
     else:
@@ -751,8 +807,10 @@ class GCAnimation:
     except:
       print 'Images in directory ' + imagesDir
 
-    # last day of displayed period
-    today = time.time() - 3600*24*9
+    # today as last day of displayed period
+    # can be set to another specific date int(time.mktime(time.strptime("2016-08-02", "%Y-%m-%d")))
+ 
+    today = time.time()
 
     self.imResult = Image.new('RGB',(self.LX,self.LY),self.background)
 
@@ -780,7 +838,7 @@ class GCAnimation:
 
     if not noText:
       #imDraw.text((30,5),   u"Géocaches en France"                      , font=self.fontArial     , fill="red")
-      imDraw.text((30,15),   self.title                      , font=self.fontArial     , fill="green")
+      imDraw.text((30,15),   self.title                      , font=self.fontArial     , fill="red")
       if self.color == "white":
         imDraw.text((35,85),  u"génération: Garenkreiz"                     , font=self.fontArialSmall, fill=(254,254,254))
       else:
@@ -823,6 +881,10 @@ class GCAnimation:
 
     if len(cacheTimes) == 0:
       return
+
+    # generate the first image without any cache
+    self.generateFlash(self.LX,self.LY,nDays,cacheTimes[0])
+
     # initialize the time of the current frame to the first date
     previousTime = cacheTimes[0]
 
@@ -962,6 +1024,7 @@ if __name__=='__main__':
     print '-x <file of cache ids> : exclude the caches from the animation'
     print '-p : printing'
     print '-c <color>: background color (white or black)'
+    print '-a <archived_caches.gpx>: list of cache that are now archived'
     print '<caches file> : CSV table of caches'
     print ''
     print 'Note : some arguments can be used multiple times (-f, -l, etc...)'
@@ -974,6 +1037,7 @@ if __name__=='__main__':
   printing = False
   archived = []
   frontiers = []
+  polygons = []
   tracks = []
   logs = []
   excludeCaches = None
@@ -982,7 +1046,7 @@ if __name__=='__main__':
   print sys.argv[1:]
   
   try:
-    opts, args = getopt.getopt(sys.argv[1:],"hpg:c:f:l:x:z:")
+    opts, args = getopt.getopt(sys.argv[1:],"hpa:c:f:g:i:l:x:z:")
   except getopt.GetoptError:
     usage()
 
@@ -991,21 +1055,37 @@ if __name__=='__main__':
     
   for opt, arg in opts:
     if opt == '-h':
+      # help
       usage()
     elif opt == "-p":
+      # generate a image for printing (no animation)
       printing = True
     elif opt == "-c":
+      # choos the main background color (black ou white)
       color = arg
+
+    elif opt == "-a":
+      # load a file of archived caches
+      archived.append(arg)
     elif opt in ("-g", "--geocacher"):
+      # name of the geocacher
       geocacher = arg
     elif opt in ("-f", "--frontiers"):
+      # load GPX file to display a frontier or coast
       frontiers.append(arg)
+    elif opt in ("-i", "--inside"):
+      # display only geocaches inside the given GPX polygon
+      polygons.append(arg)
     elif opt in ("-z", "--zone"):
+      # use the template to display the named zone (scale and offset)
       currentZone = arg
     elif opt in ("-x", "--exclude"):
+      # exclude a list of caches (when the region is wrong)
       excludeCaches = arg
     elif opt in ("-l", "--logs"):
+      # load a file containing the logs of a cacher to display the moves
       logs.append(arg)
+      
   print archived
   print frontiers
   
@@ -1017,13 +1097,20 @@ if __name__=='__main__':
         excludedCaches.append(x.strip())
   print excludedCaches
 
+  for file in frontiers:
+    myAnimation.loadFromGPX(file,status=FRONTIER)
+
+  for file in polygons:
+    myAnimation.loadFromGPX(file,status=POLYGON)
+
   for file in args:
     print "Loading file:", file
     myAnimation.loadFromFile(file,geocacher)
 
-  for file in frontiers:
-    myAnimation.loadFromGPX(file,status=FRONTIER)
-
+  for file in archived:
+    print "Loading archived file", file
+    myAnimation.loadFromFile(file,geocacher,status=ARCHIVED)
+    
   for file in logs:
     myAnimation.loadLogsFromFile(file)
 
