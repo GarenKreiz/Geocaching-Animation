@@ -62,13 +62,9 @@ class GPXWaypoint:
       self.attribs={}
    def from_string(self, c):
       f = re.search("<(trk|w)pt(?P<opts>.*?)>(?P<content>.*?)", c, re.DOTALL+re.I)
-      # print "Wpt"
       if not f: return 1
       c = re.compile(".*?=\".*?\"", re.DOTALL)
-      # print c
-      # print f.group("opts")
       opts = re.findall(re.compile(".*?=\".*?\"", re.DOTALL), f.group("opts"))
-      # print "Wpt from string next"
 
       for o in opts:
          n, v = o.split("=")    
@@ -108,44 +104,32 @@ class GPXParser:
       self.file = filename    
       f = open(filename, "r")
       content = f.read(); f.close()
-      # print "Parsing start"
       self.init_from_string(content)
-      # print "Parsing end"
  
    def init_from_string(self, c):
       self.trcks, self.wpts, self.rts = [], [], []    
       gpx = re.search("<gpx(?P<opts>.*?)>(?P<content>.*?)</gpx>", c,re.DOTALL+re.I)
-      # print "Init from string"
       if not gpx: return 1
-      # print gpx.group("opts")
       #gpx_opts = re.findall(re.compile(".*?=\".*?\"", re.DOTALL), gpx.group("opts"))
-      #print "Init from string next"
       #for gopt in gpx_opts:
       #   n, v = gopt.split("=")    
       #   v = v.strip()
       #   if v.startswith("\"") and v.endswith("\""): v = v[1:-1]
       #   self.attribs[n.strip()] = v
 
-      # print gpx
-      # print gpx.group("content")
-      # print "Init from string next"
       # Waypoints
       gpx_wpts = re.findall(re.compile("<wpt.*?>.*?</wpt>", re.DOTALL+re.I), gpx.group("content"))
-      # print "Init from string next"
-      # print gpx_wpts
       for wp in gpx_wpts:
          wpt = GPXWaypoint()
          wpt.from_string(wp)
          self.wpts.append(wpt)
  
-      # print "Init from string next"
       # Tracks   
       gpx_trks = re.findall(re.compile("<trk.*?>.*?</trk>", re.DOTALL+re.I), gpx.group("content"))   
       for trk in gpx_trks:
          t = GPXTrack()
          t.from_string(trk)
          self.trcks.append(t)
-      # print "Init from string end"
  
 if __name__=='__main__':
    import sys

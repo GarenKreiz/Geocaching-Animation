@@ -9,6 +9,7 @@
 #
 # Example:
 #   http://www.youtube.com/watch?v=dQEG5hvDyGs
+#
 # Requires:
 #   Python environment (tested with version 2.6.5, 2.7.10)
 #   GPXParser module from http://pinguin.uni-psych.gwdg.de/~ihrke/wiki/index.php/GPXParser.py
@@ -141,7 +142,7 @@ zones = {
 
 texts = [
   #(u"génération: Garenkreiz", 35, 95),
-  #(u"génération: Garenkreiz (CC BY-NC-SA)", 35, 625),
+  (u"génération: Garenkreiz (CC BY-NC-SA)", 35, 625),
   #(u"licence: CC BY-NC-SA", 35, 655),
   #(u"musique: Winter Is Coming (Andrey Avkhimovich)", 35, 650),
   #(u"musique: Pedro Collares (Gothic)", 35,80),
@@ -157,16 +158,16 @@ logos = [
   #('Logo_2.png',1035,480, 224, 224),
   #('Logo_3.png',1053,272, 224,224),
   #('Logo_Loir-et-Cher.jpg',1035,20, 224, 224),
-  ('Logo_Breizh_Geocacheurs.png',1035,480, 224, 224),
+  #'Logo_Breizh_Geocacheurs.png',1035,480, 224, 224),
   #('Logo_Geocaching_16_years.png',1035,272, 224,224),
-  ('Logo_Geocaching_15_years.png',1053,272, 224,224),
+  #'Logo_Geocaching_15_years.png',1053,272, 224,224),
   #('Plaque_15_ans_white.png',30,440, 240, 200),
-  ('Plaque_15_ans_black.png',30,440, 240, 200),
+  #'Plaque_15_ans_black.png',30,440, 240, 200),
   ]
 
 # emphasize some caches
 showCaches = [
-  ("GC6GFKY",10,"green"),
+  #("GC6GFKY",10,"green"),
   #("GC39D0",4,"yellow"),
   ]
 
@@ -177,7 +178,7 @@ noText = False          # drawing text and logos
 # can be set to another specific date 
  
 lastDay = time.time() # today
-lastDay = int(time.mktime(time.strptime("2016-08-02", "%Y-%m-%d")))
+# lastDay = int(time.mktime(time.strptime("2016-08-02", "%Y-%m-%d")))
 # lastDay = int(time.mktime(time.strptime("2018-02-03", "%Y-%m-%d")))
 
 # size of output image : 720p or 1080p (HD)
