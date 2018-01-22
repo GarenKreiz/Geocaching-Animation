@@ -25,11 +25,12 @@
 #
 # Additionnal parameters in the code:
 #   - zones      : definition of the zone to display (region, country, ...)
-#   - logoImages : to decorate the images
+#   - logos      : to decorate the images
+#   - texts      : to add some texts like music attribution or copyright
 #   - showCaches : to emphasize special caches (colored circle)
 #   - bigPixels  : to choose the size of the dots for caches
 #   - noText     : don't display any text
-#   - today      : last day of the animation period
+#   - lastDay    : last day of the animation period
 #   - miscellanous sizes for text, images, etc...
 #   
 # Notes:
@@ -65,34 +66,67 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-# zone to display (can be changed with the -z argument)
+####################################################################
+# data structures for customizing the images and videos
+#
+
+# default zone to display (can be changed with the -z argument)
 # begins with _ if not a real country used in the geocache description
 currentZone = 'France'
 
 # bounding rectangle of the zone (country or state)
 
 zones = {
-  '_World_':  ("Evolution of geocaching",
+  '_World_':  (u"Evolution du géocaching dans les territoires français",
+               90.00,      # north
+               -90.00,     # south
+               -180.0  ,   # west
+               180.0,      # east 
+               (3.5,4.4),  # scale : adapt to fit to video size and preserve X/Y ratio
+               (10,-10)),    # offset for x,y coordinates
+  '_World1_':  ("Evolution of geocaching",
                55.08917,   # north
                30.33333,   # south
                -120.150,   # west
-               20.5600,    # east 
+               20.5600,    # east
                (0.15,0.3), # scale : adapt to fit to video size and preserve X/Y ratio
                (200,10)),  # offset for x,y coordinates
-  'France' :  (u"Evolution du géocaching en France",
+
+  'Finland':  ("Evolution of geocaching in Finland",
+               71.0,
+               59.0,
+               19.0,
+               32.0,
+               (25,55),
+               (200,30)),
+  'France' :  (u"16 ans de géocaching en France métropolitaine",
                51.08917,   # dunes du Perroquet, Bray-Dunes près de Zuydcoote
                41.33333,   # cap di u Beccu, Iles Lavezzi, Corse
                -5.15083,   # phare de Nividic, Ouessant
                9.56000,    # plage Fiorentine, Alistro, Corse
-               (50,70),
-               (200,10)),
-  '_Bretagne_' : (u"GC6GFKY - 15 ans de géocaching en Bretagne",
+               (48,64),
+               (200,80)),
+  '_Bretagne_' : (u"Evolution du géocaching en Bretagne",
                48.92,      # Roches Douvres?
                47.24,      # Pointe sud de Belle Ile?
                -5.17,      # Phare de Nividic?
                -0.8,       # Sud du péage de la Gravelle?
                (246,325),
                (20,50)),
+  '_Centre_' : (u"Evolution du géocaching en région Centre",
+               49,      # Roches Douvres?
+               46,      # Pointe sud de Belle Ile?
+               -1,      # Phare de Nividic?
+               4,       # Sud du péage de la Gravelle?
+               (150,210),
+               (40,30)),
+  '_Loir-et-Cher_' : (u"Evolution du géocaching en Loir-et-Cher",
+               48.2,      # Roches Douvres?
+               47.18,      # Pointe sud de Belle Ile?
+               0.5,      # Phare de Nividic?
+               2.4,       # Sud du péage de la Gravelle?
+               (435,609),
+               (70,-20)),
   '_Europe_': ("Geocaching evolution in Europe",
                70.0,
                27.0,
@@ -102,19 +136,49 @@ zones = {
                (200,10)),
   }
 
+# texts for write on each frame of the animation (attribution for example)
+#    (text, position x, position y)
+
+texts = [
+  #(u"génération: Garenkreiz", 35, 95),
+  #(u"génération: Garenkreiz (CC BY-NC-SA)", 35, 625),
+  #(u"licence: CC BY-NC-SA", 35, 655),
+  #(u"musique: Winter Is Coming (Andrey Avkhimovich)", 35, 650),
+  #(u"musique: Pedro Collares (Gothic)", 35,80),
+  #(u"musique: ProleteR (April Showers)", 35,80),
+  #(u"musique: Söd'Araygua (Somni Cristallitzat)", 35,80),
+  ]
+
 # additionnal pictures to draw on each frame of the animation
 #    (image file, position x, position y, size x, size y
 
-logoImages = [
-  ('Logo_Breizh_Geocacheurs.png',1035,20, 224, 224),
+logos = [
+  #('Logo_1.png',1035,20, 224, 224),
+  #('Logo_2.png',1035,480, 224, 224),
+  #('Logo_3.png',1053,272, 224,224),
+  #('Logo_Loir-et-Cher.jpg',1035,20, 224, 224),
   ('Logo_Breizh_Geocacheurs.png',1035,480, 224, 224),
+  #('Logo_Geocaching_16_years.png',1035,272, 224,224),
   ('Logo_Geocaching_15_years.png',1053,272, 224,224),
+  #('Plaque_15_ans_white.png',30,440, 240, 200),
+  ('Plaque_15_ans_black.png',30,440, 240, 200),
   ]
 
+# emphasize some caches
 showCaches = [
   ("GC6GFKY",10,"green"),
+  #("GC39D0",4,"yellow"),
   ]
 
+bigPixels = 1           # draw big pixels : 0, 1, 2 ,3
+noText = False          # drawing text and logos
+
+# last day of displayed period
+# can be set to another specific date 
+ 
+lastDay = time.time() # today
+lastDay = int(time.mktime(time.strptime("2016-08-02", "%Y-%m-%d")))
+# lastDay = int(time.mktime(time.strptime("2018-02-03", "%Y-%m-%d")))
 
 # size of output image : 720p or 1080p (HD)
 videoRes = 720
@@ -122,10 +186,6 @@ if videoRes == 720:
   xSize,ySize=1280,720     # 720p
 else:
   xSize,ySize=1120,1080    # HD 1080p
-
-
-bigPixels = 1           # draw big pixels (2x2), otherwise (1x1)
-noText = False          # drawing text and logos
 
 imagesDir = 'Images/'    # directory of generated images
 
@@ -137,6 +197,7 @@ EVENT       = 3
 TRACK       = 4  # visit to cache location by the chosen geocacher
 FRONTIER    = 5  # drawing natural or articial topographic features
 PLACED      = 6  # cache placed by geocacher
+POLYGON     = 7  # polygon to select a drawing area
 
 # searching for a string pattern in a previously opened file
 
@@ -146,7 +207,6 @@ def fileFindNext(f,pattern):
   while l <> '' and not re.search(pattern,l, re.IGNORECASE):
     l = f.readline()
   return l
-
 
 # compute distance between two points on Earth surface
 
@@ -172,7 +232,28 @@ def getDistance(lat1, lng1, lat2, lng2):
   distance = circ * angle / (2.0 * math.pi)
   return distance
 
+def isInsideZone(x, y, points):
+    """
+    Return True if a coordinate (x, y) is inside a polygon defined by
+    a list of verticies [(x1, y1), (x2, x2), ... , (xN, yN)].
 
+    Reference: http://www.ariel.com.au/a/python-point-int-poly.html
+    """
+    n = len(points)-1
+    inside = False
+    p1x, p1y = points[0].xy()
+    for i in range(1, n + 1):
+        p2x, p2y = points[i % n].xy()
+        if y > min(p1y, p2y):
+            if y <= max(p1y, p2y):
+                if x <= max(p1x, p2x):
+                    if p1y != p2y:
+                        xinters = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
+                    if p1x == p2x or x <= xinters:
+                        inside = not inside
+        p1x, p1y = p2x, p2y
+    return inside
+include = True
 class GCAnimation:
 
   def __init__(self,currentZone,printing=False, backgroundColor="black", excludedCaches=[]):
@@ -188,6 +269,7 @@ class GCAnimation:
     self.title = title
     
     self.frontiers = []
+    self.polygons = []
     self.geocacher = None
     self.printing = printing
     self.color = backgroundColor
@@ -198,10 +280,9 @@ class GCAnimation:
     if self.color == "white":
       self.background, self.foreground = "white","black"
       self.foreground = "black"
-      logoImages.append(('Plaque_15_ans_black.png',30,440, 240, 200))
     else:
-      logoImages.append(('Plaque_15_ans_white.png',30,440, 240, 200))
       self.background, self.foreground = "black", "white"
+      #logos.append(('Logo_bas_gauche_black.png',30,440, 240, 200))
 
     if os.name <> 'posix' or sys.platform == 'cygwin' or sys.platform == "linux2":
       # Windows fonts
@@ -375,7 +456,7 @@ class GCAnimation:
     return 0
 
 
-  def loadFromFile(self,file,geocacher=None):
+  def loadFromFile(self,file,geocacher=None,status=ACTIVE):
 
     if geocacher:
       if re.search("\|",geocacher):
@@ -384,10 +465,10 @@ class GCAnimation:
         self.geocacher = geocacher
       logoGeocacher = 'Avatar_'+self.geocacher+'.png'
       if os.path.isfile(logoGeocacher):
-        logoImages.append((logoGeocacher,1035,20, 224, 224))
+        logos.append((logoGeocacher,1035,20, 224, 224))
       
     if file[-4:].lower() == '.gpx':
-      self.loadFromGPX(file,status=ACTIVE)
+      self.loadFromGPX(file,status=status)
     else:
       self.loadFromCSV(file,geocacher)
 
@@ -501,10 +582,11 @@ class GCAnimation:
       fields = re.sub('","','|',fields[1:-1])    # getting rid of all double quotes used by GSAK
       fields = string.split(fields,"|")
       try:
-        (name,cacheType,note,last4logs,dateLastLog,wpName,placedBy,datePlaced,dateLastFound,found,country,latitude,longitude,status,url,dateFoundByMe,ownerId) = fields
+        (name,cacheType,note,last4logs,dateLastLog,wpName,placedBy,datePlaced,dateLastFound,found,country,latitude,longitude,status,url,dateFoundByMe,ownerId) = fields[0:17]
       except Exception, msg:
         print msg, fields
-        break
+        break 
+      
       if name == "Code GC" or name == "Code" or name in self.excludedCaches:
         # first line of headers in export file of GSAK
         # tested for French and English
@@ -514,8 +596,28 @@ class GCAnimation:
         print '!!! Pb cache outside',currentZone,':',name
         l = fInput.readline()
         continue
+
+      lat, lon = float(latitude), float(longitude)
+
+      if include and self.polygons <> []:
+        # find if cache is inside one of the polygons
+        inside = False
+        p = 0 
+        while not inside and p < len(self.polygons):
+          (latMin, latMax, lonMin, lonMax) = self.polygons[p].bbox()
+          if lat >= latMin and lat <= latMax and lon >= lonMin and lon <= lonMax:
+            inside = isInsideZone(lat, lon, self.polygons[p].wpts)  
+          p += 1
+        if not inside:
+          #print'!!! Outside of zone polygon', name, latitude, longitude
+          #print "= NOK =",l
+          l = fInput.readline()
+          continue
+
+      print "= OK =",l,
+
       guid = re.sub('.*guid=','',url)
-      self.guids[guid] = (name,float(latitude),float(longitude))
+      self.guids[guid] = (name,latitude,longitude)
       if cacheType == "Event Cache" or cacheType == "Cache In Trash Out Event":
         status = EVENT                     # Event cache
       elif status == 'X':
@@ -528,7 +630,7 @@ class GCAnimation:
       lat,lon = float(latitude),float(longitude)
       if (lat > self.maxLat) or (lat < self.minLat) or \
          (lon > self.maxLon) or (lon < self.minLon) or (currentZone[0] <> '_' and country <> currentZone and country <> ''):
-        print '!!! Pb point outside the drawing zone:',name
+        print '!!! Pb point outside the drawing zone:',name, lat, ' not in ', self.minLat, self.maxLat, self.minLon, self.maxLon
         l = fInput.readline()
         continue
 
@@ -574,15 +676,21 @@ class GCAnimation:
     print '  Waypoints found :',len(myGPX.wpts)
     print '  Tracks found :',len(myGPX.trcks)
     
-    if status == FRONTIER:
+    if status == FRONTIER or status == POLYGON:
       for t in myGPX.trcks:
-        self.frontiers.append(t)
+        for s in t.segs:
+            self.frontiers.append(s)
+            if status == POLYGON:
+              self.polygons.append(s)
       return
     
     self.foundWpts = {}
     self.nAddedCaches = 0
       
     for p in myGPX.wpts:
+      name =  p.attribs['name']
+      if (name[0:2] <> 'GC'):
+          continue
       lat,lon = p.lat,p.lon
 
       try:
@@ -591,13 +699,15 @@ class GCAnimation:
         country = ''
 
       if (lat > self.maxLat) or (lat < self.minLat) or \
-         (lon > self.maxLon) or (lon < self.minLon) or (country <> 'France' and country <> ''):
-        print '!!! Pb point outside the drawing area :', p.attribs['name'], lat, lon
+         (lon > self.maxLon) or (lon < self.minLon):
+        print '!!! Pb point outside the drawing area :', p.attribs['name'], lat, lon, ' not in ', self.minLat, self.maxLat, self.minLon, self.maxLon
         continue
 
-      name =  p.attribs['name']
       strTime = p.attribs['time']
-      cacheTime = int(time.mktime(time.strptime(strTime, "%Y-%m-%dT%H:%M:%SZ")))
+      strTime = re.sub('\..*','',strTime)
+      strTime = re.sub('Z$','',strTime)
+      cacheTime = int(time.mktime(time.strptime(strTime, "%Y-%m-%dT%H:%M:%S")))
+
       if p.attribs['type'] == 'Geocache|Event Cache' or p.attribs['type'] == 'Geocache|Cache In Trash Out Event':
         cacheStatus = EVENT
       else:
@@ -741,8 +851,6 @@ class GCAnimation:
     except:
       print 'Images in directory ' + imagesDir
 
-    # last day of displayed period
-    today = time.time() - 3600*24*9
 
     self.imResult = Image.new('RGB',(self.LX,self.LY),self.background)
 
@@ -761,7 +869,7 @@ class GCAnimation:
     self.imResult.save(imagesDir+'Geocaching_'+currentZone+'_frontieres.png',"PNG")
 
     if not noText:
-      for (logoImage,logoX,logoY, sizeX, sizeY) in logoImages:
+      for (logoImage,logoX,logoY, sizeX, sizeY) in logos:
         logo = Image.open(logoImage)
         logo = logo.convert("RGBA")
         if logo.size[0] > sizeX or logo.size[1] > sizeY:
@@ -769,18 +877,13 @@ class GCAnimation:
         self.imResult.paste(logo,(logoX,logoY),logo)
 
     if not noText:
-      #imDraw.text((30,5),   u"Géocaches en France"                      , font=self.fontArial     , fill="red")
-      imDraw.text((30,15),   self.title                      , font=self.fontArial     , fill="green")
+      imDraw.text((30,15),   self.title                      , font=self.fontArial     , fill="red")
       if self.color == "white":
-        imDraw.text((35,85),  u"génération: Garenkreiz"                     , font=self.fontArialSmall, fill=(254,254,254))
+        textColor = "black"
       else:
-        imDraw.text((35,85),  u"génération: Garenkreiz"                     , font=self.fontArialSmall, fill=(1,1,1))
-      #imDraw.text((36,110), u"licence: CC BY-NC-SA"                       , font=self.fontArialSmall, fill="red")
-      #imDraw.text((35,60),  u"musique: Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
-
-      #imDraw.text((35,80),  u"musique: Pedro Collares (Gothic)", font=self.fontArialSmall, fill="red")
-      #imDraw.text((35,80),  u"musique: ProleteR (April Showers)", font=self.fontArialSmall, fill="red")
-      #imDraw.text((35,80),  u"musique: Söd'Araygua (Somni Cristallitzat)", font=self.fontArialSmall, fill="red")
+        textColor = "red"
+      for (t,x,y) in texts:
+        imDraw.text((x,y), t, font=self.fontArialSmall, fill=textColor)
 
     # misc counters
     nDays = 0
@@ -813,13 +916,17 @@ class GCAnimation:
 
     if len(cacheTimes) == 0:
       return
+
+    # generate the first image without any cache
+    self.generateFlash(self.LX,self.LY,nDays,cacheTimes[0])
+
     # initialize the time of the current frame to the first date
     previousTime = cacheTimes[0]
 
     for cacheTime in cacheTimes:
       # don't display future dates corresponding to future events
-      if cacheTime > today:
-          cacheTime = today
+      if cacheTime > lastDay:
+          cacheTime = lastDay
           break
 
       dArchived = 0
@@ -905,7 +1012,7 @@ class GCAnimation:
     	self.generateFlash(self.LX,self.LY,i,cacheTime)
 
     if self.printing:
-      cacheTime = today
+      cacheTime = lastDay
     self.generateText(self.imResult,cacheTime)
     draw = ImageDraw.Draw(self.imResult)
     for (cache,size,color) in showCaches:
@@ -933,17 +1040,20 @@ class GCAnimation:
 
     if not printing:
       fOut = open(imagesDir+'listPNG.txt','w')
-      # fill some images at the end, synchronising with music 
+      for i in range(0,50):
+        # fill some images at the beginning
+        fOut.write('map0000.png\n')
       for i in range(0,nDays+1):
         fOut.write('map%04d.png\n'%i)
-      for i in range(nDays+1,max(nDays+100,5400)):
+      for i in range(nDays+1,nDays+100):
+        # some still frames to finish the video
         fOut.write('map%04d.png\n'%nDays)
       fOut.close()
     
 if __name__=='__main__':
   
   def usage():
-    print 'Usage: python generationAnimation.py <active_caches.gpx> [ ... <archived_caches.gpx> ]'
+    print 'Usage: python generationAnimation.py <active_caches.gpx>'
     print 'Usage: python generationAnimation.py <gsak_extract.csv> [ <name of geocacher> ]'
     print '-g <geocacher name> : display activity of the geocacher'
     print '-f <frontier gpx file> : display the frontiers or coastlines'
@@ -952,6 +1062,7 @@ if __name__=='__main__':
     print '-x <file of cache ids> : exclude the caches from the animation'
     print '-p : printing'
     print '-c <color>: background color (white or black)'
+    print '-a <archived_caches.gpx>: list of cache that are now archived'
     print '<caches file> : CSV table of caches'
     print ''
     print 'Note : some arguments can be used multiple times (-f, -l, etc...)'
@@ -964,6 +1075,7 @@ if __name__=='__main__':
   printing = False
   archived = []
   frontiers = []
+  polygons = []
   tracks = []
   logs = []
   excludeCaches = None
@@ -972,7 +1084,7 @@ if __name__=='__main__':
   print sys.argv[1:]
   
   try:
-    opts, args = getopt.getopt(sys.argv[1:],"hpg:c:f:l:x:z:")
+    opts, args = getopt.getopt(sys.argv[1:],"hpa:c:f:g:i:l:x:z:")
   except getopt.GetoptError:
     usage()
 
@@ -981,21 +1093,36 @@ if __name__=='__main__':
     
   for opt, arg in opts:
     if opt == '-h':
+      # help
       usage()
     elif opt == "-p":
+      # generate a image for printing (no animation)
       printing = True
     elif opt == "-c":
+      # choos the main background color (black ou white)
       color = arg
+    elif opt == "-a":
+      # load a file of archived caches
+      archived.append(arg)
     elif opt in ("-g", "--geocacher"):
+      # name of the geocacher
       geocacher = arg
     elif opt in ("-f", "--frontiers"):
+      # load GPX file to display a frontier or coast
       frontiers.append(arg)
+    elif opt in ("-i", "--inside"):
+      # display only geocaches inside the given GPX polygon
+      polygons.append(arg)
     elif opt in ("-z", "--zone"):
+      # use the template to display the named zone (scale and offset)
       currentZone = arg
     elif opt in ("-x", "--exclude"):
+      # exclude a list of caches (when the region is wrong)
       excludeCaches = arg
     elif opt in ("-l", "--logs"):
+      # load a file containing the logs of a cacher to display the moves
       logs.append(arg)
+      
   print archived
   print frontiers
   
@@ -1007,13 +1134,20 @@ if __name__=='__main__':
         excludedCaches.append(x.strip())
   print excludedCaches
 
+  for file in frontiers:
+    myAnimation.loadFromGPX(file,status=FRONTIER)
+
+  for file in polygons:
+    myAnimation.loadFromGPX(file,status=POLYGON)
+
   for file in args:
     print "Loading file:", file
     myAnimation.loadFromFile(file,geocacher)
 
-  for file in frontiers:
-    myAnimation.loadFromGPX(file,status=FRONTIER)
-
+  for file in archived:
+    print "Loading archived file", file
+    myAnimation.loadFromFile(file,geocacher,status=ARCHIVED)
+    
   for file in logs:
     myAnimation.loadLogsFromFile(file)
 

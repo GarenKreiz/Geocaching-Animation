@@ -5,6 +5,13 @@ class GPXTrack:
    def __init__(self):
       self.attribs = {}
       self.wpts = []
+      self.segs = []
+      self._bbox_ = None
+      
+   def bbox(self, latMin=None, latMax=None, lonMin=None,lonMax=None):
+     if latMin == None:
+       return self._bbox_
+     self._bbox_ = (latMin, latMax, lonMin, lonMax)
  
    def from_string(self, c):
       f = re.search("<trk(?P<opts>.*?)>(?P<content>.*?)</trk>", c, re.DOTALL+re.I)   
@@ -23,20 +30,29 @@ class GPXTrack:
          self.attribs[a[0].strip()] = a[1].strip()    
  
       for seg in segs:
-         points = re.findall(re.compile("<trkpt.+?>.*?</trkpt>", re.DOTALL+re.I), seg)   
-         for p in points:
-            w = GPXWaypoint()    
-            w.from_string(p.strip())
+         newSeg = GPXTrack()
+         index = seg.find("<trkpt", 0)
+         latMin, latMax = 100.0, -100.0
+         lonMin, lonMax = 181.0, -181.0
+         while (index <> -1):
+            indexFin = seg.index(">",index)
+            w = GPXWaypoint()
+            w.from_string(seg[index:indexFin+1]) 
             self.wpts.append(w)
+            newSeg.wpts.append(w)
+            x,y = w.xy()
+            latMin, latMax = min(x,latMin), max(x, latMax)
+            lonMin, lonMax = min(y,lonMin), max(y, lonMax)
+            index = seg.find("<trkpt", indexFin)
+         newSeg.bbox(latMin,latMax,lonMin,lonMax)
+         self.segs.append(newSeg)
  
    def __repr__(self):
       r = "Track:   "+self.attribs.__repr__()+"\nPoints: "
       for w in self.wpts:
          r += w.__repr__() 
       return r+"\n"   
- 
- 
- 
+
 class GPXWaypoint:
    #lon = 0 # -180.0 - +180.0
    #lat = 0 # -90.0 - +90.0
@@ -45,7 +61,7 @@ class GPXWaypoint:
       self.lon, self.lat = lon, lat 
       self.attribs={}
    def from_string(self, c):
-      f = re.search("<(trk|w)pt(?P<opts>.*?)>(?P<content>.*?)</(trk|w)pt>", c, re.DOTALL+re.I)
+      f = re.search("<(trk|w)pt(?P<opts>.*?)>(?P<content>.*?)", c, re.DOTALL+re.I)
       # print "Wpt"
       if not f: return 1
       c = re.compile(".*?=\".*?\"", re.DOTALL)
@@ -68,7 +84,8 @@ class GPXWaypoint:
       return "WP (lon="+str(self.lon)+", lat="+str(self.lat)+")\n  Attributes: "+self.attribs.__repr__()+"\n"
    def __repr__(self):
       return self.__str__()
- 
+   def xy(self):
+       return(self.lat,self.lon)
  
  
  
