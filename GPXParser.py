@@ -144,7 +144,6 @@ class GPXParser:
       for trk in gpx_trks:
          t = GPXTrack()
          t.from_string(trk)
-         print len(t.segs)
          self.trcks.append(t)
       # print "Init from string end"
  
