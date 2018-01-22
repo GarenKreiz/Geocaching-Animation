@@ -25,11 +25,12 @@
 #
 # Additionnal parameters in the code:
 #   - zones      : definition of the zone to display (region, country, ...)
-#   - logoImages : to decorate the images
+#   - logos      : to decorate the images
+#   - texts      : to add some texts like music attribution or copyright
 #   - showCaches : to emphasize special caches (colored circle)
 #   - bigPixels  : to choose the size of the dots for caches
 #   - noText     : don't display any text
-#   - today      : last day of the animation period
+#   - lastDay    : last day of the animation period
 #   - miscellanous sizes for text, images, etc...
 #   
 # Notes:
@@ -65,27 +66,46 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-# zone to display (can be changed with the -z argument)
+####################################################################
+# data structures for customizing the images and videos
+#
+
+# default zone to display (can be changed with the -z argument)
 # begins with _ if not a real country used in the geocache description
 currentZone = 'France'
 
 # bounding rectangle of the zone (country or state)
 
 zones = {
-  '_World_':  ("Evolution of geocaching",
+  '_World_':  (u"Evolution du géocaching dans les territoires français",
+               90.00,      # north
+               -90.00,     # south
+               -180.0  ,   # west
+               180.0,      # east 
+               (3.5,4.4),  # scale : adapt to fit to video size and preserve X/Y ratio
+               (10,-10)),    # offset for x,y coordinates
+  '_World1_':  ("Evolution of geocaching",
                55.08917,   # north
                30.33333,   # south
                -120.150,   # west
-               20.5600,    # east 
+               20.5600,    # east
                (0.15,0.3), # scale : adapt to fit to video size and preserve X/Y ratio
                (200,10)),  # offset for x,y coordinates
-  'France' :  (u"Evolution du géocaching en France",
+
+  'Finland':  ("Evolution of geocaching in Finland",
+               71.0,
+               59.0,
+               19.0,
+               32.0,
+               (25,55),
+               (200,30)),
+  'France' :  (u"16 ans de géocaching en France métropolitaine",
                51.08917,   # dunes du Perroquet, Bray-Dunes près de Zuydcoote
                41.33333,   # cap di u Beccu, Iles Lavezzi, Corse
                -5.15083,   # phare de Nividic, Ouessant
                9.56000,    # plage Fiorentine, Alistro, Corse
-               (50,70),
-               (200,10)),
+               (48,64),
+               (200,80)),
   '_Bretagne_' : (u"Evolution du géocaching en Bretagne",
                48.92,      # Roches Douvres?
                47.24,      # Pointe sud de Belle Ile?
@@ -116,19 +136,46 @@ zones = {
                (200,10)),
   }
 
+# texts for write on each frame of the animation (attribution for example)
+#    (text, position x, position y)
+
+texts = [
+  #(u"génération: Garenkreiz", 35, 95),
+  (u"génération: Garenkreiz (CC BY-NC-SA)", 35, 625),
+  #(u"licence: CC BY-NC-SA", 35, 655),
+  #(u"musique: Winter Is Coming (Andrey Avkhimovich)", 35, 650),
+  #(u"musique: Pedro Collares (Gothic)", 35,80),
+  #(u"musique: ProleteR (April Showers)", 35,80),
+  #(u"musique: Söd'Araygua (Somni Cristallitzat)", 35,80),
+  ]
+
 # additionnal pictures to draw on each frame of the animation
 #    (image file, position x, position y, size x, size y
 
-logoImages = [
+logos = [
+  #('Logo_1.png',1035,20, 224, 224),
+  #('Logo_2.png',1035,480, 224, 224),
+  #('Logo_3.png',1053,272, 224,224),
   ('Logo_Loir-et-Cher.jpg',1035,20, 224, 224),
   #('Logo_Breizh_Geocacheurs.png',1035,480, 224, 224),
   ('Logo_Geocaching_16_years.png',1035,272, 224,224),
   ]
 
+# emphasize some caches
 showCaches = [
-  ("GC39D0",5,"cyan"),
+  #("GC6GFKY",10,"green"),
+  #("GC39D0",4,"yellow"),
   ]
 
+bigPixels = 1           # draw big pixels : 0, 1, 2 ,3
+noText = False          # drawing text and logos
+
+# last day of displayed period
+# can be set to another specific date 
+ 
+lastDay = time.time() # today
+# lastDay = int(time.mktime(time.strptime("2016-08-02", "%Y-%m-%d")))
+# lastDay = int(time.mktime(time.strptime("2018-02-03", "%Y-%m-%d")))
 
 # size of output image : 720p or 1080p (HD)
 videoRes = 720
@@ -136,10 +183,6 @@ if videoRes == 720:
   xSize,ySize=1280,720     # 720p
 else:
   xSize,ySize=1120,1080    # HD 1080p
-
-
-bigPixels = 2           # draw big pixels (2x2), otherwise (1x1)
-noText = False          # drawing text and logos
 
 imagesDir = 'Images/'    # directory of generated images
 
@@ -161,7 +204,6 @@ def fileFindNext(f,pattern):
   while l <> '' and not re.search(pattern,l, re.IGNORECASE):
     l = f.readline()
   return l
-
 
 # compute distance between two points on Earth surface
 
@@ -235,10 +277,9 @@ class GCAnimation:
     if self.color == "white":
       self.background, self.foreground = "white","black"
       self.foreground = "black"
-      # logoImages.append(('Plaque_15_ans_black.png',30,440, 240, 200))
     else:
       self.background, self.foreground = "black", "white"
-      #logoImages.append(('Logo_bas_gauche_black.png',30,440, 240, 200))
+      #logos.append(('Logo_bas_gauche_black.png',30,440, 240, 200))
 
     if os.name <> 'posix' or sys.platform == 'cygwin' or sys.platform == "linux2":
       # Windows fonts
@@ -421,7 +462,7 @@ class GCAnimation:
         self.geocacher = geocacher
       logoGeocacher = 'Avatar_'+self.geocacher+'.png'
       if os.path.isfile(logoGeocacher):
-        logoImages.append((logoGeocacher,1035,20, 224, 224))
+        logos.append((logoGeocacher,1035,20, 224, 224))
       
     if file[-4:].lower() == '.gpx':
       self.loadFromGPX(file,status=status)
@@ -634,9 +675,6 @@ class GCAnimation:
     
     if status == FRONTIER or status == POLYGON:
       for t in myGPX.trcks:
-        print len(t.segs)
-        # print t.segs[0]
-        # self.frontiers.append(t)
         for s in t.segs:
             self.frontiers.append(s)
             if status == POLYGON:
@@ -663,7 +701,10 @@ class GCAnimation:
         continue
 
       strTime = p.attribs['time']
-      cacheTime = int(time.mktime(time.strptime(strTime, "%Y-%m-%dT%H:%M:%SZ")))
+      strTime = re.sub('\..*','',strTime)
+      strTime = re.sub('Z$','',strTime)
+      cacheTime = int(time.mktime(time.strptime(strTime, "%Y-%m-%dT%H:%M:%S")))
+
       if p.attribs['type'] == 'Geocache|Event Cache' or p.attribs['type'] == 'Geocache|Cache In Trash Out Event':
         cacheStatus = EVENT
       else:
@@ -807,10 +848,6 @@ class GCAnimation:
     except:
       print 'Images in directory ' + imagesDir
 
-    # today as last day of displayed period
-    # can be set to another specific date int(time.mktime(time.strptime("2016-08-02", "%Y-%m-%d")))
- 
-    today = time.time()
 
     self.imResult = Image.new('RGB',(self.LX,self.LY),self.background)
 
@@ -829,7 +866,7 @@ class GCAnimation:
     self.imResult.save(imagesDir+'Geocaching_'+currentZone+'_frontieres.png',"PNG")
 
     if not noText:
-      for (logoImage,logoX,logoY, sizeX, sizeY) in logoImages:
+      for (logoImage,logoX,logoY, sizeX, sizeY) in logos:
         logo = Image.open(logoImage)
         logo = logo.convert("RGBA")
         if logo.size[0] > sizeX or logo.size[1] > sizeY:
@@ -837,18 +874,13 @@ class GCAnimation:
         self.imResult.paste(logo,(logoX,logoY),logo)
 
     if not noText:
-      #imDraw.text((30,5),   u"Géocaches en France"                      , font=self.fontArial     , fill="red")
       imDraw.text((30,15),   self.title                      , font=self.fontArial     , fill="red")
       if self.color == "white":
-        imDraw.text((35,85),  u"génération: Garenkreiz"                     , font=self.fontArialSmall, fill=(254,254,254))
+        textColor = "black"
       else:
-        imDraw.text((35,85),  u"génération: Garenkreiz"                     , font=self.fontArialSmall, fill=(1,1,1))
-      #imDraw.text((36,110), u"licence: CC BY-NC-SA"                       , font=self.fontArialSmall, fill="red")
-      #imDraw.text((35,60),  u"musique: Adragante (Variations 3)"         , font=self.fontArialSmall, fill="red")
-
-      #imDraw.text((35,80),  u"musique: Pedro Collares (Gothic)", font=self.fontArialSmall, fill="red")
-      #imDraw.text((35,80),  u"musique: ProleteR (April Showers)", font=self.fontArialSmall, fill="red")
-      #imDraw.text((35,80),  u"musique: Söd'Araygua (Somni Cristallitzat)", font=self.fontArialSmall, fill="red")
+        textColor = "red"
+      for (t,x,y) in texts:
+        imDraw.text((x,y), t, font=self.fontArialSmall, fill=textColor)
 
     # misc counters
     nDays = 0
@@ -890,8 +922,8 @@ class GCAnimation:
 
     for cacheTime in cacheTimes:
       # don't display future dates corresponding to future events
-      if cacheTime > today:
-          cacheTime = today
+      if cacheTime > lastDay:
+          cacheTime = lastDay
           break
 
       dArchived = 0
@@ -977,7 +1009,7 @@ class GCAnimation:
     	self.generateFlash(self.LX,self.LY,i,cacheTime)
 
     if self.printing:
-      cacheTime = today
+      cacheTime = lastDay
     self.generateText(self.imResult,cacheTime)
     draw = ImageDraw.Draw(self.imResult)
     for (cache,size,color) in showCaches:
@@ -1005,17 +1037,20 @@ class GCAnimation:
 
     if not printing:
       fOut = open(imagesDir+'listPNG.txt','w')
-      # fill some images at the end, synchronising with music 
+      for i in range(0,50):
+        # fill some images at the beginning
+        fOut.write('map0000.png\n')
       for i in range(0,nDays+1):
         fOut.write('map%04d.png\n'%i)
-      for i in range(nDays+1,max(nDays+100,5400)):
+      for i in range(nDays+1,nDays+100):
+        # some still frames to finish the video
         fOut.write('map%04d.png\n'%nDays)
       fOut.close()
     
 if __name__=='__main__':
   
   def usage():
-    print 'Usage: python generationAnimation.py <active_caches.gpx> [ ... <archived_caches.gpx> ]'
+    print 'Usage: python generationAnimation.py <active_caches.gpx>'
     print 'Usage: python generationAnimation.py <gsak_extract.csv> [ <name of geocacher> ]'
     print '-g <geocacher name> : display activity of the geocacher'
     print '-f <frontier gpx file> : display the frontiers or coastlines'
@@ -1063,7 +1098,6 @@ if __name__=='__main__':
     elif opt == "-c":
       # choos the main background color (black ou white)
       color = arg
-
     elif opt == "-a":
       # load a file of archived caches
       archived.append(arg)
