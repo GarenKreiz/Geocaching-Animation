@@ -27,5 +27,7 @@ generate Pepe29 "Pepe29"
 generate Philfat29 "Philfat29"
 generate Arlok78 "Arlok78"
 generate Garenkreiz "Garenkreiz"
+generate Kavadell "Kavadell"
+generate Cukcelte "Cukcelte"
 
 

@@ -158,8 +158,11 @@ logos = [
   #('Logo_2.png',1035,480, 224, 224),
   #('Logo_3.png',1053,272, 224,224),
   #('Logo_Loir-et-Cher.jpg',1035,20, 224, 224),
-  #('Logo_Breizh_Geocacheurs.png',1035,480, 224, 224),
+  #'Logo_Breizh_Geocacheurs.png',1035,480, 224, 224),
   #('Logo_Geocaching_16_years.png',1035,272, 224,224),
+  #'Logo_Geocaching_15_years.png',1053,272, 224,224),
+  #('Plaque_15_ans_white.png',30,440, 240, 200),
+  #'Plaque_15_ans_black.png',30,440, 240, 200),
   ]
 
 # emphasize some caches
