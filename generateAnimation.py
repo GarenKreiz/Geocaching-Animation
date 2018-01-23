@@ -61,6 +61,7 @@ import math
 import string
 import getopt
 import GPXParser
+import os.path
 
 import PIL
 from PIL import Image
@@ -181,6 +182,18 @@ lastDay = time.time() # today
 # lastDay = int(time.mktime(time.strptime("2016-08-02", "%Y-%m-%d")))
 # lastDay = int(time.mktime(time.strptime("2018-02-03", "%Y-%m-%d")))
 
+frontieresDir = 'Frontieres/'  # default directory for costs and frontiers in GPX format
+logosDir = 'Logos/'            # default directory for logos and additionnal images
+avatarsDir = 'Avatars/'        # default directory for avatars of geocachers
+logsDir = 'Logs/'              # default directory for pages of logs for geocachers
+cachesDir = 'Caches/'          # default directory for files of caches (CSV or GPX)
+imagesDir = 'Images/'          # directory of generated images
+
+def defaultPath(f, defaultDir):
+  if os.path.exists(f):
+    return f  
+  return defaultDir+f
+  
 # size of output image : 720p or 1080p (HD)
 videoRes = 720
 if videoRes == 720:
@@ -188,7 +201,6 @@ if videoRes == 720:
 else:
   xSize,ySize=1120,1080    # HD 1080p
 
-imagesDir = 'Images/'    # directory of generated images
 
 # color types of items (caches, lines,...) 
 ARCHIVED    = 0
@@ -486,7 +498,9 @@ class GCAnimation:
   def loadLogsFromCSV(self,myCSV):
   
     logs = {}
-    fInput = open(myCSV,'r')
+
+    fInput = open(defaultPath(myCSV,cachesDir),'r')
+    
     l = fInput.readline()
     while l <> '':
       try:
@@ -572,7 +586,8 @@ class GCAnimation:
 
     print 'Processing CSV file:', myCSV
     
-    fInput = open(myCSV,'r')
+    fInput = open(defaultPath(myCSV,cachesDir),'r')
+
     if geocacher <> None:
       geocacher = geocacher.upper()
     self.nAddedCaches = 0
@@ -673,7 +688,8 @@ class GCAnimation:
 
     print 'Processing GPX file:',file
 
-    myGPX = GPXParser.GPXParser(file)
+    myGPX = GPXParser.GPXParser(defaultPath(file,frontieresDir))
+      
     print '  Waypoints found :',len(myGPX.wpts)
     print '  Tracks found :',len(myGPX.trcks)
     
@@ -871,7 +887,7 @@ class GCAnimation:
 
     if not noText:
       for (logoImage,logoX,logoY, sizeX, sizeY) in logos:
-        logo = Image.open(logoImage)
+        logo = Image.open(defaultPath(logoImage,logosDir))
         logo = logo.convert("RGBA")
         if logo.size[0] > sizeX or logo.size[1] > sizeY:
           logo = logo.resize((sizeX,sizeY), PIL.Image.ANTIALIAS)
@@ -1130,27 +1146,27 @@ if __name__=='__main__':
   myAnimation = GCAnimation(currentZone,printing,color,excludedCaches)
 
   if excludeCaches and os.path.isfile(excludeCaches):
-    with open(excludeCaches,'r') as f:
+    with open(defaultPath(excludeCaches,cachesDir),'r') as f:
       for x in f.readlines():
         excludedCaches.append(x.strip())
   print excludedCaches
 
   for file in frontiers:
-    myAnimation.loadFromGPX(file,status=FRONTIER)
+    myAnimation.loadFromGPX(defaultPath(file,frontieresDir),status=FRONTIER)
 
   for file in polygons:
-    myAnimation.loadFromGPX(file,status=POLYGON)
+    myAnimation.loadFromGPX(defaultPath(file,frontieresDir),status=POLYGON)
 
   for file in args:
     print "Loading file:", file
-    myAnimation.loadFromFile(file,geocacher)
+    myAnimation.loadFromFile(defaultPath(file,cachesDir),geocacher)
 
   for file in archived:
     print "Loading archived file", file
-    myAnimation.loadFromFile(file,geocacher,status=ARCHIVED)
+    myAnimation.loadFromFile(defaultPath(file,cachesDir),geocacher,status=ARCHIVED)
     
   for file in logs:
-    myAnimation.loadLogsFromFile(file)
+    myAnimation.loadLogsFromFile(defaultPath(file,logsDir))
 
   #try:
   myAnimation.generateImages(tracing=True)

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="overpass-ide"><metadata><copyright>The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.</copyright><desc>Filtered OSM data converted to GPX by overpass turbo</desc><time>2018-01-16T00:19:02Z</time></metadata><wpt lat="47.5876861" lon="1.3337639"><name>node/26692374</name><desc></desc><link href="http://osm.org/browse/node/26692374"/></wpt><trk><name>Loir-et-Cher</name><desc>ISO3166-2=FR-41
+admin_level=6
+border_type=departement
+boundary=administrative
+name=Loir-et-Cher
+name:es=Loir y Cher
+name:ru=Луар и Шер
+ref=41
+ref:INSEE=41
+ref:NUTS=FR245
+type=boundary
+wikidata=Q12564
+wikipedia=fr:Loir-et-Cher</desc><link href="http://osm.org/browse/relation/7399"/><trkseg>
+<trkpt lat="48.33680" lon="-1.64239"/>
+<trkpt lat="49.11324" lon="-1.64239"/>
+<trkpt lat="49.11324" lon="-5.15200"/>
+<trkpt lat="48.33680" lon="-5.15200"/>
+<trkpt lat="48.33680" lon="-1.64239"/>
+</trkseg></trk></gpx>
