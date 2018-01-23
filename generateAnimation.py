@@ -633,7 +633,7 @@ class GCAnimation:
       if verbose: print "= OK =",l,
 
       guid = re.sub('.*guid=','',url)
-      self.guids[guid] = (name,latitude,longitude)
+      self.guids[guid] = (name,lat,lon)
       if cacheType == "Event Cache" or cacheType == "Cache In Trash Out Event":
         status = EVENT                     # Event cache
       elif status == 'X':
