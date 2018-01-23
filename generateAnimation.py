@@ -266,7 +266,7 @@ def isInsideZone(x, y, points):
                         inside = not inside
         p1x, p1y = p2x, p2y
     return inside
-include = True
+
 class GCAnimation:
 
   def __init__(self,currentZone,printing=False, backgroundColor="black", excludedCaches=[]):
@@ -615,7 +615,7 @@ class GCAnimation:
 
       lat, lon = float(latitude), float(longitude)
 
-      if include and self.polygons <> []:
+      if self.polygons <> []:
         # find if cache is inside one of the polygons
         inside = False
         p = 0 
@@ -626,11 +626,11 @@ class GCAnimation:
           p += 1
         if not inside:
           #print'!!! Outside of zone polygon', name, latitude, longitude
-          #print "= NOK =",l
+          if verbose: print "= NOK =",l
           l = fInput.readline()
           continue
 
-      print "= OK =",l,
+      if verbose: print "= OK =",l,
 
       guid = re.sub('.*guid=','',url)
       self.guids[guid] = (name,latitude,longitude)
@@ -1080,6 +1080,7 @@ if __name__=='__main__':
     print '-p : printing'
     print '-c <color>: background color (white or black)'
     print '-a <archived_caches.gpx>: list of cache that are now archived'
+    print '-v : verbose mode to list the status of the caches'
     print '<caches file> : CSV table of caches'
     print ''
     print 'Note : some arguments can be used multiple times (-f, -l, etc...)'
@@ -1090,6 +1091,7 @@ if __name__=='__main__':
   geocacher = None
   color = False
   printing = False
+  verbose = False
   archived = []
   frontiers = []
   polygons = []
@@ -1101,7 +1103,7 @@ if __name__=='__main__':
   print sys.argv[1:]
   
   try:
-    opts, args = getopt.getopt(sys.argv[1:],"hpa:c:f:g:i:l:x:z:")
+    opts, args = getopt.getopt(sys.argv[1:],"hpva:c:f:g:i:l:x:z:")
   except getopt.GetoptError:
     usage()
 
@@ -1115,6 +1117,9 @@ if __name__=='__main__':
     elif opt == "-p":
       # generate a image for printing (no animation)
       printing = True
+    elif opt == "-v":
+      # verbose mode
+      verbose = True
     elif opt == "-c":
       # choos the main background color (black ou white)
       color = arg
