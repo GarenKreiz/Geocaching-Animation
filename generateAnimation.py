@@ -101,7 +101,7 @@ zones = {
                32.0,
                (25,55),
                (200,30)),
-  'France' :  (u"16 ans de géocaching en France métropolitaine",
+  'France' :  (u"Evolution du géocaching en France métropolitaine",
                51.08917,   # dunes du Perroquet, Bray-Dunes près de Zuydcoote
                41.33333,   # cap di u Beccu, Iles Lavezzi, Corse
                -5.15083,   # phare de Nividic, Ouessant
@@ -143,7 +143,7 @@ zones = {
 
 texts = [
   #(u"génération: Garenkreiz", 35, 95),
-  (u"génération: Garenkreiz (CC BY-NC-SA)", 35, 625),
+  (u"génération: Garenkreiz (CC BY-NC-SA)", 45, 608),
   #(u"licence: CC BY-NC-SA", 35, 655),
   #(u"musique: Winter Is Coming (Andrey Avkhimovich)", 35, 650),
   #(u"musique: Pedro Collares (Gothic)", 35,80),
@@ -168,8 +168,10 @@ logos = [
 
 # emphasize some caches
 showCaches = [
-  #("GC6GFKY",10,"green"),
-  #("GC39D0",4,"yellow"),
+  #("GC6GFKY",10,"green"),   # event 15 ans Bretagne
+  #("GC39D0",4,"yellow"),     # cache mirador
+  #("GC7FCDQ",4,"yellow"),    # event AG Breizh Geocacheurs 2018
+  #("GC1424",4,"yellow"),     # cache no 1 en Bretagne
   ]
 
 bigPixels = 1           # draw big pixels : 0, 1, 2 ,3
@@ -460,7 +462,7 @@ class GCAnimation:
 
     if dateString <> "":
       strTime = dateString+" 00:00:01Z"
-      for pattern in ["%d/%m/%Y %H:%M:%SZ", "%Y/%m/%d %H:%M:%SZ", "%d %b %y %H:%M:%SZ"]:
+      for pattern in ["%d/%m/%Y %H:%M:%SZ", "%Y/%m/%d %H:%M:%SZ", "%d/%b/%Y %H:%M:%SZ", "%d %b %y %H:%M:%SZ"]:
         try:
           t = int(time.mktime(time.strptime(strTime, pattern)))
           return t
@@ -488,7 +490,6 @@ class GCAnimation:
 
   def loadLogsFromFile(self,myFile):
 
-    print 'Processing logs file:', myFile
     if myFile[-5:].lower() == '.html' or myFile[-4:].lower() == '.htm':
       self.loadLogsFromHTML(myFile)
     else:
@@ -497,6 +498,8 @@ class GCAnimation:
       
   def loadLogsFromCSV(self,myCSV):
   
+    print 'Processing CSV logs file:', myHTML
+
     logs = {}
 
     fInput = open(defaultPath(myCSV,cachesDir),'r')
@@ -521,18 +524,21 @@ class GCAnimation:
     self.tracks.append(logs)
     self.tracksCoords.append((0.0,0.0))
     self.tracksName = "";
+    self.tracksColor = self.cacheColor[TRACK]
       
   def loadLogsFromHTML(self,myHTML):
 
-    print 'Processing tracks file:', myHTML
+    print 'Processing HTML logs file:', myHTML
+
     logs = {}
     
     fInput = open(myHTML,'r')
+    
     searching = 0
     nbLogs = 0
 
     # parsing HTML to find earch log entry
-    l = fileFindNext(fInput,"All Logs")
+    l = fileFindNext(fInput,'<table class="Table">')
     while l <> '':
       l = fileFindNext(fInput,"<tr")
       l = fileFindNext(fInput,"<img")
@@ -548,7 +554,7 @@ class GCAnimation:
       else:
         dateString = fInput.readline().strip()
       cacheTime = self.convertDate(dateString)
-      print dateString,
+      print dateString, cacheTime,
       l = fileFindNext(fInput,"<a")
       guid = re.sub('.*guid=','',l.strip())
       guid = re.sub('".*','',guid)
@@ -814,7 +820,10 @@ class GCAnimation:
           if c[0:2] == 'GC':
             (lat,lon) = self.coords[c]
           else:
-            (lat,lon) = c
+            try:
+              (lat,lon) = c
+            except:
+              pass
           (x,y) = self.latlon2xy(lat,lon)
           if (latOld,lonOld) <> (0.0,0.0):
             draw.line([(xOld, yOld),(x,y)], self.cacheColor[TRACK])
@@ -851,7 +860,8 @@ class GCAnimation:
       fileName = 'Geocaching_'+currentZone
     print "Preview image : "+imagesDir+fileName+'.png'
     self.imResult.save(imagesDir+fileName+'.png',"PNG")
-    if geocacher:
+
+    if len(self.tracks) <> 0:
       self.drawTracks(time.time())
       print "Preview image : "+imagesDir+fileName+'_tracks.png'
       self.imResult.save(imagesDir+fileName+'_tracks.png',"PNG")
@@ -954,7 +964,7 @@ class GCAnimation:
       # generate intermediate images for each days between last cache day and current day
       for cachingTime in range(previousTime+24*3600, cacheTime, 24*3600):
           nDays= nDays + 1
-          self.drawTracks(cachingTime)
+          #self.drawTracks(cachingTime)
           if not printing:
             self.generateFlash(self.LX,self.LY,nDays,cachingTime)
 
@@ -1144,10 +1154,7 @@ if __name__=='__main__':
     elif opt in ("-l", "--logs"):
       # load a file containing the logs of a cacher to display the moves
       logs.append(arg)
-      
-  print archived
-  print frontiers
-  
+        
   myAnimation = GCAnimation(currentZone,printing,color,excludedCaches)
 
   if excludeCaches and os.path.isfile(excludeCaches):
