@@ -13,13 +13,19 @@ generate() {
 	echo Generating $1 $2 $color
 	time /cygdrive/c/My\ Program\ Files/Python/python.exe generateAnimation.py \
 	     -f Cote_Bretagne.gpx -f Cote_Atlantique.gpx -f Cote_Manche.gpx -f Cote_Mediterrannee.gpx -f Frontiere_Sud.gpx -f Frontiere_Est.gpx \
-	     -l Geocaching_all_logs_$1.htm -c $color -g "$2" \
+	     -l Logs/Geocaching_all_logs_$1.htm -c $color -g "$2" \
 	     -z _Bretagne_ -x GC_Bretagne_errors.txt -p GC_Bretagne.csv \
 	     2>&1 > resu_$1_$color.txt
 	cp Images/Geocaching__Bretagne__$1.png Certificats/Geocaching__Bretagne__$1_$color.png
     done
     return 1
 }
+
+if  [ $# -eq 2 ]
+then
+        generate "$1" "$2"
+        exit
+fi
 
 generate TeamCasimirdl "(TeamCasimirdl|Casimirdelyon)"
 generate C2iC "(C2iC|Breizh Geocacheurs)"

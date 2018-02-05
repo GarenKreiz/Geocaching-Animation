@@ -213,6 +213,7 @@ TRACK       = 4  # visit to cache location by the chosen geocacher
 FRONTIER    = 5  # drawing natural or articial topographic features
 PLACED      = 6  # cache placed by geocacher
 POLYGON     = 7  # polygon to select a drawing area
+BARYCENTRE  = 8  # display barycentre of cache
 
 # searching for a string pattern in a previously opened file
 
@@ -405,6 +406,7 @@ class GCAnimation:
         TRACK       : (255,0,255),   # purple
         FRONTIER    : (0,0,255),     # blue
         PLACED      : (255,255,0),   # yellow
+        BARYCENTRE  : (0,255,0),     # green
         }
     else:
       self.cacheColor = {
@@ -415,6 +417,7 @@ class GCAnimation:
         TRACK       : (255,0,255), # purple
         FRONTIER    : (0,0,255),   # blue
         PLACED      : (255,255,0), # yellow
+        BARYCENTRE  : (255,102,255),   # green
         }
       
     self.flashCursor = 0
@@ -826,7 +829,7 @@ class GCAnimation:
               pass
           (x,y) = self.latlon2xy(lat,lon)
           if (latOld,lonOld) <> (0.0,0.0):
-            draw.line([(xOld, yOld),(x,y)], self.cacheColor[TRACK])
+            draw.line([(xOld, yOld),(x,y)], self.tracksColor[i])
             if self.geocacher and self.geocacher == self.tracksName[i]:
               self.distance += getDistance(latOld,lonOld,lat,lon)
           latOld,lonOld = lat,lon
@@ -868,7 +871,7 @@ class GCAnimation:
     self.imResult = tempImg
 
 
-  def generateImages(self, tracing):
+  def generateImages(self, barycentre = False):
 
     print "Generating images"
 
@@ -920,8 +923,12 @@ class GCAnimation:
     nArchived = 0
     self.nVisits = 0            # visits of a geocacher : found, did not found
     self.nPlaced = 0            # cache placed or event organized
+    if barycentre:
+      self.sumLatBarycentre = 0.0
+      self.sumLonBarycentre = 0.0
+      self.nbBarycentre =0
+      fBarycentre = open('barycentre.gpx','w')
     
-
     # variables to display the geocacher's moves
     latOld,lonOld = 0.0,0.0 
     xOld,yOld = 0,0
@@ -950,6 +957,13 @@ class GCAnimation:
     # initialize the time of the current frame to the first date
     previousTime = cacheTimes[0]
 
+    if barycentre:
+      self.tracks.append({})
+      self.tracksCoords.append((0.0,0.0))
+      self.tracksName.append('Barycentre')
+      self.tracksColor = self.cacheColor[BARYCENTRE]
+      trackBarycentre = len(self.tracks) - 1
+    
     for cacheTime in cacheTimes:
       # don't display future dates corresponding to future events
       if cacheTime > lastDay:
@@ -968,8 +982,6 @@ class GCAnimation:
           if not printing:
             self.generateFlash(self.LX,self.LY,nDays,cachingTime)
 
-      self.drawTracks(cacheTime)
-
       self.draw = ImageDraw.Draw(self.imResult)
 
       nDays = nDays + 1
@@ -978,7 +990,10 @@ class GCAnimation:
         # x = int(self.scaleX*(lon-self.XMinLon)) # 720p
         (x,y) = self.latlon2xy(lat,lon)
         # print 'Cache placed:',time.asctime(time.localtime(cacheTime)), name, (lat,lon) , (x,y)
-
+        if barycentre:
+          self.nbBarycentre += 1
+          self.sumLatBarycentre += lat
+          self.sumLonBarycentre += lon
         try:
             if self.wptStatus[name] <> status:
               nbStatuses[self.wptStatus[name]] -= 1
@@ -1014,6 +1029,16 @@ class GCAnimation:
           self.drawPoint(status,x,y)
         except Exception, msg:
           print '!!! Pb point outside the drawing area:',lat, lon, name, x, y, status, msg
+
+      if barycentre:
+        #print self.nbBarycentre, self.sumLatBarycentre, self.sumLonBarycentre 
+        latBarycentre = self.sumLatBarycentre/self.nbBarycentre
+        lonBarycentre = self.sumLonBarycentre/self.nbBarycentre
+        fBarycentre.write('<trkpt lat="%f" lon="%f" />\n'%(latBarycentre, lonBarycentre))
+        self.tracks[trackBarycentre][cacheTime] = [(latBarycentre,lonBarycentre)]
+        #print len(self.tracks[trackBarycentre]), latBarycentre, lonBarycentre
+      
+      self.drawTracks(cacheTime)
 
       if nbStatuses <> nbStatusesPrevious:
         dArchived    = nbStatuses[0] - nbStatusesPrevious[0]
@@ -1051,6 +1076,9 @@ class GCAnimation:
       except:
         pass
     
+    if barycentre:
+      fBarycentre.close()
+      
     # final view of all caches
     self.imResult.save(imagesDir+'Geocaching_'+currentZone+'.png',"PNG")
 
@@ -1102,6 +1130,7 @@ if __name__=='__main__':
   color = False
   printing = False
   verbose = False
+  barycentre = False
   archived = []
   frontiers = []
   polygons = []
@@ -1113,7 +1142,7 @@ if __name__=='__main__':
   print sys.argv[1:]
   
   try:
-    opts, args = getopt.getopt(sys.argv[1:],"hpva:c:f:g:i:l:x:z:")
+    opts, args = getopt.getopt(sys.argv[1:],"hbpva:c:f:g:i:l:x:z:")
   except getopt.GetoptError:
     usage()
 
@@ -1130,6 +1159,9 @@ if __name__=='__main__':
     elif opt == "-v":
       # verbose mode
       verbose = True
+    elif opt == "-b":
+      # display barycentre of caches
+      barycentre = True
     elif opt == "-c":
       # choos the main background color (black ou white)
       color = arg
@@ -1181,7 +1213,7 @@ if __name__=='__main__':
     myAnimation.loadLogsFromFile(defaultPath(file,logsDir))
 
   #try:
-  myAnimation.generateImages(tracing=True)
+  myAnimation.generateImages(barycentre)
   #except Exception, msg:
   #  print "Problem in generation:", msg
     
