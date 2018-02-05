@@ -817,6 +817,7 @@ class GCAnimation:
       t = self.tracks[i]
       try:
         caches = t[cachingTime]
+        # print "drawTracks", caches
         (latOld,lonOld) = self.tracksCoords[i]
         (xOld, yOld) = self.latlon2xy(latOld,lonOld)
         for c in caches:
@@ -830,6 +831,8 @@ class GCAnimation:
           (x,y) = self.latlon2xy(lat,lon)
           if (latOld,lonOld) <> (0.0,0.0):
             draw.line([(xOld, yOld),(x,y)], self.tracksColor[i])
+            for (dx,dy) in [(1,0), (1,1), (0,1)]:
+              draw.line([(xOld+dx, yOld+dy),(x+dx,y+dy)], self.tracksColor[i])
             if self.geocacher and self.geocacher == self.tracksName[i]:
               self.distance += getDistance(latOld,lonOld,lat,lon)
           latOld,lonOld = lat,lon
@@ -1021,6 +1024,8 @@ class GCAnimation:
           if status == TRACK or status == PLACED:                            # drawing moves of a geocacher
             if (latOld,lonOld) <> (0.0,0.0):
               self.draw.line([(xOld, yOld),(x,y)], self.cacheColor[TRACK])
+              for (dx,dy) in [(1,0), (1,1), (0,1)]:
+                self.draw.line([(xOld+dx, yOld+dy),(x+dx,y+dy)], self.cacheColor[TRACK])
               self.distance += getDistance(latOld,lonOld,lat,lon)
             self.nVisits += 1
             # del draw
