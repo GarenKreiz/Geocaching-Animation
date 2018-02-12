@@ -108,13 +108,20 @@ zones = {
                9.56000,    # plage Fiorentine, Alistro, Corse
                (48,64),
                (200,80)),
-  '_Bretagne_' : (u"Evolution du géocaching en Bretagne",
+  '_Bretagne_' : (u"GC7FCDQ : barycentre du géocaching en Bretagne?",
                48.92,      # Roches Douvres?
                47.24,      # Pointe sud de Belle Ile?
                -5.17,      # Phare de Nividic?
                -0.8,       # Sud du péage de la Gravelle?
                (246,325),
                (20,50)),
+  '_Tregor_' : (u"GC78P24 + 16 ans de géocaching dans le Trégor",
+               48.875,      # Roches Douvres
+               48.38,      # ???
+               -3.90,      # Morlaix
+               -2.95,      # Paimpol
+               (800,1200),
+               (120,-45)),
   '_Centre_' : (u"Evolution du géocaching en région Centre",
                49,      # Roches Douvres?
                46,      # Pointe sud de Belle Ile?
@@ -128,7 +135,7 @@ zones = {
                0.5,      # Phare de Nividic?
                2.4,       # Sud du péage de la Gravelle?
                (435,609),
-               (70,-20)),
+               (140,-20)),
   '_Europe_': ("Geocaching evolution in Europe",
                70.0,
                27.0,
@@ -155,34 +162,40 @@ texts = [
 #    (image file, position x, position y, size x, size y
 
 logos = [
-  #('Logo_1.png',1035,20, 224, 224),
-  #('Logo_2.png',1035,480, 224, 224),
-  #('Logo_3.png',1053,272, 224,224),
-  #('Logo_Loir-et-Cher.jpg',1035,20, 224, 224),
-  #'Logo_Breizh_Geocacheurs.png',1035,480, 224, 224),
-  #('Logo_Geocaching_16_years.png',1035,272, 224,224),
-  #'Logo_Geocaching_15_years.png',1053,272, 224,224),
-  #('Plaque_15_ans_white.png',30,440, 240, 200),
-  #'Plaque_15_ans_black.png',30,440, 240, 200),
+  # Haut ('Logo_1.png',1035,20, 224, 224),
+  # Milieu ('Logo_2.png',1053,272, 224,224),
+  # Bas ('Logo_3.png',1035,480, 224, 224),
+  # Breizh ('Logo_Breizh_Geocacheurs.png',1035,480, 224, 224),
+  # Breizh ('Logo_Geocaching_15_years.png',1053,272, 224,224),
+  # Breizh ('Plaque_15_ans_black.png',30,440, 240, 200),
+  # Breizh ('Plaque_15_ans_white.png',30,440, 240, 200),
+  # Mirador ('Logo_Loir-et-Cher.jpg',1035,490, 224, 224),
+  # Mirador ('Logo_Geocaching_16_years.png',1035,255, 224,224),
+  # Tregor ('Logo_Geocaching_16_years.png',1053,300, 224,224),
+  # Tregor ('Banniere_Bro_Dreger.png',    1035,75, 224, 224),
+  # Tregor ('Logo_International_Day_2017.png', 1035,480,224,224),
   ]
 
 # emphasize some caches
 showCaches = [
-  #("GC6GFKY",10,"green"),   # event 15 ans Bretagne
-  #("GC39D0",4,"yellow"),     # cache mirador
+  #("GC6GFKY",10,"green"),    # event 15 ans Bretagne
+  #("GC39D0",4,"yellow"),     # event Mirador
   #("GC7FCDQ",4,"yellow"),    # event AG Breizh Geocacheurs 2018
-  #("GC1424",4,"yellow"),     # cache no 1 en Bretagne
+  #("GC1424",4,"yellow"),     # event 15 ans Bretagne : Keriolet
+  #("GC78P24",4,"orange"),    # event Tregor
+  #("GC16D3" ,3,"orange"),    # event Tregor Krampouz
+  #("",4,"yellow"), 
   ]
 
 bigPixels = 1           # draw big pixels : 0, 1, 2 ,3
 noText = False          # drawing text and logos
-
+fatTrack = False        # drawing wider version of geocaching tracks
 # last day of displayed period
 # can be set to another specific date 
  
 lastDay = time.time() # today
 # lastDay = int(time.mktime(time.strptime("2016-08-02", "%Y-%m-%d")))
-# lastDay = int(time.mktime(time.strptime("2018-02-03", "%Y-%m-%d")))
+lastDay = int(time.mktime(time.strptime("2018-02-03", "%Y-%m-%d")))
 
 frontieresDir = 'Frontieres/'  # default directory for costs and frontiers in GPX format
 logosDir = 'Logos/'            # default directory for logos and additionnal images
@@ -345,6 +358,7 @@ class GCAnimation:
     self.tracks = []        # list of visit tracks to display
     self.tracksCoords = []  # last coordinate on track displayed
     self.tracksName = []    # name of geocacher or name of TB
+    self.tracksColor = []   # color of the track
     
     # animation of the creation or disparition of a cache : list of pixels to lighten up for each of the 16 animation frames
     # the position is relative to the location of the cache
@@ -403,21 +417,21 @@ class GCAnimation:
         ACTIVE      : (0,0,128),     # navy
         UNAVAILABLE : (255,102,0),   # orange
         EVENT       : (0,255,0),     # green
-        TRACK       : (255,0,255),   # purple
+        TRACK       : (50,255,0),    # (255,0,255),   # purple
         FRONTIER    : (0,0,255),     # blue
         PLACED      : (255,255,0),   # yellow
         BARYCENTRE  : (0,255,0),     # green
         }
     else:
       self.cacheColor = {
-        ARCHIVED    : (255,0,0),   # red
-        ACTIVE      : (0,255,255), # light blue
-        UNAVAILABLE : (255,102,0), # orange
-        EVENT       : (0,255,0),   # green
-        TRACK       : (255,0,255), # purple
-        FRONTIER    : (0,0,255),   # blue
-        PLACED      : (255,255,0), # yellow
-        BARYCENTRE  : (255,102,255),   # green
+        ARCHIVED    : (255,0,0),     # red
+        ACTIVE      : (0,255,255),   # light blue
+        UNAVAILABLE : (255,102,0),   # orange
+        EVENT       : (0,255,0),     # green
+        TRACK       : (255,0,255),   # purple
+        FRONTIER    : (0,0,255),     # blue
+        PLACED      : (255,255,0),   # yellow
+        BARYCENTRE  : (0,255,0),     # green
         }
       
     self.flashCursor = 0
@@ -481,7 +495,7 @@ class GCAnimation:
         self.geocacher = re.sub("\(([^|]+)\|.*\)","\\1",geocacher)
       else:
         self.geocacher = geocacher
-      logoGeocacher = 'Avatar_'+self.geocacher+'.png'
+      logoGeocacher = avatarsDir+ 'Avatar_'+self.geocacher+'.png'
       if os.path.isfile(logoGeocacher):
         logos.append((logoGeocacher,1035,20, 224, 224))
       
@@ -526,8 +540,8 @@ class GCAnimation:
     
     self.tracks.append(logs)
     self.tracksCoords.append((0.0,0.0))
-    self.tracksName = "";
-    self.tracksColor = self.cacheColor[TRACK]
+    self.tracksName.append("Logs")
+    self.tracksColor.append(self.cacheColor[TRACK])
       
   def loadLogsFromHTML(self,myHTML):
 
@@ -697,8 +711,11 @@ class GCAnimation:
 
     print 'Processing GPX file:',file
 
-    myGPX = GPXParser.GPXParser(defaultPath(file,frontieresDir))
-      
+    try:
+      myGPX = GPXParser.GPXParser(defaultPath(file,frontieresDir))
+    except:
+      return
+    
     print '  Waypoints found :',len(myGPX.wpts)
     print '  Tracks found :',len(myGPX.trcks)
     
@@ -831,8 +848,9 @@ class GCAnimation:
           (x,y) = self.latlon2xy(lat,lon)
           if (latOld,lonOld) <> (0.0,0.0):
             draw.line([(xOld, yOld),(x,y)], self.tracksColor[i])
-            for (dx,dy) in [(1,0), (1,1), (0,1)]:
-              draw.line([(xOld+dx, yOld+dy),(x+dx,y+dy)], self.tracksColor[i])
+            if fatTrack:
+              for (dx,dy) in [(1,0), (1,1), (0,1)]:
+                draw.line([(xOld+dx, yOld+dy),(x+dx,y+dy)], self.tracksColor[i])
             if self.geocacher and self.geocacher == self.tracksName[i]:
               self.distance += getDistance(latOld,lonOld,lat,lon)
           latOld,lonOld = lat,lon
@@ -903,7 +921,10 @@ class GCAnimation:
 
     if not noText:
       for (logoImage,logoX,logoY, sizeX, sizeY) in logos:
-        logo = Image.open(defaultPath(logoImage,logosDir))
+        if (logoImage.find('/') > 0):
+          logo = Image.open(logoImage)
+        else:
+          logo = Image.open(defaultPath(logoImage,logosDir))
         logo = logo.convert("RGBA")
         if logo.size[0] > sizeX or logo.size[1] > sizeY:
           logo = logo.resize((sizeX,sizeY), PIL.Image.ANTIALIAS)
@@ -964,7 +985,7 @@ class GCAnimation:
       self.tracks.append({})
       self.tracksCoords.append((0.0,0.0))
       self.tracksName.append('Barycentre')
-      self.tracksColor = self.cacheColor[BARYCENTRE]
+      self.tracksColor.append(self.cacheColor[BARYCENTRE])
       trackBarycentre = len(self.tracks) - 1
     
     for cacheTime in cacheTimes:
@@ -1024,8 +1045,9 @@ class GCAnimation:
           if status == TRACK or status == PLACED:                            # drawing moves of a geocacher
             if (latOld,lonOld) <> (0.0,0.0):
               self.draw.line([(xOld, yOld),(x,y)], self.cacheColor[TRACK])
-              for (dx,dy) in [(1,0), (1,1), (0,1)]:
-                self.draw.line([(xOld+dx, yOld+dy),(x+dx,y+dy)], self.cacheColor[TRACK])
+              if fatTrack:
+                for (dx,dy) in [(1,0), (1,1), (0,1)]:
+                  self.draw.line([(xOld+dx, yOld+dy),(x+dx,y+dy)], self.cacheColor[TRACK])
               self.distance += getDistance(latOld,lonOld,lat,lon)
             self.nVisits += 1
             # del draw
