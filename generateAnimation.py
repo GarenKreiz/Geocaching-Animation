@@ -85,14 +85,14 @@ zones = {
                -180.0  ,   # west
                180.0,      # east
                (3.5,4.4),  # scale : adapt to fit to video size and preserve X/Y ratio
-               (10,-10)),    # offset for x,y coordinates
+               (10,-10)),  # offset for x,y coordinates
   '_World_Traces_':  (u"Découvertes géocachiques de Garenkreiz",
-               90.00,      # north
-               -90.00,     # south
-               -180.0  ,   # west
-               180.0,      # east
-               (3.5,4.4),  # scale : adapt to fit to video size and preserve X/Y ratio
-               (10,20)),    # offset for x,y coordinates
+               90.00,
+               -90.00,
+               -180.0,
+               180.0,
+               (3.5,4.4),
+               (10,20)),
   '_World1_':  ("Evolution of geocaching",
                55.08917,   # north
                30.33333,   # south
@@ -123,24 +123,31 @@ zones = {
                (246,325),
                (20,50)),
   '_Tregor_' : (u"GC78P24 + 16 ans de géocaching dans le Trégor",
-               48.875,      # Roches Douvres
+               48.875,     # Roches Douvres
                48.38,      # ???
                -3.90,      # Morlaix
                -2.95,      # Paimpol
                (800,1200),
                (120,-45)),
   '_Centre_' : (u"Evolution du géocaching en région Centre",
-               49,      # Roches Douvres?
-               46,      # Pointe sud de Belle Ile?
-               -1,      # Phare de Nividic?
-               4,       # Sud du péage de la Gravelle?
+               49,
+               46,
+               -1,
+               4,
                (150,210),
                (40,30)),
+  '_Creuse_' : (u"Evolution du géocaching en Creuse",
+               46.5,
+               45.6,
+               1.38,
+               2.6, 
+               (500,700),
+               (200,-10)),
   '_Loir-et-Cher_' : (u"Evolution du géocaching en Loir-et-Cher",
-               48.2,      # Roches Douvres?
-               47.18,      # Pointe sud de Belle Ile?
-               0.5,      # Phare de Nividic?
-               2.4,       # Sud du péage de la Gravelle?
+               48.2,
+               47.18,
+               0.5,
+               2.4,
                (435,609),
                (140,-20)),
   '_Europe_': ("Geocaching evolution in Europe",
@@ -152,7 +159,7 @@ zones = {
                (200,10)),
   }
 
-# texts for write on each frame of the animation (attribution for example)
+# texts text to write on each frame of the animation (attribution for example)
 #    (text, position x, position y)
 
 texts = [
@@ -169,32 +176,32 @@ texts = [
 #    (image file, position x, position y, size x, size y
 
 logos = [
-  # Haut ('Logo_1.png',1035,20, 224, 224),
-  # Milieu ('Logo_2.png',1053,272, 224,224),
-  # Bas ('Logo_3.png',1035,480, 224, 224),
-  # Breizh ('Logo_Breizh_Geocacheurs.png',1035,480, 224, 224),
-  # Breizh ('Logo_Geocaching_15_years.png',1053,272, 224,224),
-  # Breizh ('Plaque_15_ans_black.png',30,440, 240, 200),
-  # Breizh ('Plaque_15_ans_white.png',30,440, 240, 200),
-  # Mirador ('Logo_Loir-et-Cher.jpg',1035,490, 224, 224),
-  # Mirador ('Logo_Geocaching_16_years.png',1035,255, 224,224),
-  # Tregor ('Logo_Geocaching_16_years.png',1053,300, 224,224),
-  # Tregor ('Banniere_Bro_Dreger.png',    1035,75, 224, 224),
-  # Tregor ('Logo_International_Day_2017.png', 1035,480,224,224),
+  # ('Logo_1.png',1035,20, 224, 224),  # Top
+  # ('Logo_2.png',1053,272, 224,224),  # Middle
+  # ('Logo_3.png',1035,480, 224, 224), # Down
+  # ('Logo_Breizh_Geocacheurs.png',1035,480, 224, 224), # Breizh
+  # ('Logo_Geocaching_15_years.png',1053,272, 224,224), # Breizh 2016
+  # ('Plaque_15_ans_black.png',30,440, 240, 200), # Breizh 2016
+  # ('Plaque_15_ans_white.png',30,440, 240, 200), # Breizh 2016
+  # ('Logo_Geocaching_16_years.png',1053,300, 224,224), # Tregor 2017
+  # ('Banniere_Bro_Dreger.png',    1035,75, 224, 224), # Tregor
+  # ('Logo_International_Day_2017.png', 1035,480,224,224), # Tregor 2017
+  # ('Logo_Loir-et-Cher.jpg',1035,490, 224, 224), # Mirador 
+  # ('Logo_Geocaching_16_years.png',1035,255, 224,224), # Mirador 2018
   ]
 
 # emphasize some caches
 showCaches = [
-  #("GC6GFKY",10,"green"),    # event 15 ans Bretagne
-  #("GC39D0",4,"yellow"),     # event Mirador
+  #("GC6GFKY",10,"green"),    # event 15 ans Bretagne 2016
+  #("GC39D0",4,"yellow"),     # event Mirador 2018
   #("GC7FCDQ",4,"yellow"),    # event AG Breizh Geocacheurs 2018
   #("GC1424",4,"yellow"),     # event 15 ans Bretagne : Keriolet
-  #("GC78P24",4,"orange"),    # event Tregor
+  #("GC78P24",4,"orange"),    # event Tregor 2017
   #("GC16D3" ,3,"orange"),    # event Tregor Krampouz
   #("",4,"yellow"),
   ]
 
-bigPixels = 2           # draw big pixels : 0, 1, 2 ,3
+bigPixels = 1           # draw big pixels : 0, 1, 2 ,3
 noText = False          # drawing text and logos
 fatTrack = False        # drawing wider version of geocaching tracks
 # last day of displayed period
@@ -736,7 +743,7 @@ class GCAnimation:
       lat,lon = float(latitude),float(longitude)
       if (lat > self.maxLat) or (lat < self.minLat) or \
          (lon > self.maxLon) or (lon < self.minLon) or (currentZone[0] <> '_' and country <> currentZone and country <> ''):
-        print '!!! Pb point outside the drawing zone:',name, lat, ' not in ', self.minLat, self.maxLat, self.minLon, self.maxLon
+        print '!!! Pb point outside the drawing zone:', name, lat, lon, ' not in ', self.minLat, self.maxLat, self.minLon, self.maxLon
         l = fInput.readline()
         continue
 
@@ -1123,7 +1130,7 @@ class GCAnimation:
             latOld,lonOld = lat,lon
           self.drawPoint(status,x,y)
         except Exception, msg:
-          print '!!! Pb point outside the drawing area:',lat, lon, latOld, lonOld, name, x, y, status, msg
+          print '!!! Pb point outside the drawing area:', lat, lon, latOld, lonOld, name, x, y, status, msg
 
       if barycentre:
         #print self.nbBarycentre, self.sumLatBarycentre, self.sumLonBarycentre
@@ -1207,6 +1214,7 @@ if __name__=='__main__':
     print 'Usage: python generationAnimation.py <gsak_extract.csv> [ <name of geocacher> ]'
     print '-g <geocacher name> : display activity of the geocacher'
     print '-f <frontier gpx file> : display the frontiers or coastlines'
+    print '-i <polygon gpx file> : display points inside the polygon'
     print '-l <logged caches file> : process "all logs" HTML file'
     print '-z <zone> : restrict display to zone'
     print '-x <file of cache ids> : exclude the caches from the animation'
@@ -1214,6 +1222,7 @@ if __name__=='__main__':
     print '-c <color>: background color (white or black)'
     print '-a <archived_caches.gpx>: list of cache that are now archived'
     print '-v : verbose mode to list the status of the caches'
+    print '-b : display barycentre of caches'
     print '<caches file> : CSV table of caches'
     print ''
     print 'Note : some arguments can be used multiple times (-f, -l, etc...)'
