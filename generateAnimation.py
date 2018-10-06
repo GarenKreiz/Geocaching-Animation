@@ -241,6 +241,8 @@ FRONTIER    = 5  # drawing natural or articial topographic features
 PLACED      = 6  # cache placed by geocacher
 POLYGON     = 7  # polygon to select a drawing area
 BARYCENTRE  = 8  # display barycentre of cache
+TRACK1      = 9  # color of second track
+TRACK2      = 10 # color of third track
 
 # searching for a string pattern in a previously opened file
 
@@ -491,10 +493,12 @@ class GCAnimation:
         ACTIVE      : (0,0,128),     # navy
         UNAVAILABLE : (255,102,0),   # orange
         EVENT       : (0,255,0),     # green
-        TRACK       : (50,255,0),    # (255,0,255),   # purple
+        TRACK       : (255,102,0),    # (255,0,255),   # purple
         FRONTIER    : (0,0,255),     # blue
         PLACED      : (255,255,0),   # yellow
         BARYCENTRE  : (0,255,0),     # green
+        TRACK1      : (255,0,255),   # purple
+        TRACK2      : (0,0,255),   # 
         }
     else:
       self.cacheColor = {
@@ -502,10 +506,12 @@ class GCAnimation:
         ACTIVE      : (0,255,255),   # light blue
         UNAVAILABLE : (255,102,0),   # orange
         EVENT       : (0,255,0),     # green
-        TRACK       : (255,0,255),   # purple
+        TRACK       : (0,100,100),   # purple
         FRONTIER    : (0,0,255),     # blue
         PLACED      : (255,255,0),   # yellow
         BARYCENTRE  : (0,255,0),     # green
+        TRACK1      : (255,0,255),   # light grey
+        TRACK2      : (0,0,255),   # light grey
         }
 
     self.flashCursor = 0
@@ -589,7 +595,7 @@ class GCAnimation:
 
   def loadLogsFromCSV(self,myCSV):
 
-    print 'Processing CSV logs file:', myHTML
+    print 'Processing CSV logs file:', myCSV
 
     logs = {}
 
@@ -605,17 +611,24 @@ class GCAnimation:
           logs[dateLog].insert(0,cacheName)
         except:
           logs[dateLog] = [cacheName]
-        print dateFound, logs[dateLog]
       except Exception, msg:
         print "Pb logs:",msg
       l = fInput.readline()
 
-    print '  Logs loaded:',len(logs)
+    print '  Logs loaded from CSV :',len(logs)
 
     self.tracks.append(logs)
     self.tracksCoords.append((0.0,0.0))
     self.tracksName.append("Logs")
-    self.tracksColor.append(self.cacheColor[TRACK])
+    if len(self.tracks) == 1:
+        self.tracksColor.append(self.cacheColor[TRACK])
+    elif len(self.tracks) == 2:
+        self.tracksColor.append(self.cacheColor[TRACK1])
+    else:
+        self.tracksColor.append(self.cacheColor[TRACK2])
+       
+
+    print "Number of tracks:", len(self.tracks)
 
   def loadLogsFromHTML(self,myHTML):
 
@@ -645,15 +658,14 @@ class GCAnimation:
       else:
         dateString = fInput.readline().strip()
       cacheTime = self.convertDate(dateString)
-      print dateString, cacheTime,
       l = fileFindNext(fInput,"<a")
       guid = re.sub('.*guid=','',l.strip())
       guid = re.sub('".*','',guid)
-      print guid,
 
       # keeping visits to cache location
       if type in ['Found it','Didn\'t find it','Attended','Owner Maintenance']:
         try:
+          print self.guids[guid]
           (name, lat,lon) = self.guids[guid]
           self.newItem(name,lat,lon,TRACK,cacheTime)
 
@@ -666,9 +678,9 @@ class GCAnimation:
         except:
           print ": ", "unknown cache or outside zone", guid
       else:
-        print " --- ", name, type
+        print " --- ", type
 
-    print '  Logs loaded:',nbLogs
+    print '  Logs loaded from HTML :',nbLogs
 
     #self.tracks.append(logs)
     #self.tracksCoords.append((0.0,0.0))
@@ -908,7 +920,7 @@ class GCAnimation:
       t = self.tracks[i]
       try:
         caches = t[cachingTime]
-        # print "drawTracks", caches
+        # print "drawTracks", caches            
         (latOld,lonOld) = self.tracksCoords[i]
         (xOld, yOld) = self.latlon2xy(latOld,lonOld)
         for c in caches:
@@ -931,7 +943,6 @@ class GCAnimation:
           xOld,yOld = x,y
           self.tracksCoords[i] = (lat,lon)
       except Exception, msg:
-        print msg
         pass
 
 
@@ -1061,7 +1072,8 @@ class GCAnimation:
       self.tracksName.append('Barycentre')
       self.tracksColor.append(self.cacheColor[BARYCENTRE])
       trackBarycentre = len(self.tracks) - 1
-
+      print "Number of tracks with barycentre:" , len(self.tracks)
+      
     for cacheTime in cacheTimes:
       # don't display future dates corresponding to future events
       if cacheTime > lastDay:
@@ -1076,7 +1088,7 @@ class GCAnimation:
       # generate intermediate images for each days between last cache day and current day
       for cachingTime in range(previousTime+24*3600, cacheTime, 24*3600):
           nDays= nDays + 1
-          #self.drawTracks(cachingTime)
+          self.drawTracks(cachingTime)
           if not printing:
             self.generateFlash(self.LX,self.LY,nDays,cachingTime)
 
@@ -1114,7 +1126,6 @@ class GCAnimation:
         if status == ACTIVE or status == PLACED or status == EVENT:          # active caches or events
           self.nCaches += 1
           if status == PLACED:
-            print "Placed ",name
             self.nPlaced += 1
         try:
           if status == TRACK or status == PLACED:                            # drawing moves of a geocacher
@@ -1238,7 +1249,6 @@ if __name__=='__main__':
   archived = []
   frontiers = []
   polygons = []
-  tracks = []
   logs = []
   excludeCaches = None
   excludedCaches = []
@@ -1267,7 +1277,7 @@ if __name__=='__main__':
       # display barycentre of caches
       barycentre = True
     elif opt == "-c":
-      # choos the main background color (black ou white)
+      # choos the main background color (black ou <)
       color = arg
     elif opt == "-a":
       # load a file of archived caches
@@ -1315,6 +1325,9 @@ if __name__=='__main__':
 
   for file in logs:
     myAnimation.loadLogsFromFile(defaultPath(file,logsDir))
+
+  print 'Number of tracks:', len(myAnimation.tracks)
+  #myAnimation.tracksColor[1] = myAnimation.cacheColor[BARYCENTRE]
 
   #try:
   myAnimation.generateImages(barycentre)
