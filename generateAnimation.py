@@ -121,21 +121,21 @@ zones = {
                9.56000,    # plage Fiorentine, Alistro, Corse
                (48,64),
                (200,75)),
-  '_Bretagne_' : (u"Géocaching en Bretagne",
+  '_Bretagne_' : (u"EHB - Derniers jours avant liquidation",
                48.92,      # Roches Douvres?
                47.24,      # Pointe sud de Belle Ile?
                -5.17,      # Phare de Nividic?
                -0.8,       # Sud du péage de la Gravelle?
                (246,325),
                (10,50)),
-  '_Ille_et_Vilaine_' : (u"Evolution du géocaching en Ille-et-Vilaine",
+  '_Ille_et_Vilaine_' : (u"Caches breti'vieilles",
                48.73,      # Phare de la Pierre du Herpin
                47.59,      # Redon
                -3.17,      # 
                -0.8,       # Sud du péage de la Gravelle?
                (400,580),
                (90,-30)),
-  '_Tregor_' : (u"Evolution du géocaching dans le Trégor",
+  '_Tregor_' : (u"GC78P24 + 16 ans de géocaching dans le Trégor",
                48.875,     # Roches Douvres
                48.38,      # ???
                -3.90,      # Morlaix
@@ -177,7 +177,7 @@ zones = {
 
 texts = [
   #(u"génération: Garenkreiz", 35, 95),
-  (u"génération: Garenkreiz (CC BY-NC-SA)", 45, 608),
+  #(u"génération: Garenkreiz (CC BY-NC-SA)", 45, 608),
   #(u"licence: CC BY-NC-SA", 35, 655),
   #(u"musique: Winter Is Coming (Andrey Avkhimovich)", 35, 650),
   #(u"musique: Pedro Collares (Gothic)", 35,80),
@@ -192,6 +192,9 @@ logos = [
   # ('Logo_1.png',1035,20, 224, 224),  # Top
   # ('Logo_2.png',1053,272, 224,224),  # Middle
   # ('Logo_3.png',1035,480, 224, 224), # Down
+  ('Avatars/Avatar_Metalleux.jpg',1060,20, 224, 224),  # Top
+  ('Avatars/Avatar_PascalSartor.jpg', 1108, 300, 224,224),  # Middle
+  ('Avatars/Avatar_Sartor35.jpg',1102,480, 224, 224), # Down
   # ('Departement_Ille-et-Vilaine.png',1035,480,224,224), # Ille et Vilaine
   # ('Logo_Breizh_Geocacheurs.png',1035,480, 224, 224), # Breizh
   # ('Logo_Geocaching_15_years.png',1053,272, 224,224), # Breizh 2016
@@ -222,6 +225,7 @@ fatTrack = False        # drawing wider version of geocaching tracks
 # can be set to another specific date
 
 lastDay = time.time() # today
+lastDay = int(time.mktime(time.strptime("2018-10-06", "%Y-%m-%d"))) # Liquidation EHB
 # Mirador lastDay = int(time.mktime(time.strptime("2016-08-02", "%Y-%m-%d")))
 # Challenge lastDay = int(time.mktime(time.strptime("2018-05-16", "%Y-%m-%d")))
 
@@ -507,12 +511,12 @@ class GCAnimation:
         ACTIVE      : (0,0,128),     # navy
         UNAVAILABLE : (255,102,0),   # orange
         EVENT       : (0,255,0),     # green
-        TRACK       : (255,102,0),   # orange
+        TRACK       : (255,102,0),    # (255,0,255),   # purple
         FRONTIER    : (0,0,255),     # blue
         PLACED      : (255,255,0),   # yellow
         BARYCENTRE  : (0,255,0),     # green
         TRACK1      : (255,0,255),   # purple
-        TRACK2      : (0,0,255),     # blue
+        TRACK2      : (0,0,255),   # 
         }
     else:
       self.cacheColor = {
@@ -520,12 +524,12 @@ class GCAnimation:
         ACTIVE      : (0,255,255),   # light blue
         UNAVAILABLE : (255,102,0),   # orange
         EVENT       : (0,255,0),     # green
-        TRACK       : (255,0,255),   # purple
+        TRACK       : (0,100,100),   # purple
         FRONTIER    : (0,0,255),     # blue
         PLACED      : (255,255,0),   # yellow
         BARYCENTRE  : (0,255,0),     # green
-        TRACK1      : (0,100,100),   # light grey
-        TRACK2      : (0,150,0),     # light green
+        TRACK1      : (255,0,255),   # light grey
+        TRACK2      : (0,150,0),     # 
         }
 
     self.flashCursor = 0
@@ -749,7 +753,6 @@ class GCAnimation:
         l = fInput.readline()
         continue
       elif currentZone[0] <> '_' and country <> currentZone:
-        # check if the cache in inside the country (Groundspeak field)
         print '!!! Pb cache outside',currentZone,':',name
         l = fInput.readline()
         continue
