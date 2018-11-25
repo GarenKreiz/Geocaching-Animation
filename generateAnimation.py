@@ -34,6 +34,12 @@
 #   - lastDay    : last day of the animation period
 #   - miscellanous sizes for text, images, etc...
 #
+# Functions:
+#   - drawing frontiers or coasts
+#   - drawing caches inside a given perimeter
+#   - drawing moves corresponding to the logs of several geocachers
+#   - for a geocacher draw the moves corresponding to creations and visits (first list of logs)
+#
 # Notes:
 #   Many thanks to VNC (www.geocaching-france.com) and eolas (www.mides.fr) for the data on France
 #   If you use this program, I'd appreciate to hear from you!
@@ -114,15 +120,22 @@ zones = {
                -5.15083,   # phare de Nividic, Ouessant
                9.56000,    # plage Fiorentine, Alistro, Corse
                (48,64),
-               (200,80)),
-  '_Bretagne_' : (u"GC7FCDQ : barycentre du géocaching en Bretagne?",
+               (200,75)),
+  '_Bretagne_' : (u"Géocaching en Bretagne",
                48.92,      # Roches Douvres?
                47.24,      # Pointe sud de Belle Ile?
                -5.17,      # Phare de Nividic?
                -0.8,       # Sud du péage de la Gravelle?
                (246,325),
-               (20,50)),
-  '_Tregor_' : (u"GC78P24 + 16 ans de géocaching dans le Trégor",
+               (10,50)),
+  '_Ille_et_Vilaine_' : (u"Evolution du géocaching en Ille-et-Vilaine",
+               48.73,      # Phare de la Pierre du Herpin
+               47.59,      # Redon
+               -3.17,      # 
+               -0.8,       # Sud du péage de la Gravelle?
+               (400,580),
+               (90,-30)),
+  '_Tregor_' : (u"Evolution du géocaching dans le Trégor",
                48.875,     # Roches Douvres
                48.38,      # ???
                -3.90,      # Morlaix
@@ -179,6 +192,7 @@ logos = [
   # ('Logo_1.png',1035,20, 224, 224),  # Top
   # ('Logo_2.png',1053,272, 224,224),  # Middle
   # ('Logo_3.png',1035,480, 224, 224), # Down
+  # ('Departement_Ille-et-Vilaine.png',1035,480,224,224), # Ille et Vilaine
   # ('Logo_Breizh_Geocacheurs.png',1035,480, 224, 224), # Breizh
   # ('Logo_Geocaching_15_years.png',1053,272, 224,224), # Breizh 2016
   # ('Plaque_15_ans_black.png',30,440, 240, 200), # Breizh 2016
@@ -493,12 +507,12 @@ class GCAnimation:
         ACTIVE      : (0,0,128),     # navy
         UNAVAILABLE : (255,102,0),   # orange
         EVENT       : (0,255,0),     # green
-        TRACK       : (255,102,0),    # (255,0,255),   # purple
+        TRACK       : (255,102,0),   # orange
         FRONTIER    : (0,0,255),     # blue
         PLACED      : (255,255,0),   # yellow
         BARYCENTRE  : (0,255,0),     # green
         TRACK1      : (255,0,255),   # purple
-        TRACK2      : (0,0,255),   # 
+        TRACK2      : (0,0,255),     # blue
         }
     else:
       self.cacheColor = {
@@ -506,12 +520,12 @@ class GCAnimation:
         ACTIVE      : (0,255,255),   # light blue
         UNAVAILABLE : (255,102,0),   # orange
         EVENT       : (0,255,0),     # green
-        TRACK       : (0,100,100),   # purple
+        TRACK       : (255,0,255),   # purple
         FRONTIER    : (0,0,255),     # blue
         PLACED      : (255,255,0),   # yellow
         BARYCENTRE  : (0,255,0),     # green
-        TRACK1      : (255,0,255),   # light grey
-        TRACK2      : (0,0,255),   # light grey
+        TRACK1      : (0,100,100),   # light grey
+        TRACK2      : (0,150,0),     # light green
         }
 
     self.flashCursor = 0
@@ -546,11 +560,13 @@ class GCAnimation:
       sys.exit()
     self.coords[name] = (lat,lon)
     try:
-      if not (lat,lon,name,status) in self.allWpts[eventTime]:
+      if not (lat,lon,name,status) in self.allWpts[eventTime] \
+             and not (lat,lon,name,PLACED) in self.allWpts[eventTime]:
         self.allWpts[eventTime].insert(0,(lat,lon,name,status))
         self.nAddedCaches += 1
     except:
       self.allWpts[eventTime] = [(lat,lon,name,status)]
+
       self.nAddedCaches += 1
     return
 
@@ -584,6 +600,19 @@ class GCAnimation:
     else:
       self.loadFromCSV(file,geocacher)
 
+
+  def addGeocacherLogs(self):
+    if len(self.tracks) > 0:
+      for d in self.tracks[0]:
+        for c in self.tracks[0][d]:
+          print d,c
+          try:
+            print c, 
+            (lat,lon) = self.coords[c]
+            print lat, lon
+            self.newItem(c,lat,lon,TRACK,d)
+          except:
+            continue
 
   def loadLogsFromFile(self,myFile):
 
@@ -668,6 +697,7 @@ class GCAnimation:
           print self.guids[guid]
           (name, lat,lon) = self.guids[guid]
           self.newItem(name,lat,lon,TRACK,cacheTime)
+          self.newItem(name,lat,lon,TRACK,cacheTime)
 
           #try:
           #  # reverse order for each day
@@ -715,13 +745,16 @@ class GCAnimation:
       if name == "Code GC" or name == "Code" or name in self.excludedCaches:
         # first line of headers in export file of GSAK
         # tested for French and English
+        if verbose: print "= EXCLUDED =",l
         l = fInput.readline()
         continue
       elif currentZone[0] <> '_' and country <> currentZone:
+        # check if the cache in inside the country (Groundspeak field)
         print '!!! Pb cache outside',currentZone,':',name
         l = fInput.readline()
         continue
 
+      if verbose: print "= TRY = ",l
       lat, lon = float(latitude), float(longitude)
 
       if self.polygons <> []:
@@ -1326,6 +1359,9 @@ if __name__=='__main__':
   for file in logs:
     myAnimation.loadLogsFromFile(defaultPath(file,logsDir))
 
+  if geocacher:
+    myAnimation.addGeocacherLogs()
+    
   print 'Number of tracks:', len(myAnimation.tracks)
   #myAnimation.tracksColor[1] = myAnimation.cacheColor[BARYCENTRE]
 
