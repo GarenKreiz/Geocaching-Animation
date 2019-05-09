@@ -17,7 +17,9 @@ Inputs
 
 Some reuses of the code or the idea
 
-- [2009/06 France](https://www.youtube.com/watch?v=0Gae6M3l4xE) 
+- [2009/06 France](https://www.youtube.com/watch?v=0Gae6M3l4xE)
+- [2009/06 New Zealand](https://www.youtube.com/watch?v=1JLkAZ0vFp4&t=28s)
+- [2009/06 New Australia](https://www.youtube.com/user/caughtatwork/videos)
 - [2009/06 Switzerland](http://www.youtube.com/watch?v=NPoFT96Ve50 )
 - [2009/07 Germany](https://www.youtube.com/watch?v=pOiHPPlSxi4 )
 - [2010/10 Portugal](http://www.youtube.com/watch?v=MddsTfFeSIQ )
@@ -26,7 +28,7 @@ Some reuses of the code or the idea
 - [2011/05 Czech Republic](https://www.youtube.com/watch?v=JW-FP1ebcL0)
 - [2011/07 Australia](http://www.youtube.com/watch?v=wXrVHSm3oGg )
 - [2011/09 Canada](http://www.youtube.com/watch?v=a1bvCO5-zpY )  
-- [2012/05 New Zealand](https://www.youtube.com/watch?v=tmttkCPdO3Q)
+- [2009/06 New Zealand](https://www.youtube.com/watch?v=1JLkAZ0vFp4&t=28s)
 - [2015/06 United Kingdom](https://www.youtube.com/watch?v=ayhYVRVE9Ac)
 - [2016/10 Europe](https://www.youtube.com/watch?v=DkU56zSPgR0)
 - [2017/03 Finland](https://www.youtube.com/watch?v=0cKnomvwFPs)
