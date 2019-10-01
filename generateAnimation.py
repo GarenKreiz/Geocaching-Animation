@@ -215,7 +215,7 @@ showCaches = [
   #("",4,"yellow"),
   ]
 
-bigPixels = 1           # draw big pixels : 0, 1, 2 ,3
+bigPixels = 0           # draw big pixels : 0, 1, 2 ,3
 noText = False          # drawing text and logos
 fatTrack = False        # drawing wider version of geocaching tracks
 # last day of displayed period
@@ -520,12 +520,12 @@ class GCAnimation:
         ACTIVE      : (0,255,255),   # light blue
         UNAVAILABLE : (255,102,0),   # orange
         EVENT       : (0,255,0),     # green
-        TRACK       : (255,0,255),   # purple
+        TRACK2      : (255,0,255),   # purple
         FRONTIER    : (0,0,255),     # blue
         PLACED      : (255,255,0),   # yellow
         BARYCENTRE  : (0,255,0),     # green
         TRACK1      : (0,100,100),   # light grey
-        TRACK2      : (0,150,0),     # light green
+        TRACK       : (0,150,0),     # light green
         }
 
     self.flashCursor = 0
@@ -563,11 +563,10 @@ class GCAnimation:
       if not (lat,lon,name,status) in self.allWpts[eventTime] \
              and not (lat,lon,name,PLACED) in self.allWpts[eventTime]:
         self.allWpts[eventTime].insert(0,(lat,lon,name,status))
-        self.nAddedCaches += 1
-    except:
+        self.nAddedEvents += 1
+    except Exception, msg:
       self.allWpts[eventTime] = [(lat,lon,name,status)]
-
-      self.nAddedCaches += 1
+      self.nAddedEvents += 1
     return
 
 
@@ -605,11 +604,8 @@ class GCAnimation:
     if len(self.tracks) > 0:
       for d in self.tracks[0]:
         for c in self.tracks[0][d]:
-          print d,c
           try:
-            print c, 
             (lat,lon) = self.coords[c]
-            print lat, lon
             self.newItem(c,lat,lon,TRACK,d)
           except:
             continue
@@ -641,7 +637,7 @@ class GCAnimation:
         except:
           logs[dateLog] = [cacheName]
       except Exception, msg:
-        print "Pb logs:",msg
+        print "Problem in logs:" , msg
       l = fInput.readline()
 
     print '  Logs loaded from CSV :',len(logs)
@@ -729,7 +725,7 @@ class GCAnimation:
 
     if geocacher <> None:
       geocacher = geocacher.upper()
-    self.nAddedCaches = 0
+    self.nAddedEvents = 0
     l = fInput.readline()
     while l <> '':
       fields = re.sub('[\n\r]*','',l)
@@ -739,7 +735,7 @@ class GCAnimation:
       try:
         (name,cacheType,note,last4logs,dateLastLog,wpName,placedBy,datePlaced,dateLastFound,found,country,latitude,longitude,status,url,dateFoundByMe,ownerId) = fields[0:17]
       except Exception, msg:
-        print msg, fields
+        print "Problem in CSV", msg, fields
         break
 
       if name == "Code GC" or name == "Code" or name in self.excludedCaches:
@@ -750,7 +746,7 @@ class GCAnimation:
         continue
       elif currentZone[0] <> '_' and country <> currentZone:
         # check if the cache in inside the country (Groundspeak field)
-        print '!!! Pb cache outside',currentZone,':',name
+        print '!!! Pb cache outside',currentZone,':',name, country
         l = fInput.readline()
         continue
 
@@ -824,7 +820,7 @@ class GCAnimation:
       l = fInput.readline()
     fInput.close()
 
-    print 'Added caches:',self.nAddedCaches
+    print 'Added events:',self.nAddedEvents
 
   def loadFromGPX(self,file,status=ACTIVE):
 
@@ -847,7 +843,7 @@ class GCAnimation:
       return
 
     self.foundWpts = {}
-    self.nAddedCaches = 0
+    self.nAddedEvents = 0
 
     for p in myGPX.wpts:
       name =  p.attribs['name']
@@ -883,7 +879,7 @@ class GCAnimation:
       else:
           self.foundWpts[name] = cacheStatus
       self.newItem(name,lat,lon,cacheStatus,cacheTime)
-    print 'Added caches',self.nAddedCaches
+    print 'Added events',self.nAddedEvents
     print 'Caches :',len(self.foundWpts)
 
 
@@ -926,7 +922,7 @@ class GCAnimation:
             try:
               self.imTemp.putpixel((x+dx,y+dy),self.flashColor[status]) # yellow flash: cache activation, purple one for archiving
             except:
-              print '!!! Pb writing pixel', x+dx, y+dy, nDays, time.asctime(time.localtime(cacheTime))
+              print '!!! Problem writing pixel', x+dx, y+dy, nDays, time.asctime(time.localtime(cacheTime))
 
     # next step of the animation of the flash
     self.flashCursor = (self.flashCursor - 1) % self.flashLength
@@ -953,31 +949,30 @@ class GCAnimation:
       t = self.tracks[i]
       try:
         caches = t[cachingTime]
-        # print "drawTracks", caches            
         (latOld,lonOld) = self.tracksCoords[i]
         (xOld, yOld) = self.latlon2xy(latOld,lonOld)
         for c in caches:
-          if c[0:2] == 'GC':
-            (lat,lon) = self.coords[c]
-          else:
-            try:
+          try:
+            if c[0:2] == 'GC':
+              (lat,lon) = self.coords[c]
+            else:
               (lat,lon) = c
-            except:
-              pass
-          (x,y) = self.latlon2xy(lat,lon)
-          if (latOld,lonOld) <> (0.0,0.0):
-            draw.line([(xOld, yOld),(x,y)], self.tracksColor[i])
-            if fatTrack:
-              for (dx,dy) in [(1,0), (1,1), (0,1)]:
-                draw.line([(xOld+dx, yOld+dy),(x+dx,y+dy)], self.tracksColor[i])
-            if self.geocacher and self.geocacher == self.tracksName[i]:
-              self.distance += getDistance(latOld,lonOld,lat,lon)
-          latOld,lonOld = lat,lon
-          xOld,yOld = x,y
-          self.tracksCoords[i] = (lat,lon)
+            (x,y) = self.latlon2xy(lat,lon)
+            if (latOld,lonOld) <> (0.0,0.0):
+              draw.line([(xOld, yOld),(x,y)], self.tracksColor[i])
+              if fatTrack:
+                for (dx,dy) in [(1,0), (1,1), (0,1)]:
+                  draw.line([(xOld+dx, yOld+dy),(x+dx,y+dy)], self.tracksColor[i])
+              if self.geocacher and self.geocacher == self.tracksName[i]:
+                self.distance += getDistance(latOld,lonOld,lat,lon)
+            latOld,lonOld = lat,lon
+            xOld,yOld = x,y
+            self.tracksCoords[i] = (lat,lon)
+          except:
+              print "Missing trackpoint", c, time.strftime('%Y/%m/%d',time.localtime(cachingTime))
       except Exception, msg:
         pass
-
+    
 
   def generatePreview(self, geocacher=None):
 
@@ -1137,11 +1132,12 @@ class GCAnimation:
           self.nbBarycentre += 1
           self.sumLatBarycentre += lat
           self.sumLonBarycentre += lon
+
         try:
-            if self.wptStatus[name] <> status:
-              nbStatuses[self.wptStatus[name]] -= 1
-              nbStatuses[status] += 1
-              self.wptStatus[name] = status
+          if self.wptStatus[name] <> status:
+            nbStatuses[self.wptStatus[name]] -= 1
+            nbStatuses[status] += 1
+            self.wptStatus[name] = status
         except:
           self.wptStatus[name] = status
           nbStatuses[status] += 1
@@ -1174,7 +1170,7 @@ class GCAnimation:
             latOld,lonOld = lat,lon
           self.drawPoint(status,x,y)
         except Exception, msg:
-          print '!!! Pb point outside the drawing area:', lat, lon, latOld, lonOld, name, x, y, status, msg
+          print '!!! Problem - point outside the drawing area:', lat, lon, latOld, lonOld, name, x, y, status, msg
 
       if barycentre:
         #print self.nbBarycentre, self.sumLatBarycentre, self.sumLonBarycentre
@@ -1183,8 +1179,6 @@ class GCAnimation:
         fBarycentre.write('<trkpt lat="%f" lon="%f" />\n'%(latBarycentre, lonBarycentre))
         self.tracks[trackBarycentre][cacheTime] = [(latBarycentre,lonBarycentre)]
         #print len(self.tracks[trackBarycentre]), latBarycentre, lonBarycentre
-
-      self.drawTracks(cacheTime)
 
       if nbStatuses <> nbStatusesPrevious:
         dArchived    = nbStatuses[0] - nbStatusesPrevious[0]
@@ -1199,6 +1193,7 @@ class GCAnimation:
       minUnavailable = min(minUnavailable,dUnavailable)
       minActive = min(minActive,dActive)
 
+      self.drawTracks(cacheTime)
       if not printing:
         self.generateFlash(self.LX,self.LY,nDays,cacheTime)
 
