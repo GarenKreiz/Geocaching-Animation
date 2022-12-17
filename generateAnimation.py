@@ -660,7 +660,7 @@ class GCAnimation:
 
     logs = {}
 
-    fInput = open(myHTML,'r')
+    fInput = open(myHTML,'r',encoding="utf8")
 
     searching = 0
     nbLogs = 0
@@ -827,7 +827,8 @@ class GCAnimation:
 
     try:
       myGPX = GPXParser.GPXParser(defaultPath(file,frontieresDir))
-    except:
+    except Exception as msg:
+      print ("Problem reading GPX file",msg)
       return
 
     print ('  Waypoints found :',len(myGPX.wpts))
@@ -1063,7 +1064,7 @@ class GCAnimation:
       self.sumLatBarycentre = 0.0
       self.sumLonBarycentre = 0.0
       self.nbBarycentre =0
-      fBarycentre = open('barycentre.gpx','w')
+      fBarycentre = open('barycentre.gpx','w',encoding="utf8")
 
     # variables to display the geocacher's moves
     latOld,lonOld = 0.0,0.0

@@ -102,7 +102,7 @@ class GPXParser:
       if not filename.endswith(".gpx"):    
          print ("Warning: filename does not end on .gpx...")
       self.file = filename    
-      f = open(filename, "r")
+      f = open(filename, "r",encoding="utf8")
       content = f.read(); f.close()
       self.init_from_string(content)
  
