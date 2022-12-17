@@ -34,7 +34,7 @@ class GPXTrack:
          index = seg.find("<trkpt", 0)
          latMin, latMax = 100.0, -100.0
          lonMin, lonMax = 181.0, -181.0
-         while (index <> -1):
+         while (index != -1):
             indexFin = seg.index(">",index)
             w = GPXWaypoint()
             w.from_string(seg[index:indexFin+1]) 
@@ -100,7 +100,7 @@ class GPXParser:
    def __init__(self, filename):    
       self.attribs={}
       if not filename.endswith(".gpx"):    
-         print "Warning: filename does not end on .gpx..."
+         print ("Warning: filename does not end on .gpx...")
       self.file = filename    
       f = open(filename, "r")
       content = f.read(); f.close()
@@ -140,5 +140,5 @@ if __name__=='__main__':
    parser = GPXParser(sys.argv[1])
 
    for p in parser.wpts:
-      print p
+      print (p)
       
