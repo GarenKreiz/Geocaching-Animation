@@ -1103,7 +1103,7 @@ class GCAnimation:
       
     for cacheTime in cacheTimes:
       # don't display future dates corresponding to future events
-      if cacheTime > lastDay:
+      if cacheTime > lastDay+86400:
           cacheTime = lastDay
           break
 
